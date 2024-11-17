@@ -1,25 +1,55 @@
+TOPNAME = top
+NXDC_FILES = constr/top.nxdc
+INC_PATH ?=
+ 
 VERILATOR = verilator
-VERILATOR_FLAGS = -Wall $(SRC_DIR)/top.v $(SRC_DIR)/top_main.cpp --cc --trace --exe --build
-SRC_DIR = ../../verilator/examples/switch
-OBJ_DIR = $(SRC_DIR)/obj_dir
-EXECUTABLE = $(OBJ_DIR)/Vtop
-WAVE_VCD = $(SRC_DIR)/wave.vcd
+VERILATOR_CFLAGS += -MMD --build -cc  \
+				-O3 --x-assign fast --x-initial fast --noassert
+ 
+BUILD_DIR = ./build
+OBJ_DIR = $(BUILD_DIR)/obj_dir
+BIN = $(BUILD_DIR)/$(TOPNAME)
+ 
+default: $(BIN)
+ 
+$(shell mkdir -p $(BUILD_DIR))
+ 
+# constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+ 
+# project source
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS += $(SRC_AUTO_BIND)
+ 
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+ 
+# rules for verilator
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+ 
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+	@rm -rf $(OBJ_DIR)
+	$(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^ \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+ 
+all: default
+ 
+run: $(BIN)
+	@$^
+ 
+clean:
+	rm -rf $(BUILD_DIR)
 
-.PHONY:all clean sim
-
-all:
-	@echo "No default target.Use 'make sim' to run the simulation."
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$(VERILATOR) $(VERILATOR_FLAGS)
-	$(EXECUTABLE) &> /dev/null & PID=$$!; sleep 10;kill -9 $$PID
-	@if ! command -v gtkwave &> /dev/null; then \
-		echo "gtkwave not found.Installing gtkwave and dependencie..."; \
-                sudo apt-get update && sudo apt-get install -y gtkwave libcanberra-gtk-module; \
-        fi
-	gtkwave $(WAVE_VCD); \
-clean:
-	rm -rf $(OBJ_DIR) $(WAVE_VCD) 
+
+.PHONY: default all clean run sim
 
 include ../Makefile

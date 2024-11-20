@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <cpu/cpu.h>
+#include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -70,6 +71,21 @@ static int cmd_info(char *args){
 	return 0;
 }
 
+
+static int cmd_x(char *args){
+	char* num = strtok(args," ");
+	char* firstaddr = strtok(NULL," ");
+	int len = 0;
+	paddr_t addr = 0;
+	int i = 0;
+	sscanf(num,"%d",&len);
+	sscanf(firstaddr,"%x",&addr);
+	for(i = 0;i < len;i ++){
+		printf("%x\n",paddr_read(addr,4));
+		addr = addr + 4;
+	}	
+	return 0;
+}
 static struct {
   const char *name;
   const char *description;
@@ -80,6 +96,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   {"si","Next step",cmd_si },
   {"info","Print the reg",cmd_info},
+  {"x","Memory Scan",cmd_x}
   /* TODO: Add more commands */
 
 };

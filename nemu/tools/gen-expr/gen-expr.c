@@ -31,8 +31,21 @@ static char *code_format =
 "  return 0; "
 "}";
 
+int buf_index = 0;
+
+int choose(int n){
+	int random_num = rand() % 3;
+	printf("buf index = %d,random number = %d\n",buf_index,random_num);
+	return random_num;
+}
+
 static void gen_rand_expr() {
   buf[0] = '\0';
+  switch (choose(3)) {
+    case 0: gen_num(); break;
+    case 1: gen('('); gen_rand_expr(); gen(')'); break;
+    default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+  }
 }
 
 int main(int argc, char *argv[]) {

@@ -170,23 +170,18 @@ bool check_parentheses(int p, int q)
 {
     if(tokens[p].type != 6  || tokens[q].type != 7)
         return false;
-    int a = p , b = q;
-    while(b > a)
-    {
-        if(tokens[a].type == 6){
-            if(tokens[b].type == 7)
-            {
-                a ++ , b --;
-                continue;
-            }
-
-            else
-                b --;
-        }
-        else if(tokens[a].type == 7)
-            return false;
-        else a ++;
-    }
+    int a = 0 , b = 0;
+     for(int i = p + 1; i <= q - 1; ++i){
+	    if(tokens[i].type == LEFT){
+	        a ++;
+	    }
+	    else if(tokens[i].type == RIGHT){
+	        b ++;
+	    }
+	    if(a < b){
+	        return false;
+	    }
+	}
     return true;
 }
 

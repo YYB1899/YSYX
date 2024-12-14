@@ -252,7 +252,7 @@ uint32_t eval(int p, int q) {
                 else return val1 / val2;
             default:
                 printf("No Op");
-                assert(0);
+                return 0;
         }
     }
 }

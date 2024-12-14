@@ -197,6 +197,7 @@ int max(int a,int b){
 uint32_t eval(int p, int q) {
     if (p > q) {
         /* Bad expression */
+        assert(0);
         return -1;
     }
     else if (p == q) {
@@ -243,13 +244,10 @@ uint32_t eval(int p, int q) {
         switch (op_type) {
             case 2:
                 return val1 + val2;
-                printf("+");
             case 3:
                 return val1 - val2;
-                printf("-");
             case 4:
                 return val1 * val2;
-                printf("+");
             case 5:
                 if(val2 == 0) return 0;
                 else return val1 / val2;

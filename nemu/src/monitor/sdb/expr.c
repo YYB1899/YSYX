@@ -233,9 +233,13 @@ uint32_t eval(int p, int q) {
         }
         
         int  op_type = tokens[op].type;
-        uint32_t  val1 = eval(p, op - 1);
-        uint32_t  val2 = eval(op + 1, q);
-
+        uint32_t  val1 = 0;
+        if(val1 != 256){val1 = eval(p,op - 1);}
+        else {val1 = eval(p,op - 2);}
+        uint32_t  val2 = 0;
+	if(val2 != 256){val2 = eval(op + 1,q);}
+        else {val2 = eval(op + 2,q);}
+        
         switch (op_type) {
             case 2:
                 return val1 + val2;

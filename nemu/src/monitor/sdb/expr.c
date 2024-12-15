@@ -165,10 +165,7 @@ static bool make_token(char *e) {
 }
 
 bool check_paretheses_first(int p, int q){
-   int n = 0;
-   int m = 0;
-   int i;
-   int j;
+   int n = 0,m = 0,j,i;
    if(tokens[p].type != 6  || tokens[q].type != 7)
         return false;
    else{

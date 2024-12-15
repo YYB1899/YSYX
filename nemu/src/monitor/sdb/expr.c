@@ -164,6 +164,27 @@ static bool make_token(char *e) {
   return true;
 }
 
+bool check(int p, int q){
+   int n = 0;
+   int m = 0;
+   int i = 0;
+   int j = 0;
+   if(tokens[p].type != 6  || tokens[q].type != 7)
+        return false;
+   else{
+   	for(i = p + 1;i < q;i ++){
+   		if(tokens[i].type == 6) {n = i;break;}
+   	}
+   	for(j = q - 1;j > p;j --){
+   		if(tokens[j].type == 7) {m = j;break;}
+   	}
+   	if(i == q && j == p) return true;
+   	if(m < n) return false;
+   	if(m > n) return true;
+   }
+   return true;
+}
+
 bool check_parentheses(int p, int q)
 {
     if(tokens[p].type != 6  || tokens[q].type != 7)
@@ -253,6 +274,7 @@ uint32_t eval(int p, int q) {
 }
 
 
+
 word_t expr(char *e, bool *success) {
   if (make_token(e) == false) {
     *success = false;
@@ -261,8 +283,14 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   *success = true;
-  uint32_t result = 0;
-  result = eval(0,nr_token - 1);
-  printf("result = %d\n", result);
-  return result;
+  if(check(0,nr_token - 1) == false){
+  	assert(0);
+  	return 0;
+  }
+  else{
+  	uint32_t result = 0;
+ 	 result = eval(0,nr_token - 1);
+  	printf("result = %d\n", result);
+  	return result;
+  }
 }

@@ -136,12 +136,10 @@ static bool make_token(char *e) {
           	
           	break;
           case 7:
-          	token1.type = 7;
+                token1.type = 7;
           	tokens[nr_token ++] = token1;
- 
           	break;
           case 256:
-          	tokens[nr_token ++] = token1;
           	break;
           case 1:
           	token1.type = 1;

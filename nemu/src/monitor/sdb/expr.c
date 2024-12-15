@@ -164,25 +164,32 @@ static bool make_token(char *e) {
   return true;
 }
 
-bool check(int p, int q){
-   int n = 0;
-   int m = 0;
-   int i = 0;
-   int j = 0;
-   if(tokens[p].type != 6  || tokens[q].type != 7)
+bool check(int p, int q) {
+    // 提前检查边界条件
+    if (tokens[p].type != 6 || tokens[q].type != 7) {
         return false;
-   else{
-   	for(i = p + 1;i < q;i ++){
-   		if(tokens[i].type == 6) {n = i;break;}
-   	}
-   	for(j = q - 1;j > p;j --){
-   		if(tokens[j].type == 7) {m = j;break;}
-   	}
-   	if(i == q && j == p) return true;
-   	if(m < n) return false;
-   	if(m > n) return true;
-   }
-   return true;
+    }
+
+    // 查找 p 之后第一个类型为 6 的标记
+    int i;
+    for (i = p + 1; i < q; i++) {
+        if (tokens[i].type == 6) {
+            break;
+        }
+    }
+
+    // 查找 q 之前第一个类型为 7 的标记（从 q-2 开始，因为 q 已知不为 7）
+    int j;
+    for (j = q - 2; j > p; j--) {
+        if (tokens[j].type == 7) {
+            break;
+        }
+    }
+
+    // 检查是否找到了符合条件的标记，并且它们的位置关系正确
+    // 如果 i == q，说明没有找到类型为 6 的标记；如果 j == p，说明没有找到类型为 7 的标记
+    // 如果找到了，则检查 m（j）和 n（i）的位置关系
+    return (i < q && j > p && j >= i);
 }
 
 bool check_parentheses(int p, int q)

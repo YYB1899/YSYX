@@ -164,11 +164,11 @@ static bool make_token(char *e) {
   return true;
 }
 
-bool check(int p, int q){
+bool check_paretheses_first(int p, int q){
    int n = 0;
    int m = 0;
-   int i = 0;
-   int j = 0;
+   int i;
+   int j;
    if(tokens[p].type != 6  || tokens[q].type != 7)
         return false;
    else{
@@ -283,7 +283,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   *success = true;
-  if(check(0,nr_token - 1) == false){
+  if(check_paretheses_first(0,nr_token - 1) == false){
   	assert(0);
   	return 0;
   }

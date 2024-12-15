@@ -177,7 +177,7 @@ bool check_paretheses_first(int p, int q){
    	}
    	if(i == q && j == p) return true;
    	if(m < n) return false;
-   	if(m > n) return true;
+   	else return true;
    }
    return true;
 }

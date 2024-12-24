@@ -35,9 +35,9 @@ int index_buf  = 0;
 
 int choose(int n){
     int flag = rand() % 3 ; // 0 1 2
-	printf("index = %d, flag = %d. \n",index_buf, flag);
     return flag;
 }
+
 void gen_num(){
     int num = rand()% 100;
     int num_size = 0, num_tmp = num;
@@ -69,11 +69,9 @@ void gen_rand_op(){
     buf[index_buf ++] = op[op_position];
 }
 
-
 static void gen_rand_expr() {
     //    buf[0] = '\0';	
-   if(index_buf > 65530)
-       	printf("overSize\n");
+    if(index_buf > 65536) {printf("oversize\n");return;}
     switch (choose(3)) {
 	case 0:
 	    gen_num();

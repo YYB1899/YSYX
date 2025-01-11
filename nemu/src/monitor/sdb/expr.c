@@ -196,7 +196,7 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses_first(int p, int q){
+bool check_parentheses(int p, int q){
    int n = 0,m = 0,j,i;
    if(tokens[p].type != 6  || tokens[q].type != 7)
         return false;
@@ -214,30 +214,6 @@ bool check_parentheses_first(int p, int q){
    return true;
 }
 
-/*bool check_parentheses(int p, int q)
-{
-    if(tokens[p].type != 6  || tokens[q].type != 7)
-        {printf("c");return false;}
-    int a = p , b = q;
-    while(b > a)
-    {
-	if(tokens[a].type == 6){
-	    if(tokens[b].type == 7)
-	    {
-		a ++ , b --;
-		continue;
-	    } 
-
-	    else 
-		b --;
-	}
-	else if(tokens[a].type == 7)
-	    return false;
-	else a++;
-    }
-    return true;
-}
-*/
 int max(int a,int b){
 	return (a > b) ? a : b;
 }
@@ -255,7 +231,7 @@ uint32_t eval(int p, int q) {
          */
         return atoi(tokens[p].str);
     }
-    else if (check_parentheses_first(p, q) == true) {
+    else if (check_parentheses(p, q) == true) {
         /* The expression is surrounded by a matched pair of parentheses.
          * If that is the case, just throw away the parentheses.
          */
@@ -326,7 +302,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   *success = true;
-   if(check_parentheses_first(0,nr_token - 1) == false){
+   if(check_parentheses(0,nr_token - 1) == false){
   	assert(0);
   	return 0;
   }

@@ -214,7 +214,7 @@ bool check_paretheses_first(int p, int q){
    return true;
 }
 
-bool check_parentheses(int p, int q)
+/*bool check_parentheses(int p, int q)
 {
     if(tokens[p].type != 6  || tokens[q].type != 7)
         {printf("c");return false;}
@@ -237,7 +237,7 @@ bool check_parentheses(int p, int q)
     }
     return true;
 }
-
+*/
 int max(int a,int b){
 	return (a > b) ? a : b;
 }
@@ -255,13 +255,13 @@ uint32_t eval(int p, int q) {
          */
         return atoi(tokens[p].str);
     }
-    else if (check_parentheses(p, q) == true) {
+         /*else if (check_parentheses(p, q) == true) {*/
         /* The expression is surrounded by a matched pair of parentheses.
          * If that is the case, just throw away the parentheses.
          */
         return eval(p + 1, q - 1);
-    }
-    else {
+    
+    /*else {*/
         int op = -1; // op = the position of 主运算符 in the token expression;
         bool simple = false;
         for(int i = p ; i <= q ; i ++)
@@ -287,7 +287,7 @@ uint32_t eval(int p, int q) {
             	simple = true;
                 op = max(op, i);
             }
-        }
+       /* }*/
         
         int  op_type = tokens[op].type;
         uint32_t  val1 = eval(p,op - 1);

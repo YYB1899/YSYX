@@ -22,7 +22,6 @@
 
 enum {
   TK_NOTYPE = 256, 
-  TK_EQ,
   NUM = 1,
   PLUS = 2,
   SUB = 3,
@@ -30,6 +29,11 @@ enum {
   DIV = 5,
   LEFT = 6,
   RIGHT = 7, 
+  TK_EQ = 8,
+  NOTEQ = 9,
+  AND = 10,
+  HEX = 11,
+  REG = 12,
 
   /* TODO: Add more token types */
 
@@ -51,8 +55,12 @@ static struct rule {
   {"\\/", DIV},         // div
   {"\\(", LEFT},         // left
   {"\\)", RIGHT},         // right
-  {"==", TK_EQ},        // equal
+  {"\\=\\=", TK_EQ},        // equal
+  {"\\!\\=",NOTEQ},      //not_equal
+  {"\\&\\&",AND},        //and
   {"[0-9]+", NUM},      // num
+  {"0x[0-9a-fA-F]+",HEX},     //hex
+  {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -143,6 +151,31 @@ static bool make_token(char *e) {
           	break;
           case 1:
           	token1.type = 1;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 8:
+          	token1.type = 8;
+          	strcpy(token1.str,"==");
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 9:
+          	token1.type = 9;
+          	strcpy(token1.str,"!=");
+          	tokens[nr_token ++] = token1;
+          	break;
+           case 10:
+          	token1.type = 10;
+          	strcpy(token1.str,"&&");
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 11:
+          	token1.type = 10;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 12:
+          	token1.type = 11;
           	strncpy(token1.str,&e[position - substr_len],substr_len);
           	tokens[nr_token ++] = token1;
           	break;
@@ -239,11 +272,19 @@ uint32_t eval(int p, int q) {
                 while(tokens[i].type != 7)
                     i ++;
             }
-            if(!simple && (tokens[i].type == 2 || tokens[i].type == 3)){
+            if(!simple && tokens[i].type == 10 ){
                 simple = true;
                 op = max(op, i);
             }
-            if(!simple && (tokens[i].type == 4 || tokens[i].type == 5) ){
+            if(!simple && (tokens[i].type == 8 || tokens[i].type == 9 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 2 || tokens[i].type == 3 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 4 || tokens[i].type == 5 )){
             	simple = true;
                 op = max(op, i);
             }
@@ -263,6 +304,12 @@ uint32_t eval(int p, int q) {
             case 5:
                 if(val2 == 0) return 0;
                 else return val1 / val2;
+            case 8:
+                return val1 == val2;
+            case 9:
+                return val1 != val2;    
+            case 10:
+                return val1 && val2;        
             default:
                 printf("No Op");
                 assert(0);

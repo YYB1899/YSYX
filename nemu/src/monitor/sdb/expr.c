@@ -327,14 +327,11 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   *success = true;
-  if(check_paretheses_first(0,nr_token - 1) == false){
-  	assert(0);
-  	return 0;
-  }
-  else{
+
+  
   	uint32_t result = 0;
  	 result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);
   	return result;
-  }
+  
 }

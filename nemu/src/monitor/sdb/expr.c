@@ -207,7 +207,7 @@ bool check_parentheses_first(int p, int q){
    	for(j = q - 1;j > p;j --){
    		if(tokens[j].type == 7) {m = j;break;}
    	}
-   	if(i == q && j == p) return true;
+   	if(n == 0 || m == 0) return true;
    	if(m < n) return false;
    	else return true;
    }

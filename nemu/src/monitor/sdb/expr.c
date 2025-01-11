@@ -194,12 +194,12 @@ static bool make_token(char *e) {
     }
   }
 
-  return true;
+  return true; 
 }
 bool check_paretheses_first(int p, int q){
    int n = 0,m = 0,j,i;
    if(tokens[p].type != 6  || tokens[q].type != 7)
-        return false;
+        {printf("a");return false;}
    else{
    	for(i = p + 1;i < q;i ++){
    		if(tokens[i].type == 6) {n = i;break;}
@@ -208,7 +208,7 @@ bool check_paretheses_first(int p, int q){
    		if(tokens[j].type == 7) {m = j;break;}
    	}
    	if(i == q && j == p) return true;
-   	if(m < n) return false;
+   	if(m < n) {printf("b");return false;}
    	else return true;
    }
    return true;
@@ -217,7 +217,7 @@ bool check_paretheses_first(int p, int q){
 bool check_parentheses(int p, int q)
 {
     if(tokens[p].type != 6  || tokens[q].type != 7)
-        return false;
+        {printf("c");return false;}
     int a = p , b = q;
     while(b > a)
     {

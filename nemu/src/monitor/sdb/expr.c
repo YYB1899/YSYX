@@ -58,8 +58,8 @@ static struct rule {
   {"\\=\\=", TK_EQ},        // equal
   {"\\!\\=",NOTEQ},      //not_equal
   {"\\&\\&",AND},        //and
-  {"[0-9]+", NUM},      // num
   {"0x[0-9a-fA-F]+",HEX},     //hex
+  {"[0-9]+", NUM},      // num
   {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 

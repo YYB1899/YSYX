@@ -59,7 +59,7 @@ static struct rule {
   {"\\!\\=",NOTEQ},      //not_equal
   {"\\&\\&",AND},        //and
   {"[0-9]+", NUM},      // num
-  {"0[xX][0-9a-fA-F]+",HEX},     //hex
+  {"0x[0-9a-fA-F]+",HEX},     //hex
   {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 

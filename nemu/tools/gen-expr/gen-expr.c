@@ -40,16 +40,11 @@ int choose(int n){
 
 void gen_num(){
     int num = rand()% 100;
-    int num_size = 0, num_tmp = num;
+    int num_size = 0, num_tmp = num , x = 1;
     while(num_tmp){
 	num_tmp /= 10;
 	num_size ++;
-    }
-    int x = 1;
-    while(num_size)
-    {
 	x *= 10;
-	num_size -- ;
     }
     x /= 10;
     while(num)
@@ -60,9 +55,7 @@ void gen_num(){
 	buf[index_buf ++] = c;
     }
 }
-void gen(char c){
-    buf[index_buf ++] = c;
-}
+
 void gen_rand_op(){
     char op[4] = {'+', '-', '*', '/'};
     int op_position = rand() % 4;

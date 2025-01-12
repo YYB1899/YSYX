@@ -59,7 +59,7 @@ static struct rule {
   {"\\!\\=",NOTEQ},      //not_equal
   {"\\&\\&",AND},        //and
   {"[0-9]+", NUM},      // num
-  {"0x[0-9a-fA-F]+",HEX},     //hex
+  {"0[xX][0-9a-fA-F]+",HEX},     //hex
   {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
@@ -149,6 +149,16 @@ static bool make_token(char *e) {
           	break;
           case 256:
           	break;
+          case 11:
+          	token1.type = 11;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 12:
+          	token1.type = 12;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
           case 1:
           	token1.type = 1;
           	strncpy(token1.str,&e[position - substr_len],substr_len);
@@ -167,16 +177,6 @@ static bool make_token(char *e) {
            case 10:
           	token1.type = 10;
           	strcpy(token1.str,"&&");
-          	tokens[nr_token ++] = token1;
-          	break;
-          case 11:
-          	token1.type = 10;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
-          	tokens[nr_token ++] = token1;
-          	break;
-          case 12:
-          	token1.type = 11;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
           	tokens[nr_token ++] = token1;
           	break;
           default:
@@ -292,7 +292,24 @@ uint32_t eval(int p, int q) {
     }
 }
 
-
+void int_to_char(int num , char str[]){
+    int len = strlen(str);
+    memset(str,0,len); /*initialize str*/
+    int num_size = 0, num_tmp = num , x = 1 , index_str = 0;
+    while(num_tmp){
+	num_tmp /= 10;
+	num_size ++;
+	x *= 10;
+    }
+    x /= 10;
+    while(num)
+    {
+	char c = num / x + '0';
+	num %= x;
+	x /= 10;
+	str[index_str ++] = c;
+    }
+}		
 
 word_t expr(char *e, bool *success) {
   if (make_token(e) == false) {
@@ -301,6 +318,39 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
+  /*get tokens_len*/
+  int tokens_len = 0;
+  int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
+  for(int i = 0 ; i < tokens_size ; i ++){
+  	if(tokens[i].type == 0) break;
+  	tokens_len ++;
+  }
+  /*REG*/
+  for(int i = 0 ; i < tokens_len ; i ++){
+  	if(tokens[i].type == 12)
+  	{
+  		bool simple = false;
+  		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
+  		if(simple == true){
+  			int_to_char(reg_value,tokens[i].str);
+  		}else{
+  			printf("reg valve error.\n");
+			assert(0);
+		}  	
+	}
+  }
+  /*HEX*/
+  for(int i = 0 ; i < tokens_len ; i ++){
+  	if(tokens[i].type == 11)
+  	{
+  		int hex_value = strtol(tokens[i].str,NULL,16);
+  		int_to_char(hex_value,tokens[i].str);	
+	}
+  }
+  /*negative*/
+  
+  /*derefence*/
+  
   *success = true;
    if(check_parentheses(0,nr_token - 1) == false){
   	assert(0);

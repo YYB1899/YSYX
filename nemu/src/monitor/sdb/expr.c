@@ -378,6 +378,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
+   tokens_len -= 1;
   /*derefence*/
   printf("%d\n",tokens_len);
    uint32_t result = 0;

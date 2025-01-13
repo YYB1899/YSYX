@@ -118,7 +118,7 @@ typedef struct token {
   int type;
   char str[32];
 } Token;
-
+int len = 0;
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
@@ -213,7 +213,7 @@ static bool make_token(char *e) {
                 printf("i = %d and without rules\n", i);
                 break;
         }
-
+    	len = nr_token;
         break;
       }
     }
@@ -356,7 +356,7 @@ word_t expr(char *e, bool *success) {
   		if(simple == true){
   			int_to_char(reg_value,tokens[i].str);
   		}else{
-  			printf("reg valve error.\n");
+  			printf("reg value error.\n");
 			assert(0);
 		}  	
 	}
@@ -370,13 +370,21 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*negative*/
-  for (int i = 0; i < nr_token; i ++) {
-  if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type != 1) ) {
+for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
+		||
+		(tokens[i].type == '-' && i == 0)
+	  )
+	{
+	    //printf("%s\n", tokens[i+1].str);
 	    tokens[i].type = TK_NOTYPE;
+	    //tokens[i].str = tmp;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-';
+	    // printf("%s\n", tokens[i+1].str);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE)
 		{
@@ -385,9 +393,10 @@ word_t expr(char *e, bool *success) {
 		    }
 		    tokens_len -- ;
 		}
-	    } 
-     }
-  }
+	    }
+	}
+    }
+
   /*derefence*/ 
   for (int i = 0; i < nr_token; i ++) {
   if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) ) {

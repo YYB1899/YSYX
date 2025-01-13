@@ -118,7 +118,7 @@ typedef struct token {
   int type;
   char str[32];
 } Token;
-int len = 0;
+
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
@@ -213,7 +213,6 @@ static bool make_token(char *e) {
                 printf("i = %d and without rules\n", i);
                 break;
         }
-    	len = nr_token;
         break;
       }
     }
@@ -372,10 +371,7 @@ word_t expr(char *e, bool *success) {
   /*negative*/
 for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
-		||
-		(tokens[i].type == '-' && i == 0)
-	  )
+	if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) )
 	{
 	    //printf("%s\n", tokens[i+1].str);
 	    tokens[i].type = TK_NOTYPE;

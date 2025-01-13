@@ -376,13 +376,13 @@ word_t expr(char *e, bool *success) {
 		    tokens_len -- ;
 		}
 	    }
-	}tokens_len -=1;
+	}
     }
     
   /*derefence*/
   printf("%d\n",tokens_len);
    uint32_t result = 0;
- 	result = eval(0,nr_token - 1);
+ 	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	return result;
   

@@ -250,12 +250,12 @@ int max(int a,int b){
 uint32_t eval(int p, int q) {
 	printf("p=%d\n",p);
 	printf("q=%d\n",q);
-    if (p > q) {
-        /* Bad expression */
-        assert(0);
+    /*if (p > q) {
+        * Bad expression 
+        *assert(0);
         return -1;
-    }
-    else if (p == q) {
+    }*/
+   if (p == q) {
         /* Single token.
          * For now this token should be a number.
          * Return the value of the number.
@@ -299,7 +299,6 @@ uint32_t eval(int p, int q) {
         int  op_type = tokens[op].type;
         uint32_t  val1 = eval(p,op - 1);
         uint32_t  val2 = eval(op + 1,q);
-        printf("op=%d\n",op);
         switch (op_type) {
             case 2:
                 return val1 + val2;

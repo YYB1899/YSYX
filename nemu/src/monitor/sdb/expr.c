@@ -341,8 +341,8 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
   /*get tokens_len*/
   int tokens_len = 0;
-  /*int tokens_size = sizeof(tokens)/sizeof(tokens[0]);*/
-  for(int i = 0 ; i < 30 ; i ++){
+  int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
+  for(int i = 0 ; i < tokens_size ; i ++){
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }
@@ -397,11 +397,38 @@ for(int i = 0 ; i < tokens_len ; i ++){
 }
 
   /*derefence*/ 
-  for (int i = 0; i < nr_token; i ++) {
-  if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) ) {
-    
+for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == '*' && i > 0 
+		    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
+		    && tokens[i+1].type == NUM 
+		    )
+                ||
+		(tokens[i].type == '*' && i > 0
+                    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == '*' && i == 0)
+          )
+	{
+	    tokens[i].type = TK_NOTYPE;
+	    int tmp = char_to_int(tokens[i+1].str);
+	    uintptr_t a = (uintptr_t)tmp;
+	    int value = *((int*)a);
+	    int_to_char(value, tokens[i+1].str);	    
+	    // 
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    }
+	}
     }
-  }
 uint32_t result = 0;
  	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);

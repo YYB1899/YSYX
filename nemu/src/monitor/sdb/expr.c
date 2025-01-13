@@ -351,10 +351,7 @@ word_t expr(char *e, bool *success) {
   /*negative*/  
   for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if((tokens[i].type == 3 && i > 0 && tokens[i-1].type != 1 && tokens[i+1].type == 1)
-		||
-		(tokens[i].type == 3 && i == 0)
-	  )
+	if (tokens[i].type == 3 && (i == 0 || tokens[i - 1].type != 1) )
 	{
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
@@ -374,6 +371,8 @@ word_t expr(char *e, bool *success) {
     }
     
   /*derefence*/
+  
+
    uint32_t result = 0;
  	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);

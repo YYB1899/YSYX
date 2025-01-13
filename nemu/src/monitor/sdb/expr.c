@@ -225,31 +225,24 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses(int p, int q)
-{
-    // return true;
-    //    printf("p = %d, q = %d\n",tokens[p].type, tokens[q].type);
-    if(tokens[p].type != '('  || tokens[q].type != ')')
-	return false;
-    int l = p , r = q;
-    while(l < r)
-    {
-	if(tokens[l].type == '('){
-	    if(tokens[r].type == ')')
-	    {
-		l ++ , r --;
-		continue;
-	    } 
-
-	    else 
-		r --;
-	}
-	else if(tokens[l].type == ')')
-	    return false;
-	else l ++;
-    }
-    return true;
+bool check_parentheses(int p, int q){
+   int n = 0,m = 0,j,i;
+   if(tokens[p].type != 6  || tokens[q].type != 7)
+        return false;
+   else{
+   	for(i = p + 1;i < q;i ++){
+   		if(tokens[i].type == 6) {n = i;break;}
+   	}
+   	for(j = q - 1;j > p;j --){
+   		if(tokens[j].type == 7) {m = j;break;}
+   	}
+   	if(n == 0 || m == 0) return true;
+   	if(m < n) return false;
+   	else return true;
+   }
+   return true;
 }
+
 int max(int a,int b){
 	return (a > b) ? a : b;
 }
@@ -276,81 +269,57 @@ uint32_t eval(int p, int q) {
         return eval(p + 1, q - 1);
     }
     else {
-	int op = -1; // op = the position of 主运算符 in the token expression;
-	bool flag = false; 
-	for(int i = p ; i <= q ; i ++)
-	{
-	    if(tokens[i].type == '(')
-	    {
-		while(tokens[i].type != ')')
-		    i ++;
-	    }
-	    if(!flag &&  tokens[i].type == 6){
-		flag = true;
-		op = max(op,i);
-	    }
-
-	    if(!flag &&  tokens[i].type == 7 ){
-		flag = true;
-		op = max(op,i);
-	    }
-
-	    if(!flag && tokens[i].type == 5){
-		flag = true;
-		op = max(op,i);
-	    }
-
-	    if(!flag && tokens[i].type == 4){
-		flag = true;
-		op = max(op,i);
-	    }
-	    if(!flag && tokens[i].type == 10){
-		flag = true;
-		op = max(op, i);
-	    }
-	    if(!flag && (tokens[i].type == '+' || tokens[i].type == '-')){
-		flag = true;
-		op = max(op, i);
-	    }
-	    if(!flag && (tokens[i].type == '*' || tokens[i].type == '/') ){
-		op = max(op, i);
-	    }
-	}
-	//	printf("op position is %d\n", op);
-	// if register return $register
-	int  op_type = tokens[op].type;
-
-	// 递归处理剩余的部分
-	uint32_t  val1 = eval(p, op - 1);
-	uint32_t  val2 = eval(op + 1, q);
-	//	printf("val1 = %d, val2 = %d \n", val1, val2);
-
-	switch (op_type) {
-	    case '+': 
-		return val1 + val2;
-	    case '-': 
-		return val1 - val2;
-	    case '*': 
-		return val1 * val2;
-	    case '/':
-		if(val2 == 0){
-		    //printf("division can't zero;\n");
-		    division_zero = true;
-		    return 0;
-		}	
-		return val1 / val2;
-	    case 4:
-		return val1 == val2;
-	    case 5:
-		return val1 != val2;
-	    case 6:
-		return val1 || val2;
-	    case 7:
-		return val1 && val2;
-	    default: 
-		printf("No Op type.");
-		assert(0);
-	}
+        int op = -1; // op = the position of 主运算符 in the token expression;
+        bool simple = false;
+        for(int i = p ; i <= q ; i ++)
+        {
+            if(tokens[i].type == 6)
+            {
+                while(tokens[i].type != 7)
+                    i ++;
+            }
+            if(!simple && tokens[i].type == 10 ){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 8 || tokens[i].type == 9 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 2 || tokens[i].type == 3 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 4 || tokens[i].type == 5 )){
+            	simple = true;
+                op = max(op, i);
+            }
+       }
+        
+        int  op_type = tokens[op].type;
+        uint32_t  val1 = eval(p,op - 1);
+        uint32_t  val2 = eval(op + 1,q);
+        
+        switch (op_type) {
+            case 2:
+                return val1 + val2;
+            case 3:
+                return val1 - val2;
+            case 4:
+                return val1 * val2;
+            case 5:
+                if(val2 == 0) return 0;
+                else return val1 / val2;
+            case 8:
+                return val1 == val2;
+            case 9:
+                return val1 != val2;    
+            case 10:
+                return val1 && val2;        
+            default:
+                printf("No Op");
+                assert(0);
+        }
     }
 }
 

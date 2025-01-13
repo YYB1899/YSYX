@@ -221,6 +221,8 @@ int max(int a,int b){
 uint32_t eval(int p, int q) {
     if (p > q) {
         /* Bad expression */
+        printf("p=%d\n",p);
+        printf("q=%d\n",q);
         assert(0);
         return -1;
     }
@@ -295,22 +297,33 @@ uint32_t eval(int p, int q) {
 void int_to_char(int num , char str[]){
     int len = strlen(str);
     memset(str,0,len); /*initialize str*/
-    int num_size = 0, num_tmp = num , x = 1 , index_str = 0;
+    int num_size = 0, num_tmp = num , base = 1 , index_str = 0;
     while(num_tmp){
 	num_tmp /= 10;
 	num_size ++;
-	x *= 10;
+	base *= 10;
     }
-    x /= 10;
+    base /= 10;
     while(num)
     {
-	char c = num / x + '0';
-	num %= x;
-	x /= 10;
+	char c = num / base + '0';
+	num %= base;
+	base /= 10;
 	str[index_str ++] = c;
     }
-}		
-
+}	
+	
+int char_to_int(char c[]){
+  int c_size = strlen(c);
+  int c_int = 0;
+  int base = 1;
+  for(int i = c_size - 1 ; i > 0 ; i --){
+  	c_int += (c[i] - '0') * base;
+  	base *= 10;
+  	}
+  	return c_int;
+  }
+  	
 word_t expr(char *e, bool *success) {
   if (make_token(e) == false) {
     *success = false;
@@ -350,7 +363,20 @@ word_t expr(char *e, bool *success) {
   /*negative*/
   for (int i = 0; i < nr_token; i ++) {
   if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type != 1) ) {
-     	 
+	    tokens[i].type = TK_NOTYPE;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-';
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    } 
      }
   }
   /*derefence*/ 

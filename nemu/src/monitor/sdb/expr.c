@@ -227,6 +227,7 @@ int max(int a,int b){
 
 uint32_t eval(int p, int q) {
     if (p > q) {
+    printf("11");
     printf("p=%d",p);
     printf("q=%d",q);
         /* Bad expression */

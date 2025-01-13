@@ -84,7 +84,7 @@ void init_regex() {
     }
   }
 }
-
+int len = 0;
 typedef struct token {
   int type;
   char str[32];
@@ -184,7 +184,7 @@ static bool make_token(char *e) {
                 printf("i = %d and without rules\n", i);
                 break;
         }
-
+	len = nr_token;
         break;
       }
     }

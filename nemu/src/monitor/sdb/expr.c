@@ -220,8 +220,8 @@ int max(int a,int b){
 }
 
 uint32_t eval(int p, int q) {
-    printf("%d\n",p);
-    printf("%d\n",q);
+    printf("p=%d\n",p);
+    printf("q=%d\n",q);
     if (p > q) {
         /* Bad expression */
         assert(0);
@@ -378,7 +378,6 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-   tokens_len -= 1;
   /*derefence*/
   printf("%d\n",tokens_len);
    uint32_t result = 0;

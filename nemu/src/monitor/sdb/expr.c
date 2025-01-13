@@ -429,8 +429,14 @@ for(int i = 0 ; i < tokens_len ; i ++)
 	    }
 	}
     }
-uint32_t result = 0;
- 	result = eval(0,tokens_len - 1);
-  	printf("result = %d\n", result);
-  	return result;
+  uint32_t res = 0;
+    //    printf("Begin calc <===================>\n");
+    res = eval(0, tokens_len - 1);
+    //    printf("%d\n", tokens[i].t   printf("check flag = %d\n",check_parentheses(0, tokens_len - 1));
+    if(!division_zero)
+	printf("uint32_t res = %d\n", res);
+    else 
+	printf("Your input have an error: can't division zeor\n");    
+    memset(tokens, 0, sizeof(tokens));
+    return res;
 }

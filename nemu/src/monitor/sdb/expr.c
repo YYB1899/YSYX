@@ -84,6 +84,36 @@ void init_regex() {
   }
 }
 
+void int_to_char(int num , char str[]){
+    int len = strlen(str);
+    memset(str,0,len); /*initialize str*/
+    int num_size = 0, num_tmp = num , base = 1 , index_str = 0;
+    while(num_tmp){
+	num_tmp /= 10;
+	num_size ++;
+	base *= 10;
+    }
+    base /= 10;
+    while(num)
+    {
+	char c = num / base + '0';
+	num %= base;
+	base /= 10;
+	str[index_str ++] = c;
+    }
+}	
+	
+int char_to_int(char c[]){
+  int c_size = strlen(c);
+  int c_int = 0;
+  int base = 1;
+  for(int i = c_size - 1 ; i > 0 ; i --){
+  	c_int += (c[i] - '0') * base;
+  	base *= 10;
+  	}
+  	return c_int;
+  }
+  
 typedef struct token {
   int type;
   char str[32];
@@ -196,22 +226,30 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses(int p, int q){
-   int n = 0,m = 0,j,i;
-   if(tokens[p].type != 6  || tokens[q].type != 7)
-        return false;
-   else{
-   	for(i = p + 1;i < q;i ++){
-   		if(tokens[i].type == 6) {n = i;break;}
-   	}
-   	for(j = q - 1;j > p;j --){
-   		if(tokens[j].type == 7) {m = j;break;}
-   	}
-   	if(n == 0 || m == 0) return true;
-   	if(m < n) return false;
-   	else return true;
-   }
-   return true;
+bool check_parentheses(int p, int q)
+{
+    // return true;
+    //    printf("p = %d, q = %d\n",tokens[p].type, tokens[q].type);
+    if(tokens[p].type != '('  || tokens[q].type != ')')
+	return false;
+    int l = p , r = q;
+    while(l < r)
+    {
+	if(tokens[l].type == '('){
+	    if(tokens[r].type == ')')
+	    {
+		l ++ , r --;
+		continue;
+	    } 
+
+	    else 
+		r --;
+	}
+	else if(tokens[l].type == ')')
+	    return false;
+	else l ++;
+    }
+    return true;
 }
 int max(int a,int b){
 	return (a > b) ? a : b;
@@ -293,35 +331,7 @@ uint32_t eval(int p, int q) {
     }
 }
 
-void int_to_char(int num , char str[]){
-    int len = strlen(str);
-    memset(str,0,len); /*initialize str*/
-    int num_size = 0, num_tmp = num , base = 1 , index_str = 0;
-    while(num_tmp){
-	num_tmp /= 10;
-	num_size ++;
-	base *= 10;
-    }
-    base /= 10;
-    while(num)
-    {
-	char c = num / base + '0';
-	num %= base;
-	base /= 10;
-	str[index_str ++] = c;
-    }
-}	
-	
-int char_to_int(char c[]){
-  int c_size = strlen(c);
-  int c_int = 0;
-  int base = 1;
-  for(int i = c_size - 1 ; i > 0 ; i --){
-  	c_int += (c[i] - '0') * base;
-  	base *= 10;
-  	}
-  	return c_int;
-  }
+
   	
 word_t expr(char *e, bool *success) {
   if (make_token(e) == false) {

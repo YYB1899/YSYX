@@ -220,8 +220,6 @@ int max(int a,int b){
 }
 
 uint32_t eval(int p, int q) {
-    printf("p=%d\n",p);
-    printf("q=%d\n",q);
     if (p > q) {
         /* Bad expression */
         assert(0);
@@ -351,7 +349,6 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*negative*/  
-  printf("%d\n",tokens_len);
   for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if((tokens[i].type == 3 && i > 0 && tokens[i-1].type != 1 && tokens[i+1].type == 1)
@@ -359,15 +356,12 @@ word_t expr(char *e, bool *success) {
 		(tokens[i].type == 3 && i == 0)
 	  )
 	{
-	printf("%d\n",tokens_len);
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
-	 printf("%d\n",tokens_len);
 	    tokens[i+1].str[0] = '-';
 	    for(int j = 0 ; j < tokens_len ; j ++){
-	 printf("%d\n",tokens_len);
 	    if(tokens[j].type == TK_NOTYPE)
 	       {
 		    for(int k = j +1 ; k < tokens_len ; k ++){
@@ -380,7 +374,6 @@ word_t expr(char *e, bool *success) {
     }
     
   /*derefence*/
-  printf("%d\n",tokens_len);
    uint32_t result = 0;
  	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);

@@ -220,6 +220,8 @@ int max(int a,int b){
 }
 
 uint32_t eval(int p, int q) {
+    printf("%d\n",p);
+    printf("%d\n",q);
     if (p > q) {
         /* Bad expression */
         assert(0);
@@ -348,8 +350,8 @@ word_t expr(char *e, bool *success) {
   		int_to_char(hex_value,tokens[i].str);	
 	}
   }
-  /*negative*/
-  printf("%d",tokens_len);
+  /*negative*/  
+  printf("%d\n",tokens_len);
   for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
@@ -377,7 +379,7 @@ word_t expr(char *e, bool *success) {
 	}
     }
   /*derefence*/
-  printf("%d",tokens_len);
+  printf("%d\n",tokens_len);
    uint32_t result = 0;
  	result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);

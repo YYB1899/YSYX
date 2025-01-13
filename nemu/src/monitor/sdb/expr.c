@@ -279,67 +279,53 @@ uint32_t eval(int p, int q) {
     else {
         int op = -1; // op = the position of 主运算符 in the token expression;
         bool simple = false;
-       for(int i = p ; i <= q ; i ++)
-	{
-	    if(tokens[i].type == 6)
-	    {
-		while(tokens[i].type != 7)
-		    i ++;
-	    }
-	    if(!simple &&  tokens[i].type == 10){
-		simple = true;
-		op = max(op,i);
-	    }
-
-	    if(!simple && tokens[i].type == 9){
-		simple = true;
-		op = max(op,i);
-	    }
-
-	    if(!simple && tokens[i].type == 8){
-		simple = true;
-		op = max(op,i);
-	    }
-	    if(!simple && (tokens[i].type == 2 || tokens[i].type == 3)){
-		simple = true;
-		op = max(op, i);
-	    }
-	    if(!simple && (tokens[i].type == 4 || tokens[i].type == 5) ){
-		op = max(op, i);
-	    }
-	}
-	//	printf("op position is %d\n", op);
-	// if register return $register
-	int  op_type = tokens[op].type;
-
-	// 递归处理剩余的部分
-	uint32_t  val1 = eval(p, op - 1);
-	uint32_t  val2 = eval(op + 1, q);
-	//	printf("val1 = %d, val2 = %d \n", val1, val2);
-
-	switch (op_type) {
-	    case 2: 
-		return val1 + val2;
-	    case 3: 
-		return val1 - val2;
-	    case 4: 
-		return val1 * val2;
-	    case 5:
-		if(val2 == 0){
-		    //printf("division can't zero;\n");
-		    division_zero = true;
-		    return 0;
-		}	
-		return val1 / val2;
-	    case 8:
-		return val1 == val2;
-	    case 9:
-		return val1 != val2;
-	    case 10:
-		return val1 && val2;
-	    default: 
-		printf("No Op type.");
-		assert(0);
+        for(int i = p ; i <= q ; i ++)
+        {
+            if(tokens[i].type == 6)
+            {
+                while(tokens[i].type != 7)
+                    i ++;
+            }
+            if(!simple && tokens[i].type == 10 ){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 8 || tokens[i].type == 9 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 2 || tokens[i].type == 3 )){
+                simple = true;
+                op = max(op, i);
+            }
+            if(!simple && (tokens[i].type == 4 || tokens[i].type == 5 )){
+            	simple = true;
+                op = max(op, i);
+            }
+       }
+        
+        int  op_type = tokens[op].type;
+        uint32_t  val1 = eval(p,op - 1);
+        uint32_t  val2 = eval(op + 1,q);
+        switch (op_type) {
+            case 2:
+                return val1 + val2;
+            case 3:
+                return val1 - val2;
+            case 4:
+                return val1 * val2;
+            case 5:
+                if(val2 == 0) return 0;
+                else return val1 / val2;
+            case 8:
+                return val1 == val2;
+            case 9:
+                return val1 != val2;    
+            case 10:
+                return val1 && val2;        
+            default:
+                printf("No Op");
+                assert(0);
         }
     }
 }

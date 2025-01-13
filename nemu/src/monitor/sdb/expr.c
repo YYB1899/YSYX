@@ -242,8 +242,6 @@ uint32_t eval(int p, int q) {
         return atoi(tokens[p].str);
     }
     else if (check_parentheses(p, q) == true) {
-    	   printf("P=%d\n",p);
-           printf("1=%d\n",q);
         /* The expression is surrounded by a matched pair of parentheses.
          * If that is the case, just throw away the parentheses.
          */

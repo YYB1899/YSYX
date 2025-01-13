@@ -337,7 +337,7 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
+  *success = true;
   /* TODO: Insert codes to evaluate the expression. */
   /*get tokens_len*/
   int tokens_len = 0;

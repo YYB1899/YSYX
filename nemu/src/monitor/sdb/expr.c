@@ -348,15 +348,30 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*negative*/
-  for(int i = 0 ; i < tokens_len ; i ++){
-  	if((tokens[i].type == 3 && i == 0) || 
-  	   (tokens[i].type == 3 && i > 0 && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i+1].type == 1) ||
-  	   (tokens[i].type == 3 && i > 0 && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i+1].type == 11))
-  	{
-	    //printf("%s\n", tokens[i+1].str);
-	    tokens[i].type = TK_NOTYPE;
-	    //tokens[i].str = tmp;
-	    for(int j = 31 ; j >= 0 ; j --){
+  for (int i = 0; i < nr_token; i ++) {
+  if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type != 1) ) {
+    tokens[i].type = 256;
+    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-';
+	    // printf("%s\n", tokens[i+1].str);
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	     }
+     }
+  }
+  /*derefence*/ 
+  for (int i = 0; i < nr_token; i ++) {
+  if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) ) {
+    tokens[i].type = 256;
+    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-';
@@ -370,10 +385,8 @@ word_t expr(char *e, bool *success) {
 		    tokens_len -- ;
 		}
 	    }
-	}
+    }
   }
-  /*derefence*/ 
-  
   *success = true;
    if(check_parentheses(0,nr_token - 1) == false){
   	assert(0);

@@ -470,6 +470,7 @@ word_t expr(char *e, bool *success)
      * Init the tokens str. 1 ==> -1.
      *
      */
+     printf("%d\n",tokens_len);
     for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
@@ -501,7 +502,7 @@ word_t expr(char *e, bool *success)
      * Init the tokens !
      * TODO 
      */
-     printf("%d\n",tokens_len);
+     
     for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if(tokens[i].type == '!')

@@ -392,6 +392,7 @@ for(int i = 0 ; i < tokens_len ; i ++){
     }
   }
 uint32_t result = 0;
+	printf("%d\n",tokens_len);
  	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	return result;

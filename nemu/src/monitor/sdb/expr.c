@@ -349,6 +349,7 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*negative*/
+  printf("%d",tokens_len);
   for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
@@ -376,7 +377,7 @@ word_t expr(char *e, bool *success) {
 	}
     }
   /*derefence*/
-  
+  printf("%d",tokens_len);
    uint32_t result = 0;
  	result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);

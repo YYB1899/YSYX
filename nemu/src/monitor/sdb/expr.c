@@ -66,7 +66,7 @@ static struct rule {
 #define NR_REGEX ARRLEN(rules)
 
 static regex_t re[NR_REGEX] = {};
-
+bool division_zero = false;
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
  */
@@ -333,8 +333,8 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
   /*get tokens_len*/
   int tokens_len = 0;
-  /*int tokens_size = sizeof(tokens)/sizeof(tokens[0]);*/
-  for(int i = 0 ; i < 30 ; i ++){
+  int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
+  for(int i = 0 ; i < tokens_size ; i ++){
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }
@@ -390,10 +390,15 @@ for(int i = 0 ; i < tokens_len ; i ++){
     
     }
   }
-
-   uint32_t result = 0;
- 	result = eval(0,tokens_len - 1);
-  	printf("result = %d\n", result);
-  	return result;
+ uint32_t res = 0;
+    //    printf("Begin calc <===================>\n");
+    res = eval(0, tokens_len - 1);
+    //    printf("%d\n", tokens[i].t   printf("check flag = %d\n",check_parentheses(0, tokens_len - 1));
+    if(!division_zero)
+	printf("uint32_t res = %d\n", res);
+    else 
+	printf("Your input have an error: can't division zeor\n");    
+    memset(tokens, 0, sizeof(tokens));
+    return res;
   
 }

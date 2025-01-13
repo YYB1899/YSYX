@@ -341,8 +341,8 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
   /*get tokens_len*/
   int tokens_len = 0;
-  int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
-  for(int i = 0 ; i < tokens_size ; i ++){
+  /*int tokens_size = sizeof(tokens)/sizeof(tokens[0]);*/
+  for(int i = 0 ; i < 30 ; i ++){
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }

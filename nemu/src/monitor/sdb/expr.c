@@ -362,7 +362,10 @@ word_t expr(char *e, bool *success) {
   }
   /*negative*/
 for(int i = 0 ; i < tokens_len ; i ++){
-	if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) )
+	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != NUM && tokens[i+1].type == NUM)
+		||
+		(tokens[i].type == '-' && i == 0)
+	  )
 	{
 	    //printf("%s\n", tokens[i+1].str);
 	    
@@ -392,7 +395,7 @@ for(int i = 0 ; i < tokens_len ; i ++){
     }
   }
 uint32_t result = 0;
- 	result = eval(0,tokens_len - 2);
+ 	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	return result;
 }

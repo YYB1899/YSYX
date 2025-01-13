@@ -290,6 +290,8 @@ int max(int a, int b) {
 
 
 uint32_t eval(int p, int q) {
+printf("p=%d\n",p);
+printf("q=%d\n",q);
     if (p > q) {
 	/* Bad expression */
 	assert(0);

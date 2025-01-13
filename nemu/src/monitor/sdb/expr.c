@@ -250,12 +250,12 @@ int max(int a,int b){
 uint32_t eval(int p, int q) {
 	printf("p=%d\n",p);
 	printf("q=%d\n",q);
-    /*if (p > q) {
-        * Bad expression 
-        *assert(0);
+    if (p > q) {
+        /* Bad expression */
+        assert(0);
         return -1;
-    }*/
-   if (p == q) {
+    }
+   else if (p == q) {
         /* Single token.
          * For now this token should be a number.
          * Return the value of the number.
@@ -365,6 +365,7 @@ for(int i = 0 ; i < tokens_len ; i ++){
 	if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != 1) )
 	{
 	    //printf("%s\n", tokens[i+1].str);
+	    
 	    tokens[i].type = TK_NOTYPE;
 	    //tokens[i].str = tmp;
 	    for(int j = 31 ; j >= 0 ; j --){

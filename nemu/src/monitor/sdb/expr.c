@@ -221,8 +221,6 @@ int max(int a,int b){
 uint32_t eval(int p, int q) {
     if (p > q) {
         /* Bad expression */
-        printf("p=%d\n",p);
-        printf("q=%d\n",q);
         assert(0);
         return -1;
     }
@@ -234,8 +232,8 @@ uint32_t eval(int p, int q) {
         return atoi(tokens[p].str);
     }
     else if (check_parentheses(p, q) == true) {
-    	printf("p=%d",p);
-    	printf("1=%d",q);
+    	printf("p=%d\n",p);
+    	printf("1=%d\n",q);
         /* The expression is surrounded by a matched pair of parentheses.
          * If that is the case, just throw away the parentheses.
          */

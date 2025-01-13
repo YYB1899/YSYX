@@ -121,7 +121,7 @@ typedef struct token {
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
-int len = 0;
+
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -179,44 +179,43 @@ static bool make_token(char *e) {
           	break;
           case 256:
           	break;
-		    case 1: // num
-			tokens[nr_token].type = 1;
-			strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
-			nr_token ++;
-			break;
-		    case 12: // regex
-			tokens[nr_token].type = 12;
-			strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
-			nr_token ++;
-			break;
-		    case 11: // HEX
-			tokens[nr_token].type = 11;
-			strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
-			nr_token ++;
-			break;
-		    case 8:
-			tokens[nr_token].type = 8;
-			strcpy(tokens[nr_token].str, "==");
-			nr_token++;
-			break;
-		    case 9:
-			tokens[nr_token].type = 9;
-			strcpy(tokens[nr_token].str, "!=");
-			nr_token++;
-			break;
-		    case 10:
-			tokens[nr_token].type = 10;
-			strcpy(tokens[nr_token].str, "&&");
-			nr_token++;
-			break;
-		    default:
-			printf("i = %d and No rules is com.\n", i);
-			break;
-		}
-		len = nr_token;
-		break;
-	    }
-	}
+ 	  case 11:
+          	token1.type = 11;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 12:
+          	token1.type = 12;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 1:
+          	token1.type = 1;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 8:
+          	token1.type = 8;
+          	strcpy(token1.str,"==");
+          	tokens[nr_token ++] = token1;
+          	break;
+          case 9:
+          	token1.type = 9;
+          	strcpy(token1.str,"!=");
+          	tokens[nr_token ++] = token1;
+          	break;
+           case 10:
+          	token1.type = 10;
+          	strcpy(token1.str,"&&");
+          	tokens[nr_token ++] = token1;
+          	break;
+          default:
+                printf("i = %d and without rules\n", i);
+                break;
+	   }
+	   break;
+	  }
+     }
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
@@ -226,22 +225,30 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses(int p, int q){
-   int n = 0,m = 0,j,i;
-   if(tokens[p].type != 6  || tokens[q].type != 7)
-        return false;
-   else{
-   	for(i = p + 1;i < q;i ++){
-   		if(tokens[i].type == 6) {n = i;break;}
-   	}
-   	for(j = q - 1;j > p;j --){
-   		if(tokens[j].type == 7) {m = j;break;}
-   	}
-   	if(n == 0 || m == 0) return true;
-   	if(m < n) return false;
-   	else return true;
-   }
-   return true;
+bool check_parentheses(int p, int q)
+{
+    // return true;
+    //    printf("p = %d, q = %d\n",tokens[p].type, tokens[q].type);
+    if(tokens[p].type != '('  || tokens[q].type != ')')
+	return false;
+    int l = p , r = q;
+    while(l < r)
+    {
+	if(tokens[l].type == '('){
+	    if(tokens[r].type == ')')
+	    {
+		l ++ , r --;
+		continue;
+	    } 
+
+	    else 
+		r --;
+	}
+	else if(tokens[l].type == ')')
+	    return false;
+	else l ++;
+    }
+    return true;
 }
 
 int max(int a,int b){

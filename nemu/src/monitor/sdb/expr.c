@@ -197,30 +197,22 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses(int p, int q)
-{
-    // return true;
-    //    printf("p = %d, q = %d\n",tokens[p].type, tokens[q].type);
-    if(tokens[p].type != '('  || tokens[q].type != ')')
-	return false;
-    int l = p , r = q;
-    while(l < r)
-    {
-	if(tokens[l].type == '('){
-	    if(tokens[r].type == ')')
-	    {
-		l ++ , r --;
-		continue;
-	    } 
-
-	    else 
-		r --;
-	}
-	else if(tokens[l].type == ')')
-	    return false;
-	else l ++;
-    }
-    return true;
+bool check_parentheses(int p, int q){
+   int n = 0,m = 0,j,i;
+   if(tokens[p].type != 6  || tokens[q].type != 7)
+        return false;
+   else{
+   	for(i = p + 1;i < q;i ++){
+   		if(tokens[i].type == 6) {n = i;break;}
+   	}
+   	for(j = q - 1;j > p;j --){
+   		if(tokens[j].type == 7) {m = j;break;}
+   	}
+   	if(n == 0 || m == 0) return true;
+   	if(m < n) return false;
+   	else return true;
+   }
+   return true;
 }
 int max(int a,int b){
 	return (a > b) ? a : b;

@@ -336,6 +336,7 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }
+  printf("tokens_len=%d\n",tokens_len);
   /*REG*/
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 12)
@@ -427,7 +428,7 @@ word_t expr(char *e, bool *success) {
 	}
     }
    uint32_t result = 0;
- 	result = eval(0,4);
+ 	result = eval(0,tokens_len);
   	printf("result = %d\n", result);
   	return result;
   

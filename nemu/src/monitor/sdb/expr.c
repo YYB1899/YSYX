@@ -191,8 +191,10 @@ static bool make_token(char *e) {
 
   return true; 
 }
+
 bool check_parentheses(int p, int q){
    int n = 0,m = 0,j,i;
+   printf("p=%d,q=%d",p,q);
    if(tokens[p].type != 6  || tokens[q].type != 7){
         return false;
         assert(0);}
@@ -209,6 +211,7 @@ bool check_parentheses(int p, int q){
    }
 
 }
+
 int max(int a, int b) {
     return (a > b) ? a : b;
 }

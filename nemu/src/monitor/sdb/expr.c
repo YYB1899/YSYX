@@ -426,7 +426,6 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-    printf("nr_token=%d\n",nr_token);
    uint32_t result = 0;
  	result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);

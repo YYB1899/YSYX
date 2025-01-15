@@ -381,7 +381,7 @@ word_t expr(char *e, bool *success) {
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
-	    tokens[i+1].str[0] = 3 ;
+	    tokens[i+1].str[0] = '-' ;
 	    for(int j = 0 ; j < nr_token ; j ++){
 	       if(tokens[j].type == 256)
 	       {

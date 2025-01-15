@@ -319,6 +319,19 @@ void int_to_char(int x, char str[]){
     }
     str[tmp_index] = '\0';
     }
+    else{
+    	while(x)
+    {
+	int a = x / flag; 
+	x %= flag;
+	flag /= 10;
+	str[tmp_index ++] = a + '0';
+    }
+    if(x == 0){
+    int a = x / flag; 
+	x %= flag;
+	flag /= 10;
+	str[tmp_index ++] = a + '0';}}
 }	
 
 int char_to_int(char s[]){

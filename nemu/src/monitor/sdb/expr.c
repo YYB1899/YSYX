@@ -269,7 +269,7 @@ uint32_t eval(int p, int q) {
        }
         
         int  op_type = tokens[op].type;
-        printf("%d,%d",op,op_type);
+        printf("%d,%d\n",op,op_type);
         uint32_t  val1 = eval(p,op - 1);
         uint32_t  val2 = eval(op + 1,q);
         
@@ -335,6 +335,13 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 	printf("nr_token=%d\n",nr_token);
+  int tokens_len = 0;
+    for(int i = 0 ; i < 30 ; i ++)
+    {
+	if(tokens[i].type == 0)
+	    break;
+	tokens_len ++;
+    }
   /*REG*/
   for(int i = 0 ; i < nr_token ; i ++){
   	if(tokens[i].type == 12)
@@ -350,7 +357,7 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*HEX*/
-  for(int i = 0 ; i < nr_token ; i ++){
+  for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 11)
   	{
   		int hex_value = strtol(tokens[i].str,NULL,16);

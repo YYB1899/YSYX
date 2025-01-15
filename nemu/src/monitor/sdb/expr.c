@@ -361,7 +361,7 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == 11)
   	{
   		int hex_value = strtol(tokens[i].str,NULL,16);
-  		printf("hex=%s\n",tokens[i].str);
+  		printf("hex=%d\n",hex_value);
   		int_to_char(hex_value,tokens[i].str);	
   		printf("hex%s\n",tokens[i].str);
 	}

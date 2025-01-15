@@ -363,10 +363,18 @@ word_t expr(char *e, bool *success) {
   /*negative*/  
   for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if((tokens[i].type == 3 && i > 0 && tokens[i-1].type != 1 && tokens[i+1].type == 1)
+	if(	(tokens[i].type == 3 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 3 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
 		||
-		(tokens[i].type == 3 && i == 0)
-	  )
+                (tokens[i].type == 3 && i == 0)
+          )
 	{	printf("a\n");
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){

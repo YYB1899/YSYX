@@ -238,9 +238,6 @@ uint32_t eval(int p, int q) {
          */
         return eval(p + 1, q - 1);
     }
-    else if(check_parentheses(p, q) == false) {
-    	printf("error");
-    	return -1;}
     else {
         int op = -1; // op = the position of 主运算符 in the token expression;
         bool simple = false;

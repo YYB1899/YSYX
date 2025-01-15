@@ -352,7 +352,7 @@ word_t expr(char *e, bool *success) {
   }
   /*HEX*/
   printf("tokens_len=%d\n",tokens_len);
-  for(int i = 0 ; i < tokens_len ; i ++){
+  for(int i = 0 ; i < 5 ; i ++){
   	if(tokens[i].type == 11)
   	{
   		int hex_value = strtol(tokens[i].str,NULL,16);

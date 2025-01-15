@@ -296,42 +296,26 @@ uint32_t eval(int p, int q) {
     }
 }
 
-void int_to_char(int x, char str[]){
-    int len = strlen(str);
-    memset(str, 0, len);
+void int_to_char(int x, char str[]) {
+    // 假设 str 是一个足够大的数组，这里使用 32 作为长度
+    memset(str, 0, 32); 
     int tmp_index = 0;
     int tmp_x = x;
     int x_size = 0, flag = 1;
-    while(tmp_x){
-	tmp_x /= 10;
-	x_size ++;
-	flag *= 10;
+    while (tmp_x) {
+        tmp_x /= 10;
+        x_size++;
+        flag *= 10;
     }
     flag /= 10;
-    printf("%d\n",flag);
-    if(x % 10 != 0){
-    while(x)
-    {
-	int a = x / flag; 
-	x %= flag;
-	flag /= 10;
-	str[tmp_index ++] = a + '0';
+    // 从最高位开始将数字转换为字符
+    while (x || flag) {
+        int a = x / flag;
+        x %= flag;
+        str[tmp_index++] = a + '0';
+        flag /= 10;
     }
-    str[tmp_index] = '\0';
-    }
-    else{
-    	while(x)
-    {
-	int a = x / flag; 
-	x %= flag;
-	flag /= 10;
-	str[tmp_index ++] = a + '0';
-    }
-    if(x == 0){
-    int a = x / flag; 
-	x %= flag;
-	flag /= 10;
-	str[tmp_index ++] = a + '0';}}
+    str[tmp_index] = '\0'; 
 }	
 
 int char_to_int(char s[]){

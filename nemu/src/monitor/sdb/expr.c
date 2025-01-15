@@ -232,6 +232,7 @@ uint32_t eval(int p, int q) {
          * For now this token should be a number.
          * Return the value of the number.
          */
+         printf("a=%s\n",tokens[p].str);
         return atoi(tokens[p].str);
     }
     else if (check_parentheses(p, q) == true) {

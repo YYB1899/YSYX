@@ -226,14 +226,11 @@ uint32_t eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-    	    printf("p=%d\n",p);
-            printf("q=%d\n",q);
         /* Single token.
          * For now this token should be a number.
          * Return the value of the number.
          */
-         printf("a=%s\n",tokens[p].str);
-        return atoi(tokens[p].str);
+       return atoi(tokens[p].str);
     }
     else if (check_parentheses(p, q) == true) {
         /* The expression is surrounded by a matched pair of parentheses.

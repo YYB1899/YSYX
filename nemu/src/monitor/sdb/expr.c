@@ -422,7 +422,8 @@ word_t expr(char *e, bool *success) {
 	}
     }
         uint32_t result = 0;
- 	result = eval(0,nr_token - 1);
+        printf("%d,%d",tokens_len,nr_token);
+ 	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	memset(tokens,0,sizeof(tokens));
   	return result;  

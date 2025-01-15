@@ -371,9 +371,9 @@ word_t expr(char *e, bool *success) {
 	    for(int j = 0 ; j < tokens_len ; j ++){
 	       if(tokens[j].type == TK_NOTYPE)
 	       {
-		    /*for(int k = j +1 ; k < tokens_len ; k ++){*/
-			/*tokens[k - 1] = tokens[k];*/
-		    /*}*/
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
 		    tokens_len -- ;
 	       }
 	    }
@@ -387,10 +387,10 @@ word_t expr(char *e, bool *success) {
 	{
 	    tokens[i].type = TK_NOTYPE;
 	    int tmp = char_to_int(tokens[i+1].str);
-	    uintptr_t a = (uintptr_t)tmp;
-	    int value = *((int*)a);
+	    uint32_t a = (uint32_t)tmp;
+	    int value = 0;
+	    memcpy(&value, &a, sizeof(int));
 	    int_to_char(value, tokens[i+1].str);	    
-	    // 
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE)
 		{

@@ -269,6 +269,7 @@ uint32_t eval(int p, int q) {
        }
         
         int  op_type = tokens[op].type;
+        printf("%d,%d",op,op_type);
         uint32_t  val1 = eval(p,op - 1);
         uint32_t  val2 = eval(op + 1,q);
         

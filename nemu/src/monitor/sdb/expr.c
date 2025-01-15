@@ -199,11 +199,7 @@ bool check_parentheses_first(int p, int q){
 bool check_parentheses(int p, int q){
    int n = 0,m = 0,j,i;
    printf("p=%d,q=%d\n",p,q);
-   if(tokens[p].type != 6  || tokens[q].type != 7){
-        return false;
-        assert(0);}
-   else{
-   	for(i = p + 1;i < q;i ++){
+        for(i = p + 1;i < q;i ++){
    		if(tokens[i].type == 6) {n = i;break;}
    	}
    	for(j = q - 1;j > p;j --){
@@ -212,8 +208,6 @@ bool check_parentheses(int p, int q){
    	if(n == 0 || m == 0) return true;
    	if(m < n) return false;
    	else return true;
-   }
-
 }
 
 int max(int a, int b) {
@@ -240,6 +234,8 @@ uint32_t eval(int p, int q) {
          */
         return eval(p + 1, q - 1);
     }
+    else if(check_parentheses(p, q) == true) {
+    	assert(0);}
     else {
         int op = -1; // op = the position of 主运算符 in the token expression;
         bool simple = false;
@@ -431,10 +427,10 @@ word_t expr(char *e, bool *success) {
     	if(check_parentheses_first(0,tokens_len - 1) == false)
     		assert(0);
     	else{
-        uint32_t result = 0;
- 	result = eval(0,tokens_len - 1);
-  	printf("result = %d\n", result);
-  	memset(tokens,0,sizeof(tokens));
-  	return result;  
+        	uint32_t result = 0;
+ 		result = eval(0,tokens_len - 1);
+  		printf("result = %d\n", result);
+  		memset(tokens,0,sizeof(tokens));
+  		return result;  
   	}
 }

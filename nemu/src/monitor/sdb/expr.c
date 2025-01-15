@@ -350,7 +350,7 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*HEX*/
-  for(int i = 0 ; i < 5 ; i ++){
+  for(int i = 0 ; i < nr_token ; i ++){
   	if(tokens[i].type == 11)
   	{
   		int hex_value = strtol(tokens[i].str,NULL,16);

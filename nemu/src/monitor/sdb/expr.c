@@ -332,7 +332,6 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-	printf("nr_token=%d\n",nr_token);
   int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
@@ -356,19 +355,13 @@ word_t expr(char *e, bool *success) {
   }
   /*HEX*/
   for(int i = 0 ; i < nr_token; i ++){
-  	printf("abc\n");
-  	printf("%d\n",i);
   	if(tokens[i].type == 11)
   	{
-  		printf("hex%s\n",tokens[i].str);
-  		long int hex_value = strtol(tokens[i].str,NULL,16);
-  		printf("hex=%ld\n",hex_value);
+		long int hex_value = strtol(tokens[i].str,NULL,16);
   		int_to_char(hex_value,tokens[i].str);	
-  		printf("hex%s\n",tokens[i].str);
 	}
   }
   /*negative*/  
-  printf("nr_token=%d\n",nr_token);
   for(int i = 0 ; i < nr_token ; i ++)
     {
 	if(	(tokens[i].type == 3 && i > 0 
@@ -384,7 +377,6 @@ word_t expr(char *e, bool *success) {
                 (tokens[i].type == 3 && i == 0)
           )	
 	{	
-	    printf("neg");
 	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
@@ -401,7 +393,6 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-    printf("nr_token=%d\n",nr_token);
   /*derefence*/
    for(int i = 0 ; i < nr_token ; i ++)
     {

@@ -209,8 +209,7 @@ bool check_parentheses(int p, int q){
    		if(tokens[j].type == 7) {m = j;break;}
    	}
    	if(n == 0 || m == 0) return true;
-   	if(m < n) return 
-   	false;
+   	if(m < n) return false;
    	else return true;
    	}
 }
@@ -239,6 +238,8 @@ uint32_t eval(int p, int q) {
          */
         return eval(p + 1, q - 1);
     }
+    else if(check_parentheses(p, q) == false) {
+    	assert(0);}
     else {
         int op = -1; // op = the position of 主运算符 in the token expression;
         bool simple = false;

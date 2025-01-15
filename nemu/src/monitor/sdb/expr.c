@@ -155,10 +155,10 @@ static bool make_token(char *e) {
           	nr_token ++;
           	break;
           case 1:
-          	token1.type = 1;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
-          	tokens[nr_token ++] = token1;
-          	break;
+     		tokens[nr_token].type = 1;
+		strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
+		nr_token ++;
+		break;
           case 8:
           	tokens[nr_token].type = 8;
           	strcpy(tokens[nr_token].str,"==");
@@ -420,9 +420,9 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-   uint32_t result = 0;
+        uint32_t result = 0;
  	result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);
-  	return result;
-  
+  	memset(tokens,0,sizeof(tokens));
+  	return result;  
 }

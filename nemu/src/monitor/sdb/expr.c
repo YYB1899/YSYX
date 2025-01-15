@@ -349,6 +349,7 @@ word_t expr(char *e, bool *success) {
   for(int i = 0 ; i < 5 ; i ++){
   	if(tokens[i].type == 11)
   	{
+  		printf("a");
   		int hex_value = strtol(tokens[i].str,NULL,16);
   		int_to_char(hex_value,tokens[i].str);	
 	}

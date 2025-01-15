@@ -336,6 +336,7 @@ word_t expr(char *e, bool *success) {
   int tokens_len = 0;
   //int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
   for(int i = 0 ; i < 30 ; i ++){
+  	printf("b\n");
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }

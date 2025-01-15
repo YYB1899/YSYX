@@ -191,30 +191,22 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses(int p, int q) {
-    // 首先确认 p 和 q 是否指向正确的括号类型
-    if (tokens[p].type != 6 || tokens[q].type != 7) {
+bool check_parentheses(int p, int q){
+   int n = 0,m = 0,j,i;
+   if(tokens[p].type != 6  || tokens[q].type != 7){
         return false;
-    }
-
-    // 初始化计数器来追踪未配对的开括号数量
-    int openCount = 0;
-
-    // 遍历 p 和 q 之间的所有 token
-    for (int i = p + 1; i < q; ++i) {
-        if (tokens[i].type == 6) { // 找到开括号
-            openCount++;
-        } else if (tokens[i].type == 7) { // 找到闭括号
-            if (openCount == 0) {
-                // 如果没有未配对的开括号，说明闭括号过多
-                return false;
-            }
-            openCount--;
-        }
-    }
-
-    // 最后检查是否所有的开括号都找到了对应的闭括号
-    return openCount == 0;
+        assert(0);}
+   else{
+   	for(i = p + 1;i < q;i ++){
+   		if(tokens[i].type == 6) {n = i;break;}
+   	}
+   	for(j = q - 1;j > p;j --){
+   		if(tokens[j].type == 7) {m = j;break;}
+   	}
+   	if(n == 0 || m == 0) return true;
+   	if(m < n) return false;
+   	else return true;
+   }
 }
 int max(int a,int b){
 	return (a > b) ? a : b;

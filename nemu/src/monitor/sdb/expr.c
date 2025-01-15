@@ -437,10 +437,10 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }   
-    	if(check_parentheses_first(0,tokens_len - 1) == false)
+    	if(check_parentheses(0,tokens_len - 1) == false)
     		assert(0);
-    	else if(check_parentheses_second(0,tokens_len - 1) == false)
-    		assert(0);
+    	//else if(check_parentheses_second(0,tokens_len - 1) == false)
+    		//assert(0);
     	else{
         	uint32_t result = 0;
  		result = eval(0,tokens_len - 1);

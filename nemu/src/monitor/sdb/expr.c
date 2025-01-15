@@ -217,9 +217,7 @@ int max(int a, int b) {
 }
 
 uint32_t eval(int p, int q) {
-	printf("%d,%d",p,q);
     if (p > q) {
-    printf("%d,%d",p,q);
         /* Bad expression */
         assert(0);
         return -1;
@@ -426,7 +424,6 @@ word_t expr(char *e, bool *success) {
 	}
     }
         uint32_t result = 0;
-        printf("len=%d,nr=%d\n",tokens_len,nr_token);
  	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	memset(tokens,0,sizeof(tokens));

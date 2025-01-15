@@ -152,8 +152,8 @@ static bool make_token(char *e) {
           	break;
           case 11:
           	token1.type = 11;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
-          	tokens[nr_token ++] = token1;
+          	strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);
+          	nr_token ++;
           	break;
           case 12:
           	token1.type = 12;
@@ -270,7 +270,6 @@ uint32_t eval(int p, int q) {
        }
         
         int  op_type = tokens[op].type;
-        printf("%d,%d\n",op,op_type);
         uint32_t  val1 = eval(p,op - 1);
         uint32_t  val2 = eval(op + 1,q);
         

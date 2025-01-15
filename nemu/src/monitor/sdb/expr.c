@@ -359,6 +359,7 @@ word_t expr(char *e, bool *success) {
   		int_to_char(hex_value,tokens[i].str);	
 	}
   }
+  printf("tokens_len=%d\n",tokens_len);
   /*negative*/  
   for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -380,7 +381,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-    
+    printf("tokens_len=%d\n",tokens_len);
   /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++)
     {

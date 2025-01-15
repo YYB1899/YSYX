@@ -336,7 +336,6 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }
-  printf("tokens_len=%d\n",tokens_len);
   /*REG*/
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 12)
@@ -352,7 +351,6 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*HEX*/
-  printf("tokens_len=%d\n",tokens_len);
   for(int i = 0 ; i < 5 ; i ++){
   	if(tokens[i].type == 11)
   	{
@@ -360,7 +358,6 @@ word_t expr(char *e, bool *success) {
   		int_to_char(hex_value,tokens[i].str);	
 	}
   }
-  printf("tokens_len=%d\n",tokens_len);
   /*negative*/  
   for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -393,7 +390,6 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-    printf("tokens_len=%d\n",tokens_len);
   /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++)
     {

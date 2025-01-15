@@ -155,9 +155,9 @@ static bool make_token(char *e) {
           	nr_token ++;
           	break;
           case 1:
-          	tokens[nr_token].type = 1;
-          	strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);
-          	nr_token ++;
+          	token1.type = 1;
+          	strncpy(token1.str,&e[position - substr_len],substr_len);
+          	tokens[nr_token ++] = token1;
           	break;
           case 8:
           	tokens[nr_token].type = 8;

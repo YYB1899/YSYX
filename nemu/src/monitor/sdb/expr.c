@@ -376,11 +376,12 @@ word_t expr(char *e, bool *success) {
                 (tokens[i].type == 3 && i == 0)
           )	
 	{	
-		printf("a\n");
+		
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
+	    printf("%s",tokens[i+1].str);
 	    tokens[i+1].str[0] = 3 ;
 	    for(int j = 0 ; j < nr_token ; j ++){
 	       if(tokens[j].type == TK_NOTYPE)

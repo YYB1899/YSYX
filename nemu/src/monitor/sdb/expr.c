@@ -309,6 +309,7 @@ void int_to_char(int x, char str[]){
     }
     flag /= 10;
     printf("%d\n",flag);
+    if(x % 10 != 0){
     while(x)
     {
 	int a = x / flag; 
@@ -317,6 +318,7 @@ void int_to_char(int x, char str[]){
 	str[tmp_index ++] = a + '0';
     }
     str[tmp_index] = '\0';
+    }
 }	
 
 int char_to_int(char s[]){

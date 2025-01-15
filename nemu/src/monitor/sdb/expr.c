@@ -377,14 +377,13 @@ word_t expr(char *e, bool *success) {
           )	
 	{	
 		
-	    tokens[i].type = TK_NOTYPE;
+	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
-	    printf("%s\n",tokens[i+1].str);
 	    tokens[i+1].str[0] = 3 ;
 	    for(int j = 0 ; j < nr_token ; j ++){
-	       if(tokens[j].type == TK_NOTYPE)
+	       if(tokens[j].type == 256)
 	       {
 		    for(int k = j +1 ; k < nr_token ; k ++){
 			tokens[k - 1] = tokens[k];

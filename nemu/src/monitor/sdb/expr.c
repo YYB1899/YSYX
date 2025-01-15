@@ -333,16 +333,16 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   /*get tokens_len*/
-  int tokens_len = 0;
+  //int tokens_len = 0;
   //int tokens_size = sizeof(tokens)/sizeof(tokens[0]);
-  for(int i = 0 ; i < 30 ; i ++){
-  	printf("b\n");
-  	if(tokens[i].type != tokens[i-1].type) break;
-  	tokens_len ++;
-  }
-  printf("tokens_len=%d\n",tokens_len);
+  //for(int i = 0 ; i < 30 ; i ++){
+  	//printf("b\n");
+  	//if(tokens[i].type != tokens[i-1].type) break;
+  	//tokens_len ++;
+  //}
+  //printf("tokens_len=%d\n",tokens_len);
   /*REG*/
-  for(int i = 0 ; i < tokens_len ; i ++){
+  for(int i = 0 ; i < nr_token ; i ++){
   	if(tokens[i].type == 12)
   	{
   		bool simple = false;
@@ -364,7 +364,7 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*negative*/  
-  for(int i = 0 ; i < tokens_len ; i ++)
+  for(int i = 0 ; i < nr_token ; i ++)
     {
 	if(	(tokens[i].type == 3 && i > 0 
 		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
@@ -383,20 +383,20 @@ word_t expr(char *e, bool *success) {
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
-	    tokens[i+1].str[0] = '-';
-	    for(int j = 0 ; j < tokens_len ; j ++){
+	    tokens[i+1].str[0] = 3 ;
+	    for(int j = 0 ; j < nr_token ; j ++){
 	       if(tokens[j].type == TK_NOTYPE)
 	       {
-		    for(int k = j +1 ; k < tokens_len ; k ++){
+		    for(int k = j +1 ; k < nr_token ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }
-		    tokens_len -- ;
+		    nr_token -- ;
 	       }
 	    }
 	}
     }
   /*derefence*/
-   for(int i = 0 ; i < tokens_len ; i ++)
+   for(int i = 0 ; i < nr_token ; i ++)
     {
 	if(	(tokens[i].type == 4 && i > 0 
 		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
@@ -417,19 +417,19 @@ word_t expr(char *e, bool *success) {
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));
 	    int_to_char(value, tokens[i+1].str);	    
-	    for(int j = 0 ; j < tokens_len ; j ++){
+	    for(int j = 0 ; j < nr_token ; j ++){
 		if(tokens[j].type == TK_NOTYPE)
 		{
-		    for(int k = j +1 ; k < tokens_len ; k ++){
+		    for(int k = j +1 ; k < nr_token ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }
-		    tokens_len -- ;
+		    nr_token -- ;
 		}
 	    }
 	}
     }
    uint32_t result = 0;
- 	result = eval(0,tokens_len - 1);
+ 	result = eval(0,nr_token - 1);
   	printf("result = %d\n", result);
   	return result;
   

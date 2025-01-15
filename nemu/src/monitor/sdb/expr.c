@@ -157,28 +157,28 @@ static bool make_token(char *e) {
           	break;
           case 12:
           	token1.type = 12;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
-          	tokens[nr_token ++] = token1;
+          	strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);
+          	nr_token ++;
           	break;
           case 1:
           	token1.type = 1;
-          	strncpy(token1.str,&e[position - substr_len],substr_len);
-          	tokens[nr_token ++] = token1;
+          	strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);
+          	nr_token ++;
           	break;
           case 8:
           	token1.type = 8;
-          	strcpy(token1.str,"==");
-          	tokens[nr_token ++] = token1;
+          	strcpy(tokens[nr_token].str,"==");
+          	nr_token ++;
           	break;
           case 9:
           	token1.type = 9;
-          	strcpy(token1.str,"!=");
-          	tokens[nr_token ++] = token1;
+          	strcpy(tokens[nr_token].str,"!=");
+          	nr_token ++;
           	break;
            case 10:
           	token1.type = 10;
-          	strcpy(token1.str,"&&");
-          	tokens[nr_token ++] = token1;
+          	strcpy(tokens[nr_token].str,"&&");
+          	nr_token ++;
           	break;
           default:
                 printf("i = %d and without rules\n", i);

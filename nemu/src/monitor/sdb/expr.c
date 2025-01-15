@@ -349,7 +349,7 @@ word_t expr(char *e, bool *success) {
   for(int i = 0 ; i < 5 ; i ++){
   	if(tokens[i].type == 11)
   	{
-  		printf("a");
+  		printf("ac\n");
   		int hex_value = strtol(tokens[i].str,NULL,16);
   		int_to_char(hex_value,tokens[i].str);	
 	}
@@ -370,7 +370,7 @@ word_t expr(char *e, bool *success) {
 		||
                 (tokens[i].type == 3 && i == 0)
           )
-	{	printf("a\n");
+	{	
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];

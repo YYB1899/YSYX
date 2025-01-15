@@ -296,9 +296,9 @@ uint32_t eval(int p, int q) {
     }
 }
 
-void int_to_char(int x, char str[]){
-    int len = strlen(str);
-    memset(str, 0, len);
+void int_to_char(int x, char s[]){
+    int len = strlen(s);
+    memset(s, 0, len);
     int tmp_index = 0;
     int tmp_x = x;
     int x_size = 0, flag = 1;
@@ -313,7 +313,7 @@ void int_to_char(int x, char str[]){
 	int a = x / flag; 
 	x %= flag;
 	flag /= 10;
-	str[tmp_index ++] = a + '0';
+	s[tmp_index ++] = a + '0';
     }
 }	
 

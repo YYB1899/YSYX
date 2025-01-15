@@ -297,7 +297,8 @@ uint32_t eval(int p, int q) {
 }
 
 void int_to_char(int x, char str[]){
-    memset(str, 0, 32);
+    int len = strlen(str);
+    memset(str, 0, len);
     int tmp_index = 0;
     int tmp_x = x;
     int x_size = 0, flag = 1;
@@ -307,6 +308,7 @@ void int_to_char(int x, char str[]){
 	flag *= 10;
     }
     flag /= 10;
+    printf("%d\n",flag);
     while(x)
     {
 	int a = x / flag; 

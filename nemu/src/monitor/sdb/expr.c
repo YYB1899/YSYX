@@ -356,7 +356,8 @@ word_t expr(char *e, bool *success) {
   }
   /*HEX*/
   for(int i = 0 ; i < nr_token; i ++){
-  	printf("abc");
+  	printf("abc\n");
+  	printf("%d\n",i);
   	if(tokens[i].type == 11)
   	{
   		printf("hex%s\n",tokens[i].str);

@@ -356,7 +356,7 @@ word_t expr(char *e, bool *success) {
   		int hex_value = strtol(tokens[i].str,NULL,16);
   		printf("hex=%d\n",hex_value);
   		int_to_char(hex_value,tokens[i].str);	
-  		printf("%s\n",tokens[i].str);
+  		printf("qa%s\n",tokens[i].str);
 	}
   }
   /*negative*/  

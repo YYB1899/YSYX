@@ -351,6 +351,7 @@ word_t expr(char *e, bool *success) {
 	}
   }
   /*HEX*/
+  printf("tokens_len=%d\n",tokens_len);
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 11)
   	{

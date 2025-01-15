@@ -212,7 +212,6 @@ bool check_parentheses(int p, int q){
    	if(m < n) return false;
    	else return true;
    }
-   return true;
 }
 int max(int a,int b){
 	return (a > b) ? a : b;

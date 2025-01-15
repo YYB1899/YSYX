@@ -374,7 +374,7 @@ word_t expr(char *e, bool *success) {
                 (tokens[i].type == 3 && i == 0)
           )	
 	{	
-		
+	    printf("neg");
 	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];

@@ -381,7 +381,7 @@ word_t expr(char *e, bool *success) {
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
-	    printf("%s",tokens[i+1].str);
+	    printf("%s\n",tokens[i+1].str);
 	    tokens[i+1].str[0] = 3 ;
 	    for(int j = 0 ; j < nr_token ; j ++){
 	       if(tokens[j].type == TK_NOTYPE)

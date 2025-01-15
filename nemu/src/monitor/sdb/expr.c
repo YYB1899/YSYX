@@ -428,7 +428,7 @@ word_t expr(char *e, bool *success) {
 	}
     }
    uint32_t result = 0;
- 	result = eval(0,tokens_len);
+ 	result = eval(0,tokens_len - 1);
   	printf("result = %d\n", result);
   	return result;
   

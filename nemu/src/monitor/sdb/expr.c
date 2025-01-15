@@ -220,6 +220,7 @@ int max(int a,int b){
 }
 
 uint32_t eval(int p, int q) {
+    
     printf("p=%d\n",p);
     printf("q=%d\n",q);
     if (p > q) {
@@ -338,6 +339,7 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == 0) break;
   	tokens_len ++;
   }
+  printf("tokens_len=%d\n",tokens_len);
   /*REG*/
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 12)

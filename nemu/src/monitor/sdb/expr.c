@@ -191,10 +191,10 @@ static bool make_token(char *e) {
 
   return true; 
 }
-bool check_parentheses_first(int p, int q){
-   if(tokens[p].type != 6  || tokens[q].type != 7) return false;
-   else return true;
-}
+//bool check_parentheses_first(int p, int q){
+   //if(tokens[p].type != 6  || tokens[q].type != 7) return false;
+   //else return true;
+//}
 
 bool check_parentheses(int p, int q){
    int n = 0,m = 0,j,i;
@@ -422,13 +422,13 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }   
-    	if(check_parentheses_first(0,tokens_len - 1) == false)
-    		assert(0);
-    	else{
+    	//if(check_parentheses_first(0,tokens_len - 1) == false)
+    		//assert(0);
+    	
         	uint32_t result = 0;
  		result = eval(0,tokens_len - 1);
   		printf("result = %d\n", result);
   		memset(tokens,0,sizeof(tokens));
   		return result;  
-  	}
+  	
 }

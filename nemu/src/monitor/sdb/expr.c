@@ -228,6 +228,8 @@ uint32_t eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
+    	    printf("p=%d\n",p);
+            printf("q=%d\n",q);
         /* Single token.
          * For now this token should be a number.
          * Return the value of the number.

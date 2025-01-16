@@ -221,20 +221,13 @@ uint32_t eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-        /* Single token.
-         * For now this token should be a number.
-         * Return the value of the number.
-         */
        return atoi(tokens[p].str);
     }
     else if (check_parentheses(p, q) == true) {
-        /* The expression is surrounded by a matched pair of parentheses.
-         * If that is the case, just throw away the parentheses.
-         */
         return eval(p + 1, q - 1);
     }
     else {
-        int op = -1; // op = the position of 主运算符 in the token expression;
+        int op = -1;
         bool simple = false;
         for(int i = p ; i <= q ; i ++)
         {
@@ -288,7 +281,6 @@ uint32_t eval(int p, int q) {
 }
 
 void int_to_char(int x, char str[]) {
-    // 假设 str 是一个足够大的数组，这里使用 32 作为长度
     memset(str, 0, 32); 
     int tmp_index = 0;
     int tmp_x = x;
@@ -299,7 +291,6 @@ void int_to_char(int x, char str[]) {
         flag *= 10;
     }
     flag /= 10;
-    // 从最高位开始将数字转换为字符
     while (x || flag) {
         int a = x / flag;
         x %= flag;

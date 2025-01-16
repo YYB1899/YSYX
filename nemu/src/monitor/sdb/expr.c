@@ -194,7 +194,6 @@ static bool make_token(char *e) {
 
 bool check_parentheses(int p, int q){
    int n = 0,m = 0,j,i;
-   printf("p=%d,q=%d\n",p,q);
    if(tokens[p].type != 6  || tokens[q].type != 7) return false;
    else {
         for(i = p + 1;i < q;i ++){

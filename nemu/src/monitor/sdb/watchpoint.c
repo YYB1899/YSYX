@@ -27,6 +27,7 @@
   int new_value;
 } WP;
 */
+
 WP wp_pool[NR_WP] = {0};
 static WP *head = NULL, *free_ = NULL;
 

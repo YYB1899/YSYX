@@ -12,7 +12,6 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
 #include "sdb.h"
 #define NR_WP 32
 
@@ -21,10 +20,10 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-  bool used;
+  bool flag;
   char expr[32];
-  int old;
-  int new;
+  int old_value;
+  int new_value;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -35,7 +34,7 @@ void init_wp_pool() {
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
-    wp_pool[i].used = false;
+    wp_pool[i].flag = false;
   }
 
   head = NULL;
@@ -45,8 +44,8 @@ void init_wp_pool() {
 /* TODO: Implement the functionality of watchpoint */
 WP* new_wp(){
 	for(WP* p = free_; p -> next != NULL; p = p -> next){
-		if(p -> used == false) {
-			p -> used = true;
+		if(p -> flag == false) {
+			p -> flag = true;
 		if(head == NULL){
 			head = p;
 			}
@@ -62,7 +61,7 @@ void free_wp(WP *wp){
 	if(head -> NO == wp -> NO) {
 		WP *temp = head;
 		head = head -> next;
-		temp -> used = false;
+		temp -> flag = false;
 		temp -> next = NULL;
 		printf("Deleted watchpoint %d successfully\n",wp -> NO);
 		return;
@@ -71,7 +70,7 @@ void free_wp(WP *wp){
 		if(p -> NO == wp -> NO){
 			WP *free = p;
 			p = p -> next;
-			free -> used = false;
+			free -> flag = false;
 			free -> next = NULL;
 			printf("Freed watchpoint %d successfully\n",wp -> NO);
 			return;

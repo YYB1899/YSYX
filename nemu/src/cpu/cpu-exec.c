@@ -18,7 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include "isa.h"
-#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.c"
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -40,11 +40,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   for(int i = 0; i < NR_WP; i ++){
-	if(wp_pool[i].used == true){
+	if(wp_pool[i].flag == true){
 		bool success = false;
 		int tmp = expr(wp_pool[i].expr,&success);
 		if(success == true){
-			if(tmp != wp_pool[i].old){
+			if(tmp != wp_pool[i].old_value){
 				nemu_state.state = NEMU_STOP;
 				printf("The value is changed");
 				return;

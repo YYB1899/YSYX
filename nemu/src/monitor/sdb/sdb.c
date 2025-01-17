@@ -20,7 +20,7 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include "memory/paddr.h"
-#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.c"
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.h"
 
 static int is_batch_mode = false;
 
@@ -30,8 +30,8 @@ void init_wp_pool();
 void display_watchpoint(){
 	bool flag = false;
 	for(int i = 0; i < NR_WP; i ++){
-		if(wp_pool[i].used == true){
-			printf("Watchpoint:NO = %d,expr = %s,old_value = %d,new_value = %d\n",wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old,wp_pool[i].new);
+		if(wp_pool[i].flag == true){
+			printf("Watchpoint:NO = %d,expr = %s,old_value = %d,new_value = %d\n",wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old_value,wp_pool[i].new_value);
 			flag = true;
 		}
 	}
@@ -43,7 +43,7 @@ void create_watchpoint(char *args){
 	strcpy(p -> expr,args);
 	bool success = false;
 	int tmp = expr(p -> expr,&success);
-	if(success == true) p -> old = tmp;
+	if(success == true) p -> old_value = tmp;
 	else printf("Expr evaluation error\n");
 	printf("Creat watchpoint NO.%d success\n",p -> NO);
 }

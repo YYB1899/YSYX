@@ -9,9 +9,7 @@ typedef struct watchpoint {
     int NO;
     struct watchpoint *next;
 
-    // TODO: Add more members if necessary
-
-    bool flag; // use / unuse
+    bool flag;
     char expr[100];
     int new_value;
     int old_value;

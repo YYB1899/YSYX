@@ -35,7 +35,7 @@ void display_watchpoint(){
 			flag = true;
 		}
 	}
-	if(flag == false) printf("Without watchpoint could be displayed");
+	if(flag == false) printf("Without watchpoint could be displayed\n");
 }
 
 void create_watchpoint(char *args){
@@ -148,7 +148,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   {"si","Next step",cmd_si },
-  {"info","Print the reg",cmd_info},
+  {"info","Print the reg or watchpoint",cmd_info},
   {"x","Memory scan",cmd_x},
   {"p","Evaluating expressions",cmd_p},
   {"d", "Delete watchpoint by NO", cmd_d},

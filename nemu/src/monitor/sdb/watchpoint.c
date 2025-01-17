@@ -26,10 +26,10 @@
   int old_value;
   int new_value;
 } WP;
-
-static WP wp_pool[NR_WP] = {0};
-static WP *head = NULL, *free_ = NULL;
 */
+WP wp_pool[NR_WP] = {0};
+static WP *head = NULL, *free_ = NULL;
+
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {

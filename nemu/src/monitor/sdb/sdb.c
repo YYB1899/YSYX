@@ -20,7 +20,7 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include "memory/paddr.h"
-#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.h"
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.c"
 
 static int is_batch_mode = false;
 

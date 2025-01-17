@@ -15,8 +15,8 @@
 #include "sdb.h"
 #define NR_WP 32
 #include "watchpoint.h"
-/*
-typedef struct watchpoint {
+
+/*typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 

@@ -21,6 +21,7 @@
 #include "sdb.h"
 #include "memory/paddr.h"
 #include "watchpoint.h"
+
 static int is_batch_mode = false;
 
 void init_regex();

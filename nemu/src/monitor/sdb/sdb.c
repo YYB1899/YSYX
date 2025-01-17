@@ -19,12 +19,43 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "memory/paddr.h"
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/watchpoint.c"
 
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
 
+void display_watchpoint(){
+	bool flag = false;
+	for(int i = 0; i < NR_WP; i ++){
+		if(wp_pool[i].used == true){
+			printf("Watchpoint:NO = %d,expr = %s,old_value = %d,new_value = %d\n",wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old,wp_pool[i].new);
+			flag = true;
+		}
+	}
+	if(flag == false) printf("Without watchpoint could be displayed");
+}
+
+void create_watchpoint(char *args){
+	WP* p = new_wp();
+	strcpy(p -> expr,args);
+	bool success = false;
+	int tmp = expr(p -> expr,&success);
+	if(success == true) p -> old = tmp;
+	else printf("Expr evaluation error\n");
+	printf("Creat watchpoint NO.%d success\n",p -> NO);
+}
+
+void delete_watchpoint(int NO){
+	for(int i = 0; i < NR_WP; i ++){
+		if(wp_pool[i].NO == NO){
+			free_wp(&wp_pool[i]);
+			return;
+		}
+	}
+}
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -66,11 +97,22 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args){
-	if(args == NULL) printf("No regs\n");
+	if(args == NULL) printf("No regs or watchpoint to print\n");
 	else if(strcmp(args,"r") == 0) isa_reg_display();
+	else if(strcmp(args,"w") == 0) display_watchpoint();
 	return 0;
 }
 
+static  int cmd_d(char *args){
+	if(args == NULL) printf("No args to delete\n");
+	else delete_watchpoint(atoi(args));
+	return 0;
+}
+
+static int cmd_w(char *args){
+	create_watchpoint(args);
+	return 0;
+}
 
 static int cmd_x(char *args){
 	char* num = strtok(args," ");
@@ -89,7 +131,7 @@ static int cmd_x(char *args){
 
 static int cmd_p(char* args){
 	if(args == NULL){
-		printf("No args\n");
+		printf("No args to evaluation\n");
 		return 0;
 	}
 	bool simple = false;
@@ -109,6 +151,8 @@ static struct {
   {"info","Print the reg",cmd_info},
   {"x","Memory scan",cmd_x},
   {"p","Evaluating expressions",cmd_p},
+  {"d", "Delete watchpoint by NO", cmd_d},
+  {"w", "Create watchpoint with expr", cmd_w},
   /* TODO: Add more commands */
 
 };

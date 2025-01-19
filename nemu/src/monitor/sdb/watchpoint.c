@@ -15,7 +15,6 @@
 #include "sdb.h"
 #define NR_WP 32
 #include "watchpoint.h"
-#include <assert.h>
 
 /*typedef struct watchpoint {
   int NO;

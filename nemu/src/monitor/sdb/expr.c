@@ -411,12 +411,12 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }   
-    	if(check_parentheses(0,tokens_len - 1) == false)  assert(0);
-    	else{
+    	//if(check_parentheses(0,tokens_len - 1) == false)  assert(0);
+    	//else{
         	uint32_t result = 0;
  		result = eval(0,tokens_len - 1);
   		printf("result = %d\n", result);
   		memset(tokens,0,sizeof(tokens));
   		return result;  
-  	}
+  	//}
 }

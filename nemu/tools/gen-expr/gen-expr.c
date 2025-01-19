@@ -97,11 +97,8 @@ int main(int argc, char *argv[]) {
 	sscanf(argv[1], "%d", &loop);
     }
     int i;
-     for (i = 0; i < loop; i ++) {
-     	bool success = false;
+    for (i = 0; i < loop; i ++) {
 	gen_rand_expr();
-	int expr_result = 0;
-	expr_result = expr(buf,&success);
 	buf[index_buf] = '\0';
 	sprintf(code_buf, code_format, buf);
 
@@ -120,7 +117,7 @@ int main(int argc, char *argv[]) {
 	ret = fscanf(fp, "%d", &result);
 	pclose(fp);
 
-	printf("%u %s = %d\n", result, buf, expr_result);
+	printf("%u %s\n", result, buf);
 	index_buf = 0;
     }
     return 0;

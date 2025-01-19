@@ -14,7 +14,6 @@
 ***************************************************************************************/
 
 #include <common.h>
-//#include </home/yyb/ysyx-workbench/nemu/tools/gen-expr/gen-expr.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +22,9 @@ void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
-
+void a(){
+	printf("a");
+	}
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-	printf("a");
+  a();
   /* Start engine. */
   engine_start();
   return is_exit_status_bad();

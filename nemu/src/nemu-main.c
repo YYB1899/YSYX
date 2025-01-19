@@ -47,11 +47,11 @@ void a(){
         // 获取要添加的内容
         bool success;
         success = false;
-        //char *line_buf = strtok(line," ");
-        int expr_res = expr(line, &success);
+        char *line_buf = strtok(line," ");
+        int expr_res = expr(line_buf, &success);
 
         // 写入原始行和附加内容到临时文件
-        fprintf(temp_fp, "%s = %d\n", line, expr_res);
+        fprintf(temp_fp, "%s = %d\n", line_buf, expr_res);
     }
 
     // 关闭文件

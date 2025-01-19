@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-
+	printf("a");
   /* Start engine. */
   engine_start();
   printf("a");

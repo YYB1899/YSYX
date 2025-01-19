@@ -329,11 +329,14 @@ word_t expr(char *e, bool *success) {
   	{
   		bool simple = false;
   		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  		if(simple == true){
-  			int_to_char(reg_value,tokens[i].str);
-  		}else{
+  		if(simple == false){
+  			//int_to_char(reg_value,tokens[i].str);
   			printf("reg value error.\n");
 			assert(0);
+  		}else{
+  			//printf("reg value error.\n");
+			//assert(0);
+			int_to_char(reg_value,tokens[i].str);
 		}  	
 	}
   }

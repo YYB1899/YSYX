@@ -310,7 +310,7 @@ int char_to_int(char s[]){
     return res;
 }
 
-word_t expr(char *e, bool *success) {
+int expr(char *e, bool *success) {
   if (make_token(e) == false) {
     *success = false;
     return 0;

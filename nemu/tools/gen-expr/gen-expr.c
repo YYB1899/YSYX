@@ -27,10 +27,9 @@ static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
 "  unsigned result = %s; "
-"  printf(\"%%u\", result); "
+"  printf(\"%%u\\n\", result); "
 "  return 0; "
 "}";
-
 int index_buf  = 0;
 
 int choose(int n){
@@ -90,7 +89,6 @@ static void gen_rand_expr() {
 	    break;
     }
 }
-
 int main(int argc, char *argv[]) {
     int seed = time(0);
     srand(seed);
@@ -99,7 +97,7 @@ int main(int argc, char *argv[]) {
 	sscanf(argv[1], "%d", &loop);
     }
     int i;
-    for (i = 0; i < loop; i ++) {
+     for (i = 0; i < loop; i ++) {
 	gen_rand_expr();
 	buf[index_buf] = '\0';
 	sprintf(code_buf, code_format, buf);

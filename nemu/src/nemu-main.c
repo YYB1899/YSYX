@@ -43,7 +43,7 @@ void a(){
             line[len-1] = '\0';
             len--;
         }
-
+	printf("b%s",line);
         // 获取要添加的内容
         bool success;
         success = false;

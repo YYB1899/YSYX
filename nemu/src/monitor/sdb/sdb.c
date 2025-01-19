@@ -18,7 +18,7 @@
 #include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "sdb.h"
+//#include "sdb.h"
 #include "memory/paddr.h"
 #include "watchpoint.h"
 

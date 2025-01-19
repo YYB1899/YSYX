@@ -34,7 +34,6 @@ int main(int argc, char *argv[]) {
 	printf("a");
   /* Start engine. */
   engine_start();
-  printf("a");
   return is_exit_status_bad();
     
 }

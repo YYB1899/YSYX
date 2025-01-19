@@ -25,21 +25,6 @@ void engine_start();
 int is_exit_status_bad();
 
 int main(int argc, char *argv[]) {
-  /* Initialize the monitor. */
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
-#endif
-
-  /* Start engine. */
-  engine_start();
-  return is_exit_status_bad();
-  
-  
-//}
-
-//int main(int argc, char *argv[]) {
 	printf("a");
     FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
@@ -80,5 +65,21 @@ int main(int argc, char *argv[]) {
     }
    printf("File processing completed successfully.\n");
     return EXIT_SUCCESS;
+  /* Initialize the monitor. */
+#ifdef CONFIG_TARGET_AM
+  am_init_monitor();
+#else
+  init_monitor(argc, argv);
+#endif
+
+  /* Start engine. */
+  engine_start();
+  return is_exit_status_bad();
+  
+  
+//}
+
+//int main(int argc, char *argv[]) {
+    
 }
 

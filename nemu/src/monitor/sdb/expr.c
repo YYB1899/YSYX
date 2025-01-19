@@ -13,7 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
+#include "isa.h"
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.

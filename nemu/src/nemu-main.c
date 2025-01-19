@@ -22,52 +22,7 @@ void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
-void a(){
-    FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
-    if (input_fp == NULL) {
-        perror("Failed to open input file");
-    }
 
-    // 创建临时文件
-    FILE *temp_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "w");
-    if (temp_fp == NULL) {
-        perror("Failed to create temporary file");
-        fclose(input_fp);
-    }
-
-    char line[1024];  // 假设每行不超过1024个字符
-    while (fgets(line, sizeof(line), input_fp) != NULL) {
-        // 移除行尾的换行符（如果存在）
-        size_t len = strlen(line);
-        if (len > 0 && line[len-1] == '\n') {
-            line[len-1] = '\0';
-            len--;
-        }
-	printf("b %s\n",line);
-        // 获取要添加的内容
-        bool success;
-        success = false;
-        //for(int i = 0; i < len; i ++){
-        //	if(line[i] == ' '){
-        char *line_buf = strtok(line," ");	
-        int expr_res = expr(line_buf, &success);
-	printf("a%s %s\n",line,line_buf);
-        // 写入原始行和附加内容到临时文件
-        fprintf(temp_fp, " %s = %d\n", line, expr_res);
-    }
-
-    // 关闭文件
-    fclose(input_fp);
-    fclose(temp_fp);
-
-    // 替换文件
-    if (rename("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input") != 0) {
-        perror("Failed to rename temporary file to original file");
-        remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp");  // 清理临时文件
-    }
-
-    printf("File processing completed successfully.\n");
-}
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -75,7 +30,6 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  a();
   /* Start engine. */
   engine_start();
   return is_exit_status_bad();

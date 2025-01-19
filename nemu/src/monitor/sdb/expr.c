@@ -327,16 +327,13 @@ word_t expr(char *e, bool *success) {
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 12)
   	{
-  		bool simple = false;
+  		bool simple = true;
   		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  		if(simple == false){
-  			//int_to_char(reg_value,tokens[i].str);
+  		if(simple == true){
+  			int_to_char(reg_value,tokens[i].str);
+  		}else{
   			printf("reg value error.\n");
 			assert(0);
-  		}else{
-  			//printf("reg value error.\n");
-			//assert(0);
-			int_to_char(reg_value,tokens[i].str);
 		}  	
 	}
   }

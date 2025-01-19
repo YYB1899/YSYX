@@ -43,7 +43,7 @@ void a(){
             line[len-1] = '\0';
             len--;
         }
-	printf("b%s",line);
+	printf("b%s\n",line);
         // 获取要添加的内容
         bool success;
         success = false;
@@ -51,7 +51,7 @@ void a(){
         //	if(line[i] == ' '){
         char *line_buf = strtok(line," ");	
         int expr_res = expr(line_buf, &success);
-	printf("a%s",line);
+	printf("a%s\n",line);
         // 写入原始行和附加内容到临时文件
         fprintf(temp_fp, " %s = %d\n", line, expr_res);
     }

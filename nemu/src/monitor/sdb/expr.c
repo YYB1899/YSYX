@@ -327,7 +327,7 @@ word_t expr(char *e, bool *success) {
   for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == 12)
   	{
-  		bool simple = true;
+  		bool simple = false;
   		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   		if(simple == true){
   			int_to_char(reg_value,tokens[i].str);

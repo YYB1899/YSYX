@@ -51,7 +51,7 @@ void a(){
         //	if(line[i] == ' '){
         char *line_buf = strtok(line," ");	
         int expr_res = expr(line_buf, &success);
-	printf("%s",line);
+	printf("a%s",line);
         // 写入原始行和附加内容到临时文件
         fprintf(temp_fp, " %s = %d\n", line, expr_res);
     }

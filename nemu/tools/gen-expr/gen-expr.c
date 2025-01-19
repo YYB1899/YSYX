@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 	ret = fscanf(fp, "%d", &result);
 	pclose(fp);
 
-	printf("%u %s\n", result, buf);
+	printf("%u true %s\n", result, buf);
 	index_buf = 0;
     }
     return 0;

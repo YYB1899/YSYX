@@ -29,14 +29,14 @@ int main(int argc, char *argv[]) {
     FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
         perror("Failed to open input file");
-        return EXIT_FAILURE;
+        //return EXIT_FAILURE;
     }
     // 创建临时文件
     FILE *temp_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "w");
     if (temp_fp == NULL) {
         perror("Failed to create temporary file");
         fclose(input_fp);
-        return EXIT_FAILURE;
+       // return EXIT_FAILURE;
     }
     char line[1024];  // 假设每行不超过1024个字符
     while (fgets(line, sizeof(line), input_fp) != NULL) {
@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
     if (rename("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input") != 0) {
         perror("Failed to rename temporary file to original file");
         remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp");  // 清理临时文件
-        return EXIT_FAILURE;
+       // return EXIT_FAILURE;
     }
    printf("File processing completed successfully.\n");
-    return EXIT_SUCCESS;
+   // return EXIT_SUCCESS;
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();

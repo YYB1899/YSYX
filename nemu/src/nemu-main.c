@@ -51,7 +51,7 @@ void a(){
         int expr_res = expr(line_buf, &success);
 
         // 写入原始行和附加内容到临时文件
-        fprintf(temp_fp, "%s = %d\n", line_buf, expr_res);
+        fprintf(temp_fp, "%s = %d\n", line, expr_res);
     }
 
     // 关闭文件

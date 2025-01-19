@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdbool.h>
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 
 // this should be enough
 static char buf[65536] = {};

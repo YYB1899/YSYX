@@ -19,6 +19,7 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
+#include <stdbool.h>
 
 // this should be enough
 static char buf[65536] = {};
@@ -34,7 +35,6 @@ int index_buf  = 0;
 
 int choose(int n){
     int flag = rand() % 3 ; // 0 1 2
-	printf("index = %d, flag = %d. \n",index_buf, flag);
     return flag;
 }
 void gen_num(){
@@ -98,7 +98,10 @@ int main(int argc, char *argv[]) {
     }
     int i;
      for (i = 0; i < loop; i ++) {
+     	bool success = false;
 	gen_rand_expr();
+	int expr_result = 0;
+	expr_result = expr(buf,&success);
 	buf[index_buf] = '\0';
 	sprintf(code_buf, code_format, buf);
 
@@ -117,7 +120,7 @@ int main(int argc, char *argv[]) {
 	ret = fscanf(fp, "%d", &result);
 	pclose(fp);
 
-	printf("%u true %s\n", result, buf);
+	printf("%u %s = %d\n", result, buf, expr_result);
 	index_buf = 0;
     }
     return 0;

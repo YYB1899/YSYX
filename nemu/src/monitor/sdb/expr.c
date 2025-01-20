@@ -172,10 +172,10 @@ uint32_t eval(int p, int q) {
                     tokens[i].type == TK_EQ || tokens[i].type == NOTEQ ||
                     tokens[i].type == AND) {
                     op = i;
+                    printf("op=%d",op);
                 }
             }
         }
-	printf("op=%d",op);
         if (op == -1) {
             assert(0);
             return -1;

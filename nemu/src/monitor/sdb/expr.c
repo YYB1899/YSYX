@@ -208,8 +208,8 @@ bool check_parentheses(int p, int q){
    	}
 }
 
-int max(int a, int b) {
-    return (a > b) ? a : b;
+int min(int a, int b) {
+    return (a > b) ? b : a;
 }
 
 uint32_t eval(int p, int q) {
@@ -236,19 +236,19 @@ uint32_t eval(int p, int q) {
             }
             if(!simple && tokens[i].type == 10 ){
                 simple = true;
-                op = max(op, i);
+                op = min(op, i);
             }
             if(!simple && (tokens[i].type == 8 || tokens[i].type == 9 )){
                 simple = true;
-                op = max(op, i);
+                op = min(op, i);
             }
             if(!simple && (tokens[i].type == 2 || tokens[i].type == 3 )){
                 simple = true;
-                op = max(op, i);
+                op = min(op, i);
             }
             if(!simple && (tokens[i].type == 4 || tokens[i].type == 5 )){
             	simple = true;
-                op = max(op, i);
+                op = min(op, i);
             }
        }
         

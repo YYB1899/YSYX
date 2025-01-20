@@ -1,4 +1,17 @@
-
+/***************************************************************************************
+ * Copyright (c) 2014-2022 Zihao Yu, Nanjing University
+ *
+* NEMU is licensed under Mulan PSL v2.
+* You can use this software according to the terms and conditions of the Mulan PSL v2.
+* You may obtain a copy of Mulan PSL v2 at:
+*          http://license.coscl.org.cn/MulanPSL2
+*
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+*
+* See the Mulan PSL v2 for more details.
+***************************************************************************************/
 #include <isa.h>
 #include <limits.h>
 /* We use the POSIX regex functions to process regular expressions.
@@ -18,12 +31,19 @@ enum {
     NOTEQ = 9,
     AND = 10,
     HEX = 11,
+    REG = 12,
+      /* TODO: Add more token types */
 };
 
 static struct rule {
     const char *regex;
     int token_type;
 } rules[] = {
+
+  /* TODO: Add more rules.
+   * Pay attention to the precedence level of different rules.
+   */
+   
         {" +", TK_NOTYPE},    // spaces
         {"\\+", PLUS},         // plus
         {"\\-", SUB},         // sub
@@ -36,12 +56,15 @@ static struct rule {
         {"\\&\\&", AND},        // and
         {"0x[0-9a-fA-F]+", HEX},     // hex
         {"[0-9]+", NUM},      // num
+        {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
-#define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
+#define NR_REGEX ARRLEN(rules)
 
 static regex_t re[NR_REGEX] = {};
-
+/* Rules are used for many times.
+ * Therefore we compile them only once before any usage.
+ */
 void init_regex() {
     int i;
     char error_msg[128];

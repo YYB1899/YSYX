@@ -61,6 +61,7 @@ void delete_watchpoint(int NO){
 }
 
 void a(){
+	printf("a");
     FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
         perror("Failed to open input file");

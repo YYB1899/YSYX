@@ -162,6 +162,7 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_a(char *args){
+	printf("a");
 	void a();
   	return 0;
 }

@@ -1,13 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <regex.h>
-#include <stdint.h>
-#include <assert.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <isa.h>
 
+#include <isa.h>
+#include <limits.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */

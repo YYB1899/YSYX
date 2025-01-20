@@ -1,26 +1,17 @@
-/***************************************************************************************
- * Copyright (c) 2014-2022 Zihao Yu, Nanjing University
- *
- * NEMU is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- *
- * See the Mulan PSL v2 for more details.
- ***************************************************************************************/
-
-#include <isa.h>
-#include <regex.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
+#include <stdint.h>
 #include <assert.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <isa.h>
 
+/* We use the POSIX regex functions to process regular expressions.
+ * Type 'man regex' for more information about POSIX regex functions.
+ */
+#include <regex.h>
 enum {
     TK_NOTYPE = 256,
     NUM = 1,
@@ -34,7 +25,6 @@ enum {
     NOTEQ = 9,
     AND = 10,
     HEX = 11,
-    REG = 12,
 };
 
 static struct rule {
@@ -53,7 +43,6 @@ static struct rule {
         {"\\&\\&", AND},        // and
         {"0x[0-9a-fA-F]+", HEX},     // hex
         {"[0-9]+", NUM},      // num
-        {"\\$[a-zA-Z]*[0-9]*", REG}, // reg
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -104,7 +93,6 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
-                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
@@ -160,6 +148,8 @@ uint32_t eval(int p, int q) {
     } else {
         int op = -1;
         int balance = 0;
+        int min_precedence = INT_MAX; // Track the operator with the lowest precedence
+
         for (int i = p; i <= q; i++) {
             if (tokens[i].type == LEFT) {
                 balance++;
@@ -167,15 +157,29 @@ uint32_t eval(int p, int q) {
                 balance--;
             }
             if (balance == 0) {
-                if (tokens[i].type == PLUS || tokens[i].type == SUB ||
-                    tokens[i].type == MUL || tokens[i].type == DIV ||
-                    tokens[i].type == TK_EQ || tokens[i].type == NOTEQ ||
-                    tokens[i].type == AND) {
+                int precedence = INT_MAX;
+                switch (tokens[i].type) {
+                    case PLUS:
+                    case SUB:
+                        precedence = 1; // Lowest precedence
+                        break;
+                    case MUL:
+                    case DIV:
+                        precedence = 2; // Higher precedence
+                        break;
+                    case TK_EQ:
+                    case NOTEQ:
+                    case AND:
+                        precedence = 0; // Lowest precedence for logical operators
+                        break;
+                }
+                if (precedence < min_precedence) {
+                    min_precedence = precedence;
                     op = i;
-                    printf("op=%d",op);
                 }
             }
         }
+
         if (op == -1) {
             assert(0);
             return -1;
@@ -211,26 +215,18 @@ word_t expr(char *e, bool *success) {
         tokens_len++;
     }
 
-    // Handle register and hexadecimal values
+    // Handle hexadecimal values
     for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == REG) {
-            bool simple = false;
-            int reg_value = isa_reg_str2val(tokens[i].str, &simple);
-            if (simple) {
-                snprintf(tokens[i].str, sizeof(tokens[i].str), "%d", reg_value);
-                tokens[i].type = NUM;
-            } else {
-                printf("reg value error.\n");
-                assert(0);
-            }
-        } else if (tokens[i].type == HEX) {
+        if (tokens[i].type == HEX) {
             long int hex_value = strtol(tokens[i].str, NULL, 16);
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
             tokens[i].type = NUM;
         }
     }
+
     uint32_t result = eval(0, tokens_len - 1);
-    printf("result = %d\n", result);
+    printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));
     return result;
 }
+

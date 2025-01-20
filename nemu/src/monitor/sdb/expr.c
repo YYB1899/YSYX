@@ -320,7 +320,7 @@ word_t expr(char *e, bool *success) {
   int tokens_len = 0;
   for(int i = 0 ; i < 30 ; i ++)
     {
-	if(tokens[i].type == 1 || tokens[i].type == 2 || tokens[i].type == 3 || tokens[i].type == 4 || tokens[i].type == 5 || tokens[i].type == 6 || tokens[i].type == 7 || tokens[i].type == 8 || tokens[i].type == 9 || tokens[i].type == 10 || tokens[i].type == 11 || tokens[i].type == 12){ tokens_len ++;}
+	if(tokens[i].type == 1 || tokens[i].type == 2 || tokens[i].type == 3 || tokens[i].type == 4 || tokens[i].type == 5 || tokens[i].type == 6 || tokens[i].type == 7 || tokens[i].type == 8 || tokens[i].type == 9 || tokens[i].type == 10 || tokens[i].type == 11 || tokens[i].type == 12){ tokens_len ++;printf("a ");}
 	else break;
 
     }

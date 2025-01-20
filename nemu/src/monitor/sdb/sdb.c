@@ -21,7 +21,7 @@
 #include "sdb.h"
 #include "memory/paddr.h"
 #include "watchpoint.h"
-
+#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/a.h"
 static int is_batch_mode = false;
 
 void init_regex();
@@ -95,6 +95,11 @@ static int cmd_si(char *args) {
 	return 0;
 }
 
+static int cmd_a(char *args){
+	a();
+	return 0;
+}
+
 static int cmd_info(char *args){
 	if(args == NULL) printf("No regs or watchpoint to print\n");
 	else if(strcmp(args,"r") == 0) isa_reg_display();
@@ -152,6 +157,7 @@ static struct {
   {"p","Evaluating expressions",cmd_p},
   {"d", "Delete watchpoint by NO", cmd_d},
   {"w", "Create watchpoint with expr", cmd_w},
+  {"a","a",cmd_a},
   /* TODO: Add more commands */
 
 };

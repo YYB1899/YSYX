@@ -82,13 +82,11 @@ static void gen_rand_expr() {
 	    gen_num();
 	    gen(')');
 	    break;
-	default:
-	    gen('(');
-	    gen_num();
-	    gen_rand_op();
-	    gen_num();
-	    gen(')');
-	    break;
+         default: 
+            gen_rand_expr(); 
+            gen_rand_op(); 
+            gen_rand_expr(); 
+            break;
     }
 }
 int main(int argc, char *argv[]) {

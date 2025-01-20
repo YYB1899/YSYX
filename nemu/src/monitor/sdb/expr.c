@@ -175,7 +175,7 @@ uint32_t eval(int p, int q) {
                 }
             }
         }
-
+	printf("op=%d",op);
         if (op == -1) {
             assert(0);
             return -1;

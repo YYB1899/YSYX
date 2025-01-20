@@ -95,6 +95,7 @@ static bool make_token(char *e) {
     nr_token = 0;
 
     while (e[position] != '\0') {
+      /* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++) {
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
                 char *substr_start = e + position;
@@ -103,12 +104,17 @@ static bool make_token(char *e) {
                 Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
                     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
-                position += substr_len;
+                 position += substr_len;
 
-                //Token token1;
+        /* TODO: Now a new token is recognized with rules[i]. Add codes
+         * to record the token in the array `tokens'. For certain types
+         * of tokens, some extra actions should be performed.
+         */
+
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
+                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
@@ -124,11 +130,10 @@ static bool make_token(char *e) {
                 break;
             }
         }
-
-        if (i == NR_REGEX) {
-            printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
-            return false;
-        }
+    if (i == NR_REGEX) {
+      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      return false;
+       }
     }
 
     return true;
@@ -218,7 +223,37 @@ uint32_t eval(int p, int q) {
         }
     }
 }
+void int_to_char(int x, char str[]) {
+    memset(str, 0, 32); 
+    int tmp_index = 0;
+    int tmp_x = x;
+    int x_size = 0, flag = 1;
+    while (tmp_x) {
+        tmp_x /= 10;
+        x_size++;
+        flag *= 10;
+    }
+    flag /= 10;
+    while (x || flag) {
+        int a = x / flag;
+        x %= flag;
+        str[tmp_index++] = a + '0';
+        flag /= 10;
+    }
+    str[tmp_index] = '\0'; 
+}	
 
+int char_to_int(char s[]){
+    int s_size = strlen(s);
+    int res = 0 ;
+    for(int i = 0 ; i < s_size ; i ++)
+    {
+	res += s[i] - '0';
+	res *= 10;
+    }
+    res /= 10;
+    return res;
+}
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -230,19 +265,114 @@ word_t expr(char *e, bool *success) {
         if (tokens[i].type == 0) break;
         tokens_len++;
     }
-
-    // Handle hexadecimal values
-    for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == HEX) {
-            long int hex_value = strtol(tokens[i].str, NULL, 16);
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = NUM;
-        }
+  /*HEX*/
+  for(int i = 0 ; i < tokens_len; i ++){
+  	if(tokens[i].type == 11)
+  	{
+		long int hex_value = strtol(tokens[i].str,NULL,16);
+  		int_to_char(hex_value,tokens[i].str);	
+	}
+  }
+  /*negative*/  
+  for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == 3 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 3 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == 3 && i == 0)
+          )	
+	{	
+	    tokens[i].type = 256;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-' ;
+	    for(int j = 0 ; j < tokens_len ; j ++){
+	       if(tokens[j].type == 256)
+	       {
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		   tokens_len -- ;
+	       }
+	    }
+	}
     }
+  /*negative*/  
+  for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == 3 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 3 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == 3 && i == 0)
+          )	
+	{	
+	    tokens[i].type = 256;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-' ;
+	    for(int j = 0 ; j < tokens_len ; j ++){
+	       if(tokens[j].type == 256)
+	       {
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		   tokens_len -- ;
+	       }
+	    }
+	}
+    }
+  /*derefence*/
+   for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == 4 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 4 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == 4 && i == 0)
+          )
+	{
+	    tokens[i].type = TK_NOTYPE;
+	    int tmp = char_to_int(tokens[i+1].str);
+	    uint32_t a = (uint32_t)tmp;
+	    int value = 0;
+	    memcpy(&value, &a, sizeof(int));
+	    int_to_char(value, tokens[i+1].str);	    
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    }
+	}
+    }   
 
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));
     return result;
 }
-

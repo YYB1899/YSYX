@@ -210,7 +210,7 @@ static struct {
   {"p","Evaluating expressions",cmd_p},
   {"d", "Delete watchpoint by NO", cmd_d},
   {"w", "Create watchpoint with expr", cmd_w},
-  {"a","a",cmd_a},
+  {"a","Auto test",cmd_a},
   /* TODO: Add more commands */
 
 };

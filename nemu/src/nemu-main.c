@@ -44,24 +44,25 @@ void a(){
             line[len-1] = '\0';
             len--;
         }
-        int size = strlen(line);
-        int pos = -1;
-        for(int i = 0; i < size; i ++){
-        	if(line[i] == ' '){
-        		pos = i;
-        		break;
-        	}
-        }
+        //int size = strlen(line);
+        //int pos = -1;
+        //for(int i = 0; i < size; i ++){
+        	//if(line[i] == ' '){
+        		//pos = i;
+        		//break;
+        	//}
+        //}
             // 使用原地操作将 line 分割成 line_res 和 line_buf
-            line[pos] = '\0';  // 在空格处终止 line_res
-            char *line_res = line;
-            char *line_buf = line + pos + 1;
+            //line[pos] = '\0';  // 在空格处终止 line_res
+            //char *line_res = line;
+            //char *line_buf = line + pos + 1;
         // 获取要添加的内容
         bool success;
-        success = false;	
+        success = false;
+        char *line_buf = strtok(line," ");	
         int expr_res = expr(line_buf, &success);
         // 写入原始行和附加内容到临时文件
-        fprintf(temp_fp, "%s %s = %d\n",line_res, line_buf, expr_res);
+        fprintf(temp_fp, "\%s = %d\n", line, expr_res);
     }
 
     // 关闭文件

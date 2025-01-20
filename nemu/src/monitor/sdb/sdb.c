@@ -113,7 +113,7 @@ void a(){
     // 替换文件
     if (rename("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input") != 0) {
         perror("Failed to rename temporary file to original file");
-        remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp");  // 清理临时文件
+        //remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp");  // 清理临时文件
     }
 
     printf("File processing completed successfully.\n");

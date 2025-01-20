@@ -59,12 +59,6 @@ void delete_watchpoint(int NO){
 		}
 	}
 }
-
-void a(){
-	printf("a");
-
-}
-
 	
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -107,21 +101,19 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_a(char *args){
-	    FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
+    FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
         perror("Failed to open input file");
     }
 
-    // 创建临时文件
     FILE *temp_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "w");
     if (temp_fp == NULL) {
         perror("Failed to create temporary file");
         fclose(input_fp);
     }
 
-    char line[1024];  // 假设每行不超过1024个字符
+    char line[1024]; 
     while (fgets(line, sizeof(line), input_fp) != NULL) {
-        // 移除行尾的换行符（如果存在）
         size_t len = strlen(line);
         if (len > 0 && line[len-1] == '\n') {
             line[len-1] = '\0';
@@ -135,14 +127,11 @@ static int cmd_a(char *args){
         		break;
         	}
         }
-            // 使用原地操作将 line 分割成 line_res 和 line_buf
-        line[pos] = '\0';  // 在空格处终止 line_res
+        line[pos] = '\0'; 
         char *line_res = line;
         char *line_buf = line + pos + 1;
-        // 获取要添加的内容
         bool success;
         success = false;
-        //char *line_buf = strtok(line," ");	
         int expr_res = expr(line_buf, &success);
         char *endptr;
         long int_line_res = strtol(line_res, &endptr, 10);
@@ -152,14 +141,12 @@ static int cmd_a(char *args){
         else fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);
         }
 
-    // 关闭文件
     fclose(input_fp);
     fclose(temp_fp);
 
-    // 替换文件
     if (rename("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp", "/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input") != 0) {
         perror("Failed to rename temporary file to original file");
-        //remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp");  // 清理临时文件
+        remove("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/temp"); 
     }
 
     printf("File processing completed successfully.\n");

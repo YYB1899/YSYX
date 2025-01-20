@@ -83,9 +83,11 @@ static void gen_rand_expr() {
 	    gen(')');
 	    break;
 	default:
-	    gen_rand_expr();
+	    gen('(');
+	    gen_num();
 	    gen_rand_op();
-	    gen_rand_expr();
+	    gen_num();
+	    gen(')');
 	    break;
     }
 }

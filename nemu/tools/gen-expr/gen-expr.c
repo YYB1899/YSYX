@@ -79,13 +79,15 @@ static void gen_rand_expr() {
 	    break;
 	case 1:
 	    gen('(');
-	    gen_rand_expr();
+	    gen_num();
 	    gen(')');
 	    break;
          default: 
+            gen('(');
             gen_rand_expr(); 
             gen_rand_op(); 
             gen_rand_expr(); 
+            gen(')');
             break;
     }
 }

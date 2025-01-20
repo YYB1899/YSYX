@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "/home/yyb/ysyx-workbench/nemu/src/a.h"
-#include "/home/yyb/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
+
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();

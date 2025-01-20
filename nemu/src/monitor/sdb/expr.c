@@ -213,6 +213,7 @@ int max(int a, int b) {
 }
 
 uint32_t eval(int p, int q) {
+	printf("%d %d\n",p,q);
     if (p > q) {
         /* Bad expression */
         assert(0);
@@ -251,7 +252,7 @@ uint32_t eval(int p, int q) {
                 op = max(op, i);
             }
        }
-        printf("%d",op);
+        printf("%d\n",op);
         int  op_type = tokens[op].type;
         uint32_t  val1 = eval(p,op - 1);
         uint32_t  val2 = eval(op + 1,q);

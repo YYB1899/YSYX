@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "/home/yyb/ysyx-workbench/nemu/src/a.h"
 
 void init_monitor(int, char *[]);
 void am_init_monitor();

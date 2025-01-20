@@ -251,6 +251,7 @@ uint32_t eval(int p, int q) {
             	simple = true;
                 op = max(op, i);
             }
+            printf("op=%d\n",op);
        }
         
         int  op_type = tokens[op].type;

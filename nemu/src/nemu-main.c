@@ -23,26 +23,6 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-void int_to_char(int x, char str[]) {
-    memset(str, 0, 32); 
-    int tmp_index = 0;
-    int tmp_x = x;
-    int x_size = 0, flag = 1;
-    while (tmp_x) {
-        tmp_x /= 10;
-        x_size++;
-        flag *= 10;
-    }
-    flag /= 10;
-    while (x || flag) {
-        int a = x / flag;
-        x %= flag;
-        str[tmp_index++] = a + '0';
-        flag /= 10;
-    }
-    str[tmp_index] = '\0'; 
-}
-
 void a(){
     FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
@@ -81,9 +61,9 @@ void a(){
         success = false;
         //char *line_buf = strtok(line," ");	
         int expr_res = expr(line_buf, &success);
-        char char_expr_res[5];
-        int_to_char(expr_res, char_expr_res);
-        if(strcmp(line_res, char_expr_res) == 0) {
+        char *endptr;
+        long int_line_res = strtol(line_res, &endptr, 10);
+        if(int_line_res == expr_res) {
         	fprintf(temp_fp, "\%s %s = %d true\n",line_res, line_buf, expr_res);
         }
         else fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);

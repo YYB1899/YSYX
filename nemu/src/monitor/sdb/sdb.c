@@ -62,7 +62,52 @@ void delete_watchpoint(int NO){
 
 void a(){
 	printf("a");
-    FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
+
+}
+
+	
+/* We use the `readline' library to provide more flexibility to read from stdin. */
+static char* rl_gets() {
+  static char *line_read = NULL;
+
+  if (line_read) {
+    free(line_read);
+    line_read = NULL;
+  }
+
+  line_read = readline("(nemu) ");
+
+  if (line_read && *line_read) {
+    add_history(line_read);
+  }
+
+  return line_read;
+}
+
+static int cmd_c(char *args) {
+  cpu_exec(-1);
+  return 0;
+}
+
+
+static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
+  return -1;
+}
+
+static int cmd_help(char *args);
+
+static int cmd_si(char *args) {
+	int step;
+	step = 0;
+	if(args == NULL) step = 1;
+	else sscanf(args,"%d",&step);
+	cpu_exec(step);
+	return 0;
+}
+
+static int cmd_a(char *args){
+	    FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
         perror("Failed to open input file");
     }
@@ -118,52 +163,6 @@ void a(){
     }
 
     printf("File processing completed successfully.\n");
-}
-
-	
-/* We use the `readline' library to provide more flexibility to read from stdin. */
-static char* rl_gets() {
-  static char *line_read = NULL;
-
-  if (line_read) {
-    free(line_read);
-    line_read = NULL;
-  }
-
-  line_read = readline("(nemu) ");
-
-  if (line_read && *line_read) {
-    add_history(line_read);
-  }
-
-  return line_read;
-}
-
-static int cmd_c(char *args) {
-  cpu_exec(-1);
-  return 0;
-}
-
-
-static int cmd_q(char *args) {
-  nemu_state.state = NEMU_QUIT;
-  return -1;
-}
-
-static int cmd_help(char *args);
-
-static int cmd_si(char *args) {
-	int step;
-	step = 0;
-	if(args == NULL) step = 1;
-	else sscanf(args,"%d",&step);
-	cpu_exec(step);
-	return 0;
-}
-
-static int cmd_a(char *args){
-	printf("a");
-	void a();
   	return 0;
 }
 

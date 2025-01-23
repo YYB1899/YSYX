@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,15 +120,15 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
-    if (tokens[p].type != LEFT || tokens[q].type != RIGHT) {
+    if (tokens[p].type != 6 || tokens[q].type != 7) {
         return false;
     }
 
     int balance = 0;
     for (int i = p; i <= q; i++) {
-        if (tokens[i].type == LEFT) {
+        if (tokens[i].type == 6) {
             balance++;
-        } else if (tokens[i].type == RIGHT) {
+        } else if (tokens[i].type == 7) {
             balance--;
         }
         if (balance < 0) {
@@ -211,7 +210,7 @@ uint32_t eval(int p, int q) {
             }
     }
 
-}
+  }
 }
 
 word_t expr(char *e, bool *success) {
@@ -236,8 +235,7 @@ word_t expr(char *e, bool *success) {
     }
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
-  	if(tokens[i].type == REG)
-  	{
+  	if(tokens[i].type == REG){
   	    bool simple = false;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
@@ -249,23 +247,19 @@ word_t expr(char *e, bool *success) {
 		} 
   	        
 	}
-      }
+   }
         /*negative*/  
-       for(int i = 0 ; i < tokens_len ; i ++)
-    {
-	if(	(tokens[i].type == 3 && i > 0 
-		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-		    && tokens[i+1].type == 1 
-		    )
-                ||
-		(tokens[i].type == 3 && i > 0
-                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-                    && tokens[i+1].type == HEX
-                    )
-		||
-                (tokens[i].type == 3 && i == 0)
-          )	
-	{	
+       for(int i = 0 ; i < tokens_len ; i ++){
+	if((tokens[i].type == 3 && i > 0 
+	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+	    && tokens[i+1].type == 1 
+	    )||
+	    (tokens[i].type == 3 && i > 0
+             && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+             && tokens[i+1].type == HEX
+             )||
+             (tokens[i].type == 3 && i == 0)
+           ){	
 	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
@@ -280,24 +274,20 @@ word_t expr(char *e, bool *success) {
 		   tokens_len -- ;
 	       }
 	    }
-	}
-    }
+	  }
+       }
       /*derefence*/
-   for(int i = 0 ; i < tokens_len ; i ++)
-    {
-	if(	(tokens[i].type == 4 && i > 0 
-		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-		    && tokens[i+1].type == 1 
-		    )
-                ||
-		(tokens[i].type == 4 && i > 0
-                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-                    && tokens[i+1].type == HEX
-                    )
-		||
-                (tokens[i].type == 4 && i == 0)
-          )
-	{
+   for(int i = 0 ; i < tokens_len ; i ++){
+	if((tokens[i].type == 4 && i > 0 
+           && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+           && tokens[i+1].type == 1 
+           )||
+	   (tokens[i].type == 4 && i > 0
+           && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+           && tokens[i+1].type == HEX
+           )||
+           (tokens[i].type == 4 && i == 0)
+          ){
 	    tokens[i].type = 256;
 	    int tmp = atoi(tokens[i+1].str);
 	    uint32_t a = (uint32_t)tmp;
@@ -305,15 +295,14 @@ word_t expr(char *e, bool *success) {
 	    memcpy(&value, &a, sizeof(int));
 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	    
 	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == 256)
-		{
+		if(tokens[j].type == 256){
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }
 		    tokens_len -- ;
 		}
 	    }
-	}
+	  }
     }
     uint32_t result = eval(0, tokens_len - 1);
     printf("result= %d\n", result);

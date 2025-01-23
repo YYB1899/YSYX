@@ -316,7 +316,7 @@ word_t expr(char *e, bool *success) {
            && tokens[i+1].type == HEX
            )||
            ((tokens[i].type == 4 || tokens[i].type == 3 )&& i == 0)
-          ){
+          ){printf("a");
 	    tokens[i].type = 256;
 	    int tmp = atoi(tokens[i+1].str);
 	    uint32_t a = (uint32_t)tmp;

@@ -152,23 +152,22 @@ bool check_parentheses(int p, int q) {
         return false;
     }
 
-    int balance = 0;
+    int simple = 0;
     for (int i = p; i <= q; i++) {
         if (tokens[i].type == 6) {
-            balance++;
+            simple ++;
         } else if (tokens[i].type == 7) {
-            balance--;
+            simple --;
         }
-        if (balance < 0) {
+        if (simple < 0) {
             return false;
         }
     }
-    return balance == 0;
+    return simple == 0;
 }
 
 
 uint32_t eval(int p, int q) {
-printf("p=%d,q=%d",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -189,16 +188,16 @@ printf("p=%d,q=%d",p,q);
     }
     else{
         int op = -1;
-        int balance = 0;
-        int min_precedence = 128;
+        int simple = 0;
+        int max_operator = 128;
 
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case 6:
-                    balance++;
+                    simple ++;
                     break;
                 case 7:
-                    balance--;
+                    simple --;
                     break;
                 case 2:
                 case 3:
@@ -207,8 +206,8 @@ printf("p=%d,q=%d",p,q);
                 case 8:
                 case 9:
                 case 10:
-                    if(balance < min_precedence) {
-                        min_precedence = balance;
+                    if(simple < max_operator) {
+                        max_operator = simple;
                         op = i;
                     }
                     break;

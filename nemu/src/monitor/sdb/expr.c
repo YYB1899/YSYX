@@ -25,6 +25,7 @@ enum {
     NOTEQ = 9,
     AND = 10,
     HEX = 11,
+    REG = 12,
 };
 
 static struct rule {
@@ -43,6 +44,7 @@ static struct rule {
         {"\\&\\&", AND},        // and
         {"0x[0-9a-fA-F]+", HEX},     // hex
         {"[0-9]+", NUM},      // num
+        {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -92,6 +94,7 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
+                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';

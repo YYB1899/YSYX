@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  //a();
   /* Start engine. */
   engine_start();
   return is_exit_status_bad();

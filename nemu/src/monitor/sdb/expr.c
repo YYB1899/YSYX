@@ -148,6 +148,7 @@ uint32_t eval(int p, int q) {
     else if (p == q) {
         if(tokens[p].type == NUM || tokens[p].type == HEX) {
             return atoi(tokens[p].str);
+            printf("a");
         }
         else{
             assert(0);

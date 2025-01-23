@@ -213,37 +213,7 @@ uint32_t eval(int p, int q) {
 
 }
 }
-void int_to_char(int x, char str[]) {
-    memset(str, 0, 32); 
-    int tmp_index = 0;
-    int tmp_x = x;
-    int x_size = 0, flag = 1;
-    while (tmp_x) {
-        tmp_x /= 10;
-        x_size++;
-        flag *= 10;
-    }
-    flag /= 10;
-    while (x || flag) {
-        int a = x / flag;
-        x %= flag;
-        str[tmp_index++] = a + '0';
-        flag /= 10;
-    }
-    str[tmp_index] = '\0'; 
-}	
 
-int char_to_int(char s[]){
-    int s_size = strlen(s);
-    int res = 0 ;
-    for(int i = 0 ; i < s_size ; i ++)
-    {
-	res += s[i] - '0';
-	res *= 10;
-    }
-    res /= 10;
-    return res;
-}
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;

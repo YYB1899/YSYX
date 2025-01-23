@@ -262,16 +262,18 @@ word_t expr(char *e, bool *success) {
     
       /*REG*/
   for(int i = 0 ; i < tokens_len ; i ++){
-  	if(tokens[i].type == 12)
+  	if(tokens[i].type == REG)
   	{
-  		bool simple = false;
-  		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  		if(simple == true){
-  			int_to_char(reg_value,tokens[i].str);
-  		}else{
-  			printf("reg value error.\n");
-			assert(0);
-		}  	
+  	    bool simple = false;
+  	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
+  	    if(simple == true){
+            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
+            tokens[i].type = NUM;
+            }else{
+            	  printf("reg value error.\n");
+		assert(0);
+		} 
+  	        
 	}
   }
     /*negative*/  
@@ -306,7 +308,40 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-
+    
+      /*derefence*/
+   for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == 4 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 4 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == 4 && i == 0)
+          )
+	{
+	    tokens[i].type = TK_NOTYPE;
+	    int tmp = char_to_int(tokens[i+1].str);
+	    uint32_t a = (uint32_t)tmp;
+	    int value = 0;
+	    memcpy(&value, &a, sizeof(int));
+	    int_to_char(value, tokens[i+1].str);	    
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    }
+	}
+    }
 
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);

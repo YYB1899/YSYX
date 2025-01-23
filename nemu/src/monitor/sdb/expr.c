@@ -257,7 +257,20 @@ word_t expr(char *e, bool *success) {
         }
     }
     
-    
+      /*REG*/
+  for(int i = 0 ; i < tokens_len ; i ++){
+  	if(tokens[i].type == 12)
+  	{
+  		bool simple = false;
+  		int reg_value = isa_reg_str2val(tokens[i].str,&simple);
+  		if(simple == true){
+  			int_to_char(reg_value,tokens[i].str);
+  		}else{
+  			printf("reg value error.\n");
+			assert(0);
+		}  	
+	}
+  }
 
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);

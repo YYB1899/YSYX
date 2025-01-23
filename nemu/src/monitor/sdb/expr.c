@@ -260,12 +260,12 @@ word_t expr(char *e, bool *success) {
   for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if(	(tokens[i].type == 3 && i > 0 
-		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
 		    && tokens[i+1].type == 1 
 		    )
                 ||
 		(tokens[i].type == 3 && i > 0
-                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
                     && tokens[i+1].type == HEX
                     )
 		||

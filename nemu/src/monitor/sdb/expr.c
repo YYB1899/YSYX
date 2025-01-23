@@ -165,19 +165,19 @@ uint32_t eval(int p, int q) {
 
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
-                case LEFT:
+                case 6:
                     balance++;
                     break;
-                case RIGHT:
+                case 7:
                     balance--;
                     break;
-                case PLUS:
-                case SUB:
-                case MUL:
-                case DIV:
-                case TK_EQ:
-                case NOTEQ:
-                case AND:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 8:
+                case 9:
+                case 10:
                     if(balance < min_precedence) {
                         min_precedence = balance;
                         op = i;
@@ -194,13 +194,17 @@ uint32_t eval(int p, int q) {
             uint32_t val2 = eval(op + 1, q-1);
 
             switch (tokens[op].type) {
-                case PLUS:  return val1 + val2;
-                case SUB:   return val1 - val2;
-                case MUL:   return val1 * val2;
-                case DIV:   return val2 == 0 ? 0 : val1 / val2;
-                case TK_EQ: return val1 == val2;
-                case NOTEQ: return val1 != val2;
-                case AND:   return val1 && val2;
+                case 2:   return val1 + val2;
+                case 3:   return val1 - val2;
+                case 4:   return val1 * val2;
+                case 5:   
+                  if (val2 == 0) {
+        		assert(0); 
+    		  }
+    		  return val1 / val2;
+                case 8:   return val1 == val2;
+                case 9:   return val1 != val2;
+                case 10:  return val1 && val2;
                 default:
                     assert(0);
                     return -1;
@@ -221,7 +225,7 @@ word_t expr(char *e, bool *success) {
         tokens_len++;
     }
 
-    // Handle hexadecimal values
+    //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == 11) {
             long int hex_value = strtol(tokens[i].str, NULL, 16);
@@ -229,8 +233,8 @@ word_t expr(char *e, bool *success) {
             tokens[i].type = 1;
         }
     }
-          /*REG*/
-  for(int i = 0 ; i < tokens_len ; i ++){
+    //REG//
+    for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG)
   	{
   	    bool simple = false;
@@ -244,8 +248,8 @@ word_t expr(char *e, bool *success) {
 		} 
   	        
 	}
-  }
-  
+      }
+    
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));

@@ -170,8 +170,7 @@ bool check_parentheses(int p, int q) {
 uint32_t eval(int p, int q) {
 printf("p=%d,q=%d",p,q);
     if (p > q) {
-    	
-    	/* Bad expression */
+      	/* Bad expression */
         assert(0);
         return -1;
     }
@@ -281,15 +280,15 @@ word_t expr(char *e, bool *success) {
    }
    /*negative*/  
    for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == 3 && i > 0 
+	if(((tokens[i].type == 3 || tokens[i].type == 2)&& i > 0 
 	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
 	    && tokens[i+1].type == 1 
 	    )||
-	    (tokens[i].type == 3 && i > 0
+	    ((tokens[i].type == 3 || tokens[i].type == 2)&& i > 0
              && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
              && tokens[i+1].type == HEX
              )||
-             (tokens[i].type == 3 && i == 0)
+             ((tokens[i].type == 3 || tokens[i].type == 2) && i == 0)
            ){	
 	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
@@ -309,15 +308,15 @@ word_t expr(char *e, bool *success) {
     }
     /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
-	if(((tokens[i].type == 4 || tokens[i].type == 3 )&& i > 0 
+	if((tokens[i].type == 4 && i > 0 
            && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
            && tokens[i+1].type == 1 
            )||
-	   ((tokens[i].type == 4 || tokens[i].type == 3 )&& i > 0
+	   (tokens[i].type == 4 && i > 0
            && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
            && tokens[i+1].type == HEX
            )||
-           ((tokens[i].type == 4 || tokens[i].type == 3 )&& i == 0)
+           (tokens[i].type == 4 && i == 0)
           ){printf("a");
 	    tokens[i].type = 256;
 	    int tmp = atoi(tokens[i+1].str);

@@ -280,7 +280,38 @@ word_t expr(char *e, bool *success) {
   	        
 	}
       }
-
+        /*negative*/  
+  for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == 3 && i > 0 
+		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+		    && tokens[i+1].type == 1 
+		    )
+                ||
+		(tokens[i].type == 3 && i > 0
+                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == 3 && i == 0)
+          )	
+	{	
+	    tokens[i].type = 256;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-' ;
+	    for(int j = 0 ; j < tokens_len ; j ++){
+	       if(tokens[j].type == 256)
+	       {
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		   tokens_len -- ;
+	       }
+	    }
+	}
+    }
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));

@@ -148,7 +148,6 @@ uint32_t eval(int p, int q) {
     else if (p == q) {
         if(tokens[p].type == 1 || tokens[p].type == 11) {
             return atoi(tokens[p].str);
-            printf("a");
         }
         else{
             assert(0);
@@ -224,10 +223,10 @@ word_t expr(char *e, bool *success) {
 
     // Handle hexadecimal values
     for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == HEX) {
+        if (tokens[i].type == 11) {
             long int hex_value = strtol(tokens[i].str, NULL, 16);
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = NUM;
+            tokens[i].type = 1;
         }
     }
           /*REG*/

@@ -120,22 +120,24 @@ static bool make_token(char *e) {
     return true;
 }
 
-bool check_parentheses(int p, int q){
-   int n = 0,m = 0,j,i;
-   if(tokens[p].type != 6  || tokens[q].type != 7) return false;
-   else {
-       for(i = p + 1;i < q;i ++){
-   		if(tokens[i].type == 6) {n = i;break;}
-   	}
-   	for(j = q - 1;j > p;j --){
-   		if(tokens[j].type == 7) {m = j;break;}
-   	}
-   	if(n == 0 || m == 0) return true;
-   	if(m < n) return false;
-   	else return true;
-   	}
-}
+bool check_parentheses(int p, int q) {
+    if (tokens[p].type != LEFT || tokens[q].type != RIGHT) {
+        return false;
+    }
 
+    int balance = 0;
+    for (int i = p; i <= q; i++) {
+        if (tokens[i].type == LEFT) {
+            balance++;
+        } else if (tokens[i].type == RIGHT) {
+            balance--;
+        }
+        if (balance < 0) {
+            return false;
+        }
+    }
+    return balance == 0;
+}
 
 uint32_t eval(int p, int q) {
     if (p > q) {
@@ -348,3 +350,5 @@ word_t expr(char *e, bool *success) {
     memset(tokens, 0, sizeof(tokens));
     return result;
 }
+
+

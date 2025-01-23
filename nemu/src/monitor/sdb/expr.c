@@ -146,7 +146,7 @@ uint32_t eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-        if(tokens[p].type == NUM || tokens[p].type == HEX) {
+        if(tokens[p].type == 1 || tokens[p].type == 11) {
             return atoi(tokens[p].str);
             printf("a");
         }

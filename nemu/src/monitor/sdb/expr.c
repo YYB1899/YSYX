@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <assert.h>
 #include <limits.h>
-#include <stdbool.h>
 #include <isa.h>
 
 /* We use the POSIX regex functions to process regular expressions.
@@ -25,7 +24,6 @@ enum {
     NOTEQ = 9,
     AND = 10,
     HEX = 11,
-    REG = 12,
 };
 
 static struct rule {
@@ -44,7 +42,6 @@ static struct rule {
         {"\\&\\&", AND},        // and
         {"0x[0-9a-fA-F]+", HEX},     // hex
         {"[0-9]+", NUM},      // num
-        {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -94,7 +91,6 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
-                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
@@ -138,6 +134,7 @@ bool check_parentheses(int p, int q) {
     }
     return balance == 0;
 }
+
 
 uint32_t eval(int p, int q) {
     if (p > q) {
@@ -209,38 +206,6 @@ uint32_t eval(int p, int q) {
 }
 }
 
-void int_to_char(int x, char str[]) {
-    memset(str, 0, 32); 
-    int tmp_index = 0;
-    int tmp_x = x;
-    int x_size = 0, flag = 1;
-    while (tmp_x) {
-        tmp_x /= 10;
-        x_size++;
-        flag *= 10;
-    }
-    flag /= 10;
-    while (x || flag) {
-        int a = x / flag;
-        x %= flag;
-        str[tmp_index++] = a + '0';
-        flag /= 10;
-    }
-    str[tmp_index] = '\0'; 
-}	
-
-int char_to_int(char s[]){
-    int s_size = strlen(s);
-    int res = 0 ;
-    for(int i = 0 ; i < s_size ; i ++)
-    {
-	res += s[i] - '0';
-	res *= 10;
-    }
-    res /= 10;
-    return res;
-}
-
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -260,89 +225,6 @@ word_t expr(char *e, bool *success) {
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
             tokens[i].type = NUM;
         }
-    }
-    
-      /*REG*/
-  for(int i = 0 ; i < tokens_len ; i ++){
-  	if(tokens[i].type == REG)
-  	{
-  	    bool simple = false;
-  	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  	    if(simple == true){
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
-            tokens[i].type = NUM;
-            }else{
-            	  printf("reg value error.\n");
-		assert(0);
-		} 
-  	        
-	}
-  }
-    /*negative*/  
-  for(int i = 0 ; i < tokens_len ; i ++)
-    {
-	if(	(tokens[i].type == 3 && i > 0 
-		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
-		    && tokens[i+1].type == 1 
-		    )
-                ||
-		(tokens[i].type == 3 && i > 0
-                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
-                    && tokens[i+1].type == HEX
-                    )
-		||
-                (tokens[i].type == 3 && i == 0)
-          )	
-	{	
-	    tokens[i].type = 256;
-	    for(int j = 31 ; j >= 0 ; j --){
-		tokens[i+1].str[j] = tokens[i+1].str[j-1];
-	    }
-	    tokens[i+1].str[0] = '-' ;
-	    for(int j = 0 ; j < tokens_len ; j ++){
-	       if(tokens[j].type == 256)
-	       {
-		    for(int k = j +1 ; k < tokens_len ; k ++){
-			tokens[k - 1] = tokens[k];
-		    }
-		   tokens_len -- ;
-	       }
-	    }
-	}
-    }
-    
-      /*derefence*/
-   for(int i = 0 ; i < tokens_len ; i ++)
-    {
-	if(	(tokens[i].type == 4 && i > 0 
-		    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
-		    && tokens[i+1].type == 1 
-		    )
-                ||
-		(tokens[i].type == 4 && i > 0
-                    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12
-                    && tokens[i+1].type == HEX
-                    )
-		||
-                (tokens[i].type == 4 && i == 0)
-          )
-	{
-	    tokens[i].type = TK_NOTYPE;
-	    int tmp = char_to_int(tokens[i+1].str);
-	    uint32_t a = (uint32_t)tmp;
-	    int value = 0;
-	    memcpy(&value, &a, sizeof(int));
-	    int_to_char(value, tokens[i+1].str);	    
-	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == TK_NOTYPE)
-		{
-		    for(int k = j +1 ; k < tokens_len ; k ++){
-			tokens[k - 1] = tokens[k];
-		    }
-		    tokens_len -- ;
-		}
-	    }
-	}
     }
 
     uint32_t result = eval(0, tokens_len - 1);

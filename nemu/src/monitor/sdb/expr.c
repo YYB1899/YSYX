@@ -1,3 +1,17 @@
+/***************************************************************************************
+ * Copyright (c) 2014-2022 Zihao Yu, Nanjing University
+ *
+* NEMU is licensed under Mulan PSL v2.
+* You can use this software according to the terms and conditions of the Mulan PSL v2.
+* You may obtain a copy of Mulan PSL v2 at:
+*          http://license.coscl.org.cn/MulanPSL2
+*
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+*
+* See the Mulan PSL v2 for more details.
+***************************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,12 +40,17 @@ enum {
     AND = 10,
     HEX = 11,
     REG = 12,
+    /* TODO: Add more token types */
 };
 
 static struct rule {
     const char *regex;
     int token_type;
 } rules[] = {
+	  /* TODO: Add more rules.
+           * Pay attention to the precedence level of different rules.
+           */
+
         {" +", TK_NOTYPE},    // spaces
         {"\\+", PLUS},         // plus
         {"\\-", SUB},         // sub
@@ -51,6 +70,10 @@ static struct rule {
 
 static regex_t re[NR_REGEX] = {};
 
+/* Rules are used for many times.
+ * Therefore we compile them only once before any usage.
+ */
+ 
 void init_regex() {
     int i;
     char error_msg[128];
@@ -81,6 +104,7 @@ static bool make_token(char *e) {
     nr_token = 0;
 
     while (e[position] != '\0') {
+    	/* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++) {
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
                 char *substr_start = e + position;
@@ -90,6 +114,10 @@ static bool make_token(char *e) {
                     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
                 position += substr_len;
+        /* TODO: Now a new token is recognized with rules[i]. Add codes
+         * to record the token in the array `tokens'. For certain types
+         * of tokens, some extra actions should be performed.
+         */
                 switch (rules[i].token_type) {
                     case 1:
                     case 11:
@@ -141,6 +169,7 @@ bool check_parentheses(int p, int q) {
 
 uint32_t eval(int p, int q) {
     if (p > q) {
+    	/* Bad expression */
         assert(0);
         return -1;
     }
@@ -248,8 +277,8 @@ word_t expr(char *e, bool *success) {
   	        
 	}
    }
-        /*negative*/  
-       for(int i = 0 ; i < tokens_len ; i ++){
+   /*negative*/  
+   for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == 3 && i > 0 
 	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
 	    && tokens[i+1].type == 1 
@@ -275,8 +304,8 @@ word_t expr(char *e, bool *success) {
 	       }
 	    }
 	  }
-       }
-      /*derefence*/
+    }
+    /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == 4 && i > 0 
            && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7

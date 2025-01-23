@@ -328,14 +328,14 @@ word_t expr(char *e, bool *success) {
                 (tokens[i].type == 4 && i == 0)
           )
 	{
-	    tokens[i].type = TK_NOTYPE;
-	    int tmp = char_to_int(tokens[i+1].str);
+	    tokens[i].type = 256;
+	    int tmp = atoi(tokens[i+1].str);
 	    uint32_t a = (uint32_t)tmp;
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));
-	    int_to_char(value, tokens[i+1].str);	    
+	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	    
 	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == TK_NOTYPE)
+		if(tokens[j].type == 256)
 		{
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
@@ -346,7 +346,7 @@ word_t expr(char *e, bool *success) {
 	}
     }
     uint32_t result = eval(0, tokens_len - 1);
-    printf("Result: %d\n", result);
+    printf("result= %d\n", result);
     memset(tokens, 0, sizeof(tokens));
     return result;
 }

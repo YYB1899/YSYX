@@ -92,15 +92,15 @@ static bool make_token(char *e) {
 
                 position += substr_len;
                 switch (rules[i].token_type) {
-                    case NUM:
-                    case HEX:
-                    case REG:
+                    case 1:
+                    case 11:
+                    case 12:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
                         break;
-                    case TK_NOTYPE:
+                    case 256:
                         break;
                     default:
                         tokens[nr_token].type = rules[i].token_type;
@@ -245,6 +245,7 @@ word_t expr(char *e, bool *success) {
   	        
 	}
   }
+  
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));

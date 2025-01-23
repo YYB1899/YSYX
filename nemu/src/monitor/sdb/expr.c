@@ -204,6 +204,38 @@ uint32_t eval(int p, int q) {
 }
 }
 
+void int_to_char(int x, char str[]) {
+    memset(str, 0, 32); 
+    int tmp_index = 0;
+    int tmp_x = x;
+    int x_size = 0, flag = 1;
+    while (tmp_x) {
+        tmp_x /= 10;
+        x_size++;
+        flag *= 10;
+    }
+    flag /= 10;
+    while (x || flag) {
+        int a = x / flag;
+        x %= flag;
+        str[tmp_index++] = a + '0';
+        flag /= 10;
+    }
+    str[tmp_index] = '\0'; 
+}	
+
+int char_to_int(char s[]){
+    int s_size = strlen(s);
+    int res = 0 ;
+    for(int i = 0 ; i < s_size ; i ++)
+    {
+	res += s[i] - '0';
+	res *= 10;
+    }
+    res /= 10;
+    return res;
+}
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -216,14 +248,15 @@ word_t expr(char *e, bool *success) {
         tokens_len++;
     }
 
-    // Handle hexadecimal values
-    for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == HEX) {
-            long int hex_value = strtol(tokens[i].str, NULL, 16);
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = NUM;
-        }
-    }
+  /*HEX*/
+  for(int i = 0 ; i < tokens_len; i ++){
+  	if(tokens[i].type == 11)
+  	{
+		long int hex_value = strtol(tokens[i].str,NULL,16);
+  		int_to_char(hex_value,tokens[i].str);	
+	}
+  }
+    
 
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);

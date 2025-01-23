@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +26,7 @@ enum {
     NOTEQ = 9,
     AND = 10,
     HEX = 11,
+    REG = 12,
 };
 
 static struct rule {
@@ -43,6 +45,7 @@ static struct rule {
         {"\\&\\&", AND},        // and
         {"0x[0-9a-fA-F]+", HEX},     // hex
         {"[0-9]+", NUM},      // num
+        {"\\$[a-zA-Z]*[0-9]*",REG}, //reg
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -225,7 +228,22 @@ word_t expr(char *e, bool *success) {
             tokens[i].type = NUM;
         }
     }
-
+          /*REG*/
+  for(int i = 0 ; i < tokens_len ; i ++){
+  	if(tokens[i].type == REG)
+  	{
+  	    bool simple = false;
+  	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
+  	    if(simple == true){
+            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
+            tokens[i].type = NUM;
+            }else{
+            	  printf("reg value error.\n");
+		assert(0);
+		} 
+  	        
+	}
+  }
     uint32_t result = eval(0, tokens_len - 1);
     printf("Result: %d\n", result);
     memset(tokens, 0, sizeof(tokens));

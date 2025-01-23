@@ -12,13 +12,13 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <regex.h>
-#include <stdint.h>
-#include <assert.h>
-#include <limits.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <regex.h>
+//#include <stdint.h>
+//#include <assert.h>
+//#include <limits.h>
 #include <stdbool.h>
 #include <isa.h>
 
@@ -190,7 +190,7 @@ printf("p=%d,q=%d",p,q);
     else{
         int op = -1;
         int balance = 0;
-        int min_precedence = INT_MAX;
+        int min_precedence = 128;
 
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
@@ -306,7 +306,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-       /*negative*/  
+       /*strange positive*/  
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == 2 && i > 0 
 	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7

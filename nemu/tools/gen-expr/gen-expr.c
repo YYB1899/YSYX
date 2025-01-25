@@ -12,7 +12,6 @@
  *
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,13 +31,20 @@ static char *code_format =
 "  return 0; "
 "}";
 int index_buf  = 0;
+int choose(int n);
+void gen_num();
+void gen(char c);
+void gen_safe_divisor();
+void gen_rand_op();
+void gen_rand_expr();
 
+// Function definitio
 int choose(int n){
-    int flag = rand() % 3 ; // 0 1 2
+    int flag = rand() % n ; // 0 1 2
     return flag;
 }
 void gen_num(){
-    int num = rand()% 100;
+    int num = rand()% 100 + 1;
     int num_size = 0, num_tmp = num;
     while(num_tmp){
 	num_tmp /= 10;
@@ -62,14 +68,13 @@ void gen_num(){
 void gen(char c){
     buf[index_buf ++] = c;
 }
+
 void gen_rand_op(){
-    char op[4] = {'+', '-', '*', '/'};
-    int op_position = rand() % 4;
-    buf[index_buf ++] = op[op_position];
+    char op[4] = {'+', '-', '*'};
+    int op_position = rand() % 3;
+    buf[index_buf++] = op[op_position];
 }
-
-
-static void gen_rand_expr() {
+void gen_rand_expr() {
     //    buf[0] = '\0';	
    if(index_buf > 65530)
        	printf("overSize\n");
@@ -115,7 +120,7 @@ int main(int argc, char *argv[]) {
 	fp = popen("/tmp/.expr", "r");
 	assert(fp != NULL);
 
-	int result;
+	unsigned int result;
 	ret = fscanf(fp, "%d", &result);
 	pclose(fp);
 

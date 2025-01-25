@@ -213,6 +213,7 @@ uint32_t eval(int p, int q) {
             }
         printf("op=%d\n",op);
         }
+        printf("aop=%d\n",op);
         if (op == -1) {
             return eval(p+1, q-1);
         }

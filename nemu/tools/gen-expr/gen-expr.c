@@ -98,7 +98,7 @@ static inline void gen_rand_expr() {
         gen_num();
         gen(')'); 
         break;
-    default: gen_rand_expr();gen_rand_op();gen_rand_expr();break;
+    default: gen ('(');gen_rand_expr();gen_rand_op();gen_rand_expr();gen(')');break;
 
   }
   }

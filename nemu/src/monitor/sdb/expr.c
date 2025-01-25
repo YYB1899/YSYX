@@ -165,7 +165,7 @@ bool check_parentheses(int p, int q) {
 
 
 uint32_t eval(int p, int q) {
-    printf("p=%d,q=%d",p,q);
+    printf("p=%d,q=%d\n",p,q);
     int m = p;
     int n = q;
     if (p > q) {
@@ -211,7 +211,7 @@ uint32_t eval(int p, int q) {
                     }
                     break;
             }
-        printf("op=%d",op);
+        printf("op=%d\n",op);
         }
         if (op == -1) {
             return eval(p+1, q-1);

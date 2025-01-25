@@ -148,6 +148,7 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
+	
     int simple = 0;
     for (int i = p; i <= q; i++) {
         if (tokens[i].type == 6) {
@@ -164,6 +165,7 @@ bool check_parentheses(int p, int q) {
 
 
 uint32_t eval(int p, int q) {
+printf("p=%d,q=%d",p,q);
     int m = p;
     int n = q;
     if (p > q) {

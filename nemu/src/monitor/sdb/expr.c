@@ -211,7 +211,6 @@ uint32_t eval(int p, int q) {
                     }
                     break;
             }
-        printf("op=%d\n",op);
         }
         if (op == -1) {
             return eval(p+1, q-1);
@@ -226,6 +225,7 @@ uint32_t eval(int p, int q) {
                 val1 = eval(p, op - 1);
                 val2 = eval(op + 1, q);
             }
+            printf("op=%d\n",op);
             switch (tokens[op].type) {
                 case PLUS:   return val1 + val2;
                 case SUB:   return val1 - val2;

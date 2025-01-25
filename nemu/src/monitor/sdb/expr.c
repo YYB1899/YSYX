@@ -215,12 +215,14 @@ uint32_t eval(int p, int q) {
                 case NOTEQ:
                 case AND:
                     if(get_precedence(p, q) == true){
+                    printf("a");
                       if(simple < max_operator) {
                         max_operator = simple;
                         op = i;
                       }
                      }
                      if(get_precedence(p, q) == false){
+                     printf("b");
                         if(simple <= max_operator) {
                         max_operator = simple;
                         op = i;

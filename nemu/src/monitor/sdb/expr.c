@@ -292,7 +292,8 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == 3 && i == 0)
-           ){	
+           ){
+           //if(tokens[i].type == 3 && tokens[i - 1].type == 5 )	
 	    tokens[i].type = 256;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];

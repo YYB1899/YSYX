@@ -119,15 +119,15 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
                 switch (rules[i].token_type) {
-                    case 1:
-                    case 11:
-                    case 12:
+                    case NUM:
+                    case HEX:
+                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
                         break;
-                    case 256:
+                    case TK_NOTYPE:
                         break;
                     default:
                         tokens[nr_token].type = rules[i].token_type;
@@ -174,7 +174,7 @@ printf("p=%d,q=%d",p,q);
         return -1;
     }
     else if (p == q) {
-        if(tokens[p].type == 1 || tokens[p].type == 11) {
+        if(tokens[p].type == NUM || tokens[p].type == HEX) {
             return atoi(tokens[p].str);
         }
         else{
@@ -192,19 +192,19 @@ printf("p=%d,q=%d",p,q);
         int max_operator = 128;
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
-                case 6:
+                case LEFT:
                     simple ++;
                     break;
-                case 7:
+                case RIGHT:
                     simple --;
                     break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 8:
-                case 9:
-                case 10:
+                case PLUS:
+                case SUB:
+                case MUL:
+                case DIV:
+                case TK_EQ:
+                case NOTEQ:
+                case AND:
                     if(simple < max_operator) {
                         max_operator = simple;
                         op = i;
@@ -217,7 +217,7 @@ printf("p=%d,q=%d",p,q);
         }
         else{
         uint32_t val1,val2;
-           if(tokens[m].type == 6 || tokens[n].type == 7){
+           if(tokens[m].type == LEFT || tokens[n].type == RIGHT){
                 val1 = eval(p + 1, op - 1);
                 val2 = eval(op + 1, q - 1);
             }
@@ -226,17 +226,17 @@ printf("p=%d,q=%d",p,q);
                 val2 = eval(op + 1, q);
             }
             switch (tokens[op].type) {
-                case 2:   return val1 + val2;
-                case 3:   return val1 - val2;
-                case 4:   return val1 * val2;
-                case 5:   
+                case PLUS:   return val1 + val2;
+                case SUB:   return val1 - val2;
+                case MUL:   return val1 * val2;
+                case DIV:   
                   if (val2 == 0) {
         		assert(0); 
     		  }
     		  return val1 / val2;
-                case 8:   return val1 == val2;
-                case 9:   return val1 != val2;
-                case 10:  return val1 && val2;
+                case TK_EQ:   return val1 == val2;
+                case NOTEQ:   return val1 != val2;
+                case AND:  return val1 && val2;
                 default:
                     assert(0);
                     return -1;
@@ -260,10 +260,10 @@ word_t expr(char *e, bool *success) {
 
     //HEX
     for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == 11) {
+        if (tokens[i].type == HEX) {
             long int hex_value = strtol(tokens[i].str, NULL, 16);
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = 1;
+            tokens[i].type = NUM;
         }
     }
     //REG//
@@ -283,24 +283,24 @@ word_t expr(char *e, bool *success) {
    }
    /*negative*/  
    for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == 3 && i > 0 
-	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-	    && tokens[i+1].type == 1 
+	if((tokens[i].type == SUB && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
 	    )||
-	    (tokens[i].type == 3 && i > 0
-             && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+	    (tokens[i].type == SUB && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
              && tokens[i+1].type == HEX
              )||
-             (tokens[i].type == 3 && i == 0)
+             (tokens[i].type == SUB && i == 0)
            ){
            //if(tokens[i].type == 3 && tokens[i - 1].type == 5 )	
-	    tokens[i].type = 256;
+	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-' ;
 	    for(int j = 0 ; j < tokens_len ; j ++){
-	       if(tokens[j].type == 256)
+	       if(tokens[j].type == TK_NOTYPE)
 	       {
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
@@ -312,23 +312,23 @@ word_t expr(char *e, bool *success) {
     }
    /*strange positive*/  
    for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == 2 && i > 0 
-	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-	    && tokens[i+1].type == 1 
+	if((tokens[i].type == PLUS && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
 	    )||
-	    (tokens[i].type == 2 && i > 0
-             && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
+	    (tokens[i].type == PLUS && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
              && tokens[i+1].type == HEX
              )||
-             (tokens[i].type == 2 && i == 0)
+             (tokens[i].type == PLUS && i == 0)
            ){	
-	    tokens[i].type = 256;
+	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '+' ;
 	    for(int j = 0 ; j < tokens_len ; j ++){
-	       if(tokens[j].type == 256)
+	       if(tokens[j].type == TK_NOTYPE)
 	       {
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
@@ -340,24 +340,24 @@ word_t expr(char *e, bool *success) {
     }
     /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == 4 && i > 0 
-           && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-           && tokens[i+1].type == 1 
-           )||
-	   (tokens[i].type == 4 && i > 0
-           && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7
-           && tokens[i+1].type == HEX
-           )||
-           (tokens[i].type == 4 && i == 0)
-          ){printf("a");
-	    tokens[i].type = 256;
+	if((tokens[i].type == MUL && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
+	    )||
+	    (tokens[i].type == MUL && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+             && tokens[i+1].type == HEX
+             )||
+             (tokens[i].type == MUL && i == 0)
+           ){
+	    tokens[i].type = TK_NOTYPE;
 	    int tmp = atoi(tokens[i+1].str);
 	    uint32_t a = (uint32_t)tmp;
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));
 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	    
 	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == 256){
+		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }

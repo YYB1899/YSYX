@@ -148,10 +148,6 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
-    //if (tokens[p].type != 6 || tokens[q].type != 7) {
-     //  return false;
-    //}
-
     int simple = 0;
     for (int i = p; i <= q; i++) {
         if (tokens[i].type == 6) {
@@ -170,7 +166,6 @@ bool check_parentheses(int p, int q) {
 uint32_t eval(int p, int q) {
     int m = p;
     int n = q;
-	printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -222,14 +217,14 @@ uint32_t eval(int p, int q) {
         }
         else{
         uint32_t val1,val2;
-        if(tokens[m].type == 6 || tokens[n].type == 7){
-            val1 = eval(p + 1, op - 1);
-            val2 = eval(op + 1, q - 1);
+           if(tokens[m].type == 6 || tokens[n].type == 7){
+                val1 = eval(p + 1, op - 1);
+                val2 = eval(op + 1, q - 1);
             }
-         else{
-            val1 = eval(p, op - 1);
-            val2 = eval(op + 1, q);
-           }
+            else{
+                val1 = eval(p, op - 1);
+                val2 = eval(op + 1, q);
+            }
             switch (tokens[op].type) {
                 case 2:   return val1 + val2;
                 case 3:   return val1 - val2;

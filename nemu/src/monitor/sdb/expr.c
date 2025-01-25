@@ -166,6 +166,7 @@ bool check_parentheses(int p, int q) {
 uint32_t eval(int p, int q) {
     int m = p;
     int n = q;
+    printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -188,7 +189,6 @@ uint32_t eval(int p, int q) {
         int op = -1;
         int simple = 0;
         int max_operator = 128;
-
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case 6:
@@ -211,7 +211,7 @@ uint32_t eval(int p, int q) {
                     break;
             }
         }
-	printf("op=%d\n",op);
+        printf("op=%d\n",op);
         if (op == -1) {
             return eval(p+1, q-1);
         }
@@ -309,7 +309,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-       /*strange positive*/  
+   /*strange positive*/  
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == 2 && i > 0 
 	    && tokens[i-1].type != 1 && tokens[i-1].type != 11 && tokens[i-1].type != 12 && tokens[i-1].type != 7

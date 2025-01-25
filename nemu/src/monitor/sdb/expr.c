@@ -148,9 +148,9 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
-    if (tokens[p].type != 6 || tokens[q].type != 7) {
-        return false;
-    }
+    //if (tokens[p].type != 6 || tokens[q].type != 7) {
+      //  return false;
+    //}
 
     int simple = 0;
     for (int i = p; i <= q; i++) {

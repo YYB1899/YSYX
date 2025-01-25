@@ -219,7 +219,7 @@ uint32_t eval(int p, int q) {
         }
         else{
         uint32_t val1,val2;
-           if(tokens[m].type == LEFT || tokens[n].type == RIGHT){
+           if(tokens[m].type == LEFT && tokens[n].type == RIGHT){
                 val1 = eval(p + 1, op - 1);
                 val2 = eval(op + 1, q - 1);
             }

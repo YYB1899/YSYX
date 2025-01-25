@@ -166,7 +166,6 @@ bool check_parentheses(int p, int q) {
 uint32_t eval(int p, int q) {
     int m = p;
     int n = q;
-    printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -211,7 +210,6 @@ uint32_t eval(int p, int q) {
                     break;
             }
         }
-        printf("op=%d\n",op);
         if (op == -1) {
             return eval(p+1, q-1);
         }
@@ -271,7 +269,6 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == REG){
   	    bool simple = true;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  	    printf("simple=%d\n",simple);
   	    if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
             tokens[i].type = NUM;

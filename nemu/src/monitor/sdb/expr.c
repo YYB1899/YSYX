@@ -269,7 +269,7 @@ word_t expr(char *e, bool *success) {
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
-  	    bool simple = false;
+  	    bool simple = true;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);

@@ -223,8 +223,8 @@ uint32_t eval(int p, int q) {
                 val2 = eval(op + 1, q - 1);
             }
             else{
-                val1 = eval(m, op - 1);
-                val2 = eval(op + 1, n);
+                val1 = eval(p, op - 1);
+                val2 = eval(op + 1, q);
             }
             //printf("op=%d\n",op);
             switch (tokens[op].type) {

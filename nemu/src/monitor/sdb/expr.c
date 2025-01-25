@@ -271,13 +271,13 @@ word_t expr(char *e, bool *success) {
   	if(tokens[i].type == REG){
   	    bool simple = false;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  	    if(simple == true){
+  	    //if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
             tokens[i].type = NUM;
-            }else{
-            	  printf("reg value error.\n");
-		assert(0);
-		} 
+            //}else{
+            	  //printf("reg value error.\n");
+		//assert(0);
+		//} 
   	        
 	}
    }

@@ -12,14 +12,14 @@
  *
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
 #include <string.h>
-#include <stdbool.h>
+#include<stdlib.h>
+#include<unistd.h>
 
 // this should be enough
 static char buf[65536] = {};
@@ -28,99 +28,111 @@ static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
 "  unsigned result = %s; "
-"  printf(\"%%u\\n\", result); "
+"  printf(\"%%u\", result); "
 "  return 0; "
 "}";
-int index_buf  = 0;
 
-int choose(int n){
-    int flag = rand() % 3 ; // 0 1 2
-    return flag;
-}
-void gen_num(){
-    int num = rand()% 100;
-    int num_size = 0, num_tmp = num;
-    while(num_tmp){
-	num_tmp /= 10;
-	num_size ++;
-    }
-    int x = 1;
-    while(num_size)
-    {
-	x *= 10;
-	num_size -- ;
-    }
-    x /= 10;
-    while(num)
-    {
-	char c = num / x + '0';
-	num %= x;
-	x /= 10;
-	buf[index_buf ++] = c;
-    }
-}
-void gen(char c){
-    buf[index_buf ++] = c;
-}
-void gen_rand_op(){
-    char op[4] = {'+', '-', '*', '/'};
-    int op_position = rand() % 4;
-    buf[index_buf ++] = op[op_position];
-}
+int head=0;
+static uint32_t choose(uint32_t n){
+ 
+  return rand()%n;
 
 
-static void gen_rand_expr() {
-    //    buf[0] = '\0';	
-   if(index_buf > 65530)
-       	printf("overSize\n");
-    switch (choose(3)) {
-	case 0:
-	    gen_num();
-	    break;
-	case 1:
-	    gen('(');
-	    gen_num();
-	    gen(')');
-	    break;
-         default: 
-            gen('(');
-            gen_rand_expr(); 
-            gen_rand_op(); 
-            gen_rand_expr(); 
-            gen(')');
-            break;
-    }
 }
+static inline void gen(char c){
+  char p[2];
+  p[0] = c;
+  p[1]= '\0';
+  strcat(buf,p);
+
+}
+
+static inline void gen_numz(){
+  char number[]="0123456789";
+  int index=choose(10);
+  char p[2];
+  gen(number[index]);
+  switch(choose(2)){
+    case 0:
+      gen_numz();
+      break;
+    case 1:
+      break;
+  }
+
+}
+static inline void gen_num(){
+  char number[]="123456789";
+  int index=choose(9);
+  gen(number[index]);
+  gen_numz();
+
+}
+
+static inline void gen_blank(){
+  switch(choose(2)){
+    case 0:
+        gen(' ');
+        gen_blank();
+        break;
+    case 1:
+        break;
+  }
+
+}
+
+static inline void gen_rand_op(){
+    char oprands[]="+-*/";
+    int index=choose(4);
+    gen(oprands[index]);
+
+}
+
+static inline void gen_rand_expr() {
+  gen_blank();
+  switch(choose(3)){
+    case 0:
+    gen_num();break;
+    case 1:
+        gen ('('); 
+        gen_num();
+        gen(')'); 
+        break;
+    default: gen_rand_expr();gen_rand_op();gen_rand_expr();break;
+
+  }
+  }
 int main(int argc, char *argv[]) {
-    int seed = time(0);
-    srand(seed);
-    int loop = 1;
-    if (argc > 1) {
-	sscanf(argv[1], "%d", &loop);
-    }
-    int i;
-    for (i = 0; i < loop; i ++) {
-	gen_rand_expr();
-	buf[index_buf] = '\0';
-	sprintf(code_buf, code_format, buf);
+  int seed = time(0);
+  srand(seed);
+  int loop = 10;
+  if (argc > 1) {
+    sscanf(argv[1], "%d", &loop);
+  }
+  int i;
+  for (i = 0; i < loop; i ++) {
+    head=0;
+    buf[head]='\0';
+    gen_rand_expr();
 
-	FILE *fp = fopen("/tmp/.code.c", "w");
-	assert(fp != NULL);
-	fputs(code_buf, fp);
-	fclose(fp);
+    sprintf(code_buf, code_format, buf);
 
-	int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-	if (ret != 0) continue;
+    FILE *fp = fopen("/tmp/.code.c", "w");
+    assert(fp != NULL);
+    fputs(code_buf, fp);
+    fclose(fp);
 
-	fp = popen("/tmp/.expr", "r");
-	assert(fp != NULL);
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    if (ret != 0) continue;
 
-	int result;
-	ret = fscanf(fp, "%d", &result);
-	pclose(fp);
+    fp = popen("/tmp/.expr", "r");
+    assert(fp != NULL);
 
-	printf("%u %s\n", result, buf);
-	index_buf = 0;
-    }
-    return 0;
+    int result;
+    fscanf(fp, "%d", &result);
+    pclose(fp);
+
+    printf("%u %s\n", result, buf);
+  }
+  return 0;
 }

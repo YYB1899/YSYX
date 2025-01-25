@@ -205,7 +205,7 @@ uint32_t eval(int p, int q) {
                 case TK_EQ:
                 case NOTEQ:
                 case AND:
-                    if(simple <= max_operator) {
+                    if(simple < max_operator) {
                         max_operator = simple;
                         op = i;
                     }

@@ -133,8 +133,7 @@ static int cmd_a(char *args){
         bool success;
         success = false;
         int expr_res = expr(line_buf, &success);
-        char *endptr;
-        long int_line_res = strtol(line_res, &endptr, 10);
+        long int_line_res = strtol(line_res, NULL, 10);
         if(int_line_res == expr_res) {
         	fprintf(temp_fp, "\%s %s = %d true\n",line_res, line_buf, expr_res);
         }

@@ -40,7 +40,7 @@ void gen_rand_expr();
 
 // Function definitio
 int choose(int n){
-    int flag = rand() % n ; // 0 1 2
+    int flag = rand() % n ; // 0 1 2 ... n
     return flag;
 }
 void gen_num(){
@@ -74,11 +74,24 @@ void gen_rand_op(){
     int op_position = rand() % 3;
     buf[index_buf++] = op[op_position];
 }
-void gen_rand_expr() {
+void gen_rand_op_div(){
+	gen('(');
+	gen_num();
+	gen(')');
+	gen('/');
+	gen('(');
+	gen_num();
+	gen(')');
+}
+void gen_rand_expr(int depth) {
+   if(depth > 3){
+   	gen_num();
+   	return;
+   }
     //    buf[0] = '\0';	
    if(index_buf > 65530)
        	printf("overSize\n");
-    switch (choose(3)) {
+    switch (choose(4)) {
 	case 0:
 	    gen_num();
 	    break;
@@ -87,12 +100,19 @@ void gen_rand_expr() {
 	    gen_num();
 	    gen(')');
 	    break;
-         default: 
+         case 2: 
             gen('(');
-            gen_rand_expr(); 
+            gen_rand_expr(depth + 1); 
             gen_rand_op(); 
-            gen_rand_expr(); 
+            gen_rand_op_div(depth + 1);
+            gen_rand_op();
+            gen_rand_expr(depth + 1); 
             gen(')');
+            break;
+         case 3:
+            gen_rand_expr(depth + 1);
+            gen_rand_op();
+            gen_rand_expr(depth + 1);
             break;
     }
 }
@@ -105,7 +125,7 @@ int main(int argc, char *argv[]) {
     }
     int i;
     for (i = 0; i < loop; i ++) {
-	gen_rand_expr();
+	gen_rand_expr(0);	
 	buf[index_buf] = '\0';
 	sprintf(code_buf, code_format, buf);
 

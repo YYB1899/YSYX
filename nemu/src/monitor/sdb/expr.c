@@ -163,7 +163,16 @@ bool check_parentheses(int p, int q) {
     return simple == 0;
 }
 
-
+bool get_precedence(int p, int q) {
+    int x = 0;
+    for(int i = p; i < q; i ++){
+    	if(tokens[i].type == PLUS || tokens[i].type == SUB || tokens[i].type == MUL || tokens[i].type == DIV){x = i;break;}
+    }
+    for(int i = x + 1; i < q; i ++){
+    	if(tokens[x].type != tokens[i].type) {return false;}
+    }
+    return true;
+}
 uint32_t eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
     int m = p;
@@ -205,11 +214,19 @@ uint32_t eval(int p, int q) {
                 case TK_EQ:
                 case NOTEQ:
                 case AND:
-                    if(simple <= max_operator) {
+                    if(get_precedence(p, q) == true){
+                      if(simple <= max_operator) {
                         max_operator = simple;
                         op = i;
-                    }
-                    break;
+                      }
+                     }
+                     if(get_precedence(p, q) == false){
+                        if(simple < max_operator) {
+                        max_operator = simple;
+                        op = i;
+                      }
+                     }
+                break;
             }
         }
         printf("aop=%d\n",op);

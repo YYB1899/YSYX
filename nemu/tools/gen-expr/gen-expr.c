@@ -91,16 +91,11 @@ void gen_rand_expr(int depth) {
     //    buf[0] = '\0';	
    if(index_buf > 65530)
        	printf("overSize\n");
-    switch (choose(4)) {
+    switch (choose(3)) {
 	case 0:
 	    gen_num();
 	    break;
-	case 1:
-	    gen('(');
-	    gen_num();
-	    gen(')');
-	    break;
-         case 2: 
+         case 1: 
             gen('(');
             gen_rand_expr(depth + 1); 
             gen_rand_op(); 
@@ -109,7 +104,7 @@ void gen_rand_expr(int depth) {
             gen_rand_expr(depth + 1); 
             gen(')');
             break;
-         case 3:
+         case 2:
             gen_rand_expr(depth + 1);
             gen_rand_op();
             gen_rand_expr(depth + 1);

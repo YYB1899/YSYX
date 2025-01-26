@@ -248,13 +248,18 @@ uint32_t eval(int p, int q) {
                 val1 = eval(p + 1, op - 2);
                 val2 = eval(op + 2, q - 1);
                 }else{
-                val1 = eval(p + 1, op - 2);
-                val2 = eval(op + 2, q - 1);
+                val1 = eval(p + 1, op - 1);
+                val2 = eval(op + 1, q - 1);
                 }
             }
             else{
+               if(tokens[op - 1].type == RIGHT && tokens[op + 1].type == LEFT){                
+                val1 = eval(p , op - 2);
+                val2 = eval(op + 2, q);
+                }else{
                 val1 = eval(p, op - 1);
                 val2 = eval(op + 1, q);
+                }
             }
             switch (tokens[op].type) {
                 case PLUS:   return val1 + val2;

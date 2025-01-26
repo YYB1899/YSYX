@@ -160,7 +160,7 @@ bool check_parentheses(int p, int q) {
             return false;
         }
     }
-    return simple == 0;
+    return true;
 }
 
 int get_precedence(int i) {

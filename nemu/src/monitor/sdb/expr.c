@@ -221,13 +221,13 @@ uint32_t eval(int p, int q) {
                     int max_precedence = (op != -1) ? get_precedence(op) : 0;
 
                     if (current_precedence == max_precedence) {
-                    	printf("a");
+                    	printf("a\n");
                         if (simple <= max_operator) { 
                             max_operator = simple;
                             op = i;
                         }
                     } else if (current_precedence > max_precedence || max_precedence == 0) {
-                    printf("b");
+                    printf("b\n");
                         if (simple < max_operator) { 
                             max_operator = simple;
                             op = i;

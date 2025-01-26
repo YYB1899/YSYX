@@ -163,18 +163,18 @@ bool check_parentheses(int p, int q) {
     return simple == 0;
 }
 
-int get_precedence(int i) {
-    switch (tokens[i].type) {
-        case PLUS:
-        case SUB:
-            return 1; // Lower precedence
-        case MUL:
-        case DIV:
-            return 2; // Higher precedence
-        default:
-            return 0; // Not an operator
-    }
-}
+//int get_precedence(int i) {
+  //  switch (tokens[i].type) {
+  //      case PLUS:
+  //      case SUB:
+  //          return 1; // Lower precedence
+   //     case MUL:
+  //      case DIV:
+  //          return 2; // Higher precedence
+ //       default:
+ //           return 0; // Not an operator
+//    }
+//}
 uint32_t eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
     int m = p;
@@ -217,22 +217,23 @@ uint32_t eval(int p, int q) {
                 case NOTEQ:
                 case AND:
        		{
-                    int current_precedence = get_precedence(i);
-                    int max_precedence = (op != -1) ? get_precedence(op) : 0;
+                    //int current_precedence = get_precedence(i);
+                   // int max_precedence = (op != -1) ? get_precedence(op) : 0;
 
-                    if (current_precedence == max_precedence || max_precedence == 0) {
-                    	printf("a\n");
-                        if (simple <= max_operator) { 
-                            max_operator = simple;
-                            op = i;
-                        }
-                    } else if (current_precedence > max_precedence) {
+                   // if (current_precedence == max_precedence || max_precedence == 0) {
+                    	//printf("a\n");
+                       // if (simple <= max_operator) { 
+                        //    max_operator = simple;
+                        //    op = i;
+                        //}
+                     //} else 
+                    //if (current_precedence > max_precedence) {
                     printf("b\n");
                         if (simple < max_operator) { 
                             max_operator = simple;
                             op = i;
                         }
-                    }
+                    //}
                 }
                 break;
             default:

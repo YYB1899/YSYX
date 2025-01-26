@@ -156,11 +156,12 @@ bool check_parentheses(int p, int q) {
         } else if (tokens[i].type == 7) {
             simple --;
         }
-        if (simple < 0) {
-            return false;
-        }
+
     }
-    return true;
+    if (simple < 0) {
+            return false;
+    }
+    else return true;
 }
 
 int get_precedence(int i) {

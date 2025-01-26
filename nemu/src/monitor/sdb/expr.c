@@ -229,7 +229,7 @@ uint32_t eval(int p, int q) {
                      //} else 
                     //if (current_precedence > max_precedence) {
                     printf("b\n");
-                        if (simple <= max_operator) { 
+                        if (simple < max_operator) { 
                             max_operator = simple;
                             op = i;
                         }

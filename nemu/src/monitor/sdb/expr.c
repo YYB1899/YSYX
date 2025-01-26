@@ -220,13 +220,11 @@ uint32_t eval(int p, int q) {
                     int current_precedence = get_precedence(i);
                     int max_precedence = (op != -1) ? get_precedence(op) : 0;
                     if (current_precedence > max_precedence || max_precedence == 0) {//前加减，后乘除
-                    	printf("a\n");
                         if (simple < max_operator) { 
                             max_operator = simple;
                             op = i;
                         }
                      } else{
-                    printf("b\n");
                         if (simple <= max_operator) { 
                             max_operator = simple;
                             op = i;
@@ -257,7 +255,6 @@ uint32_t eval(int p, int q) {
                 val1 = eval(p, op - 1);
                 val2 = eval(op + 1, q);
             }
-            //printf("op=%d\n",op);
             switch (tokens[op].type) {
                 case PLUS:   return val1 + val2;
                 case SUB:   return val1 - val2;

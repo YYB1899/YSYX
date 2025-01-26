@@ -218,18 +218,18 @@ uint32_t eval(int p, int q) {
                 case AND:
        		{
                     //int current_precedence = get_precedence(i);
-                   // int max_precedence = (op != -1) ? get_precedence(op) : 0;
+                    //int max_precedence = (op != -1) ? get_precedence(op) : 0;
 
-                   // if (current_precedence == max_precedence || max_precedence == 0) {
+                    //if (current_precedence == max_precedence || max_precedence == 0) {
                     	//printf("a\n");
-                       // if (simple <= max_operator) { 
-                        //    max_operator = simple;
-                        //    op = i;
+                        //if (simple <= max_operator) { 
+                         //   max_operator = simple;
+                         //   op = i;
                         //}
                      //} else 
                     //if (current_precedence > max_precedence) {
                     printf("b\n");
-                        if (simple < max_operator) { 
+                        if (simple <= max_operator) { 
                             max_operator = simple;
                             op = i;
                         }

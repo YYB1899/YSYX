@@ -163,15 +163,17 @@ bool check_parentheses(int p, int q) {
     return simple == 0;
 }
 
-bool get_precedence(int p, int q) {
-    int x = 0;
-    for(int i = p; i < q; i ++){
-    	if(tokens[i].type == PLUS || tokens[i].type == SUB || tokens[i].type == MUL || tokens[i].type == DIV){x = i;break;}
+int get_precedence(int i) {
+    switch (tokens[i].type) {
+        case PLUS:
+        case SUB:
+            return 1; // Lower precedence
+        case MUL:
+        case DIV:
+            return 2; // Higher precedence
+        default:
+            return 0; // Not an operator
     }
-    for(int i = x + 1; i < q; i ++){
-    	if(tokens[x].type != tokens[i].type) {return false;}
-    }
-    return true;
 }
 uint32_t eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
@@ -214,20 +216,24 @@ uint32_t eval(int p, int q) {
                 case TK_EQ:
                 case NOTEQ:
                 case AND:
-                    if(get_precedence(p, q) == true){
-                    printf("a\n");
-                      if(simple < max_operator) {
-                        max_operator = simple;
-                        op = i;
-                      }
-                     }
-                     if(get_precedence(p, q) == false){
-                     printf("b\n");
-                        if(simple <= max_operator) {
-                        max_operator = simple;
-                        op = i;
-                      }
-                     }
+       		{
+                    int current_precedence = get_precedence(i);
+                    int max_precedence = (op != -1) ? get_precedence(op) : 0;
+
+                    if (current_precedence == max_precedence) {
+                        if (simple <= max_operator) { // Use <= for same precedence
+                            max_operator = simple;
+                            op = i;
+                        }
+                    } else if (current_precedence > max_precedence || max_precedence == 0) {
+                        if (simple < max_operator) { // Use < for different precedence
+                            max_operator = simple;
+                            op = i;
+                        }
+                    }
+                }
+                break;
+            default:
                 break;
             }
         }

@@ -219,8 +219,7 @@ uint32_t eval(int p, int q) {
        		{
                     int current_precedence = get_precedence(i);
                     int max_precedence = (op != -1) ? get_precedence(op) : 0;
-
-                    if (current_precedence > max_precedence || max_precedence == 0) {
+                    if (current_precedence > max_precedence || max_precedence == 0) {//前加减，后乘除
                     	printf("a\n");
                         if (simple < max_operator) { 
                             max_operator = simple;

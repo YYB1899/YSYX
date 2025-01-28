@@ -47,6 +47,7 @@ void create_watchpoint(char *args){
 	strcpy(p -> expr,args);
 	bool success = false;
 	int tmp = expr(p -> expr,&success);
+	printf("%d\n",success);
 	p -> old_value = tmp;
 	printf("Creat watchpoint NO.%d success\n",p -> NO);
 }

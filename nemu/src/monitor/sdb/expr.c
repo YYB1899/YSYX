@@ -286,7 +286,6 @@ word_t expr(char *e, bool *success) {
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
   	    bool simple = true;
-  	    printf("%d\n",tokens[i].str[0]);
   	    long int tmp = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple){
 			int2char(tmp, tokens[i].str);

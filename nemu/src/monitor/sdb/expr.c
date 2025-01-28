@@ -123,8 +123,7 @@ static bool make_token(char *e) {
                     case HEX:
                     case REG:
                         tokens[nr_token].type = rules[i].token_type;
-                        strncpy(tokens[nr_token].str, substr_start, substr_len);
-                        tokens[nr_token].str[substr_len] = '\0';
+			strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
                         nr_token++;
                         break;
                     case TK_NOTYPE:
@@ -287,6 +286,7 @@ word_t expr(char *e, bool *success) {
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
   	    bool simple = true;
+  	    printf("%d\n",tokens[i].str[0]);
   	    long int tmp = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple){
 			int2char(tmp, tokens[i].str);

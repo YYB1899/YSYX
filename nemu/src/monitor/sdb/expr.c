@@ -243,7 +243,26 @@ uint32_t eval(int p, int q) {
 
   }
 }
-
+void int2char(int x, char str[]){
+    int len = strlen(str);
+    memset(str, 0, len);
+    int tmp_index = 0;
+    int tmp_x = x;
+    int x_size = 0, flag = 1;
+    while(tmp_x){
+	tmp_x /= 10;
+	x_size ++;
+	flag *= 10;
+    }
+    flag /= 10;
+    while(x)
+    {
+	int a = x / flag; 
+	x %= flag;
+	flag /= 10;
+	str[tmp_index ++] = a + '0';
+    }
+}
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -268,10 +287,9 @@ word_t expr(char *e, bool *success) {
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
   	    bool simple = true;
-  	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
-  	    if(simple == true){
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
-            tokens[i].type = NUM;
+  	    long int tmp = isa_reg_str2val(tokens[i].str,&simple);
+  	    if(simple){
+			int2char(tmp, tokens[i].str);
             }else{
             	  printf("reg value error.\n");
 		  assert(0);

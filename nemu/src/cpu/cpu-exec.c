@@ -44,8 +44,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 		bool success = false;
 		int tmp = expr(wp_pool[i].expr,&success);
 		if(success == true){
-		printf("wp_pool[i].old_value=%d\n",wp_pool[i].old_value);
-		printf("tmp=%d\n",tmp);
 			if(tmp != wp_pool[i].old_value){
 				nemu_state.state = NEMU_STOP;
 				printf("The value is changed\n");

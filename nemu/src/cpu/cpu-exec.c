@@ -43,7 +43,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	if(wp_pool[i].flag == true){
 		bool success = false;
 		int tmp = expr(wp_pool[i].expr,&success);
-		if(success == false){
+		if(success == true){
 		printf("a");
 			if(tmp != wp_pool[i].old_value){
 				nemu_state.state = NEMU_STOP;

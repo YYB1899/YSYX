@@ -49,10 +49,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 				printf("The value is changed");
 				return;
 			}
-		}else{
-			printf("Expr error");
-			assert(0);
-			}
+		}//else{
+			//printf("Expr error");
+			//assert(0);
+			//}
 		}
 	}
 }

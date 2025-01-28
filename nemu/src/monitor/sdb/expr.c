@@ -121,8 +121,14 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
-                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
+                        strncpy(tokens[nr_token].str, substr_start, substr_len);
+                        tokens[nr_token].str[substr_len] = '\0';
+                        nr_token++;
+                        break;
+                    case REG:
+                        
+                    	tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
@@ -180,7 +186,7 @@ uint32_t eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-        if(tokens[p].type == NUM || tokens[p].type == HEX ) {
+        if(tokens[p].type == NUM || tokens[p].type == HEX) {
             return atoi(tokens[p].str);
         }
         else{

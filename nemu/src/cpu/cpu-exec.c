@@ -44,10 +44,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 		bool success = false;
 		int tmp = expr(wp_pool[i].expr,&success);
 		if(success == true){
-		printf("a");
+		printf("%d",wp_pool[i].old_value);
 			if(tmp == wp_pool[i].old_value){
 				nemu_state.state = NEMU_STOP;
-				printf("The value is changed");
+				printf("The value is changed\n");
 				return;
 			}
 		}else{

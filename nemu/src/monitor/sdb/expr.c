@@ -181,7 +181,7 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-double eval(int p, int q) {
+int eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
 
     if (p > q) {
@@ -261,8 +261,8 @@ double eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-            double val1 = eval(p, op -1);
-            double val2 = eval(op + 1, q );
+            int val1 = eval(p, op -1);
+            int val2 = eval(op + 1, q );
             switch(tokens[op].type){
                   case PLUS:
                   return val1 + val2;

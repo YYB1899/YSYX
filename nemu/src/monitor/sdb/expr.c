@@ -261,8 +261,16 @@ int eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-            int val1 = eval(p, op -1);
-            int val2 = eval(op + 1, q );
+            int val1 = 0;
+            int val2 = 0;
+            if(flag){
+                val1 = eval(p+1, op -1);
+                val2 = eval(op + 1, q -1);
+            }
+            else{
+                val1 = eval(p, op -1);
+                val2 = eval(op + 1, q );
+            }
             switch(tokens[op].type){
                   case PLUS:
                   return val1 + val2;

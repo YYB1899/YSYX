@@ -148,9 +148,6 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
-    if(tokens[p].type != LEFT || tokens[q].type != RIGHT){
-        return false;
-    }
     int simple = 0;
     for (int i = p; i <= q; i++) {
         if (tokens[i].type == LEFT){
@@ -184,8 +181,9 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-int eval(int p, int q) {
+double eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
+
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -200,13 +198,18 @@ int eval(int p, int q) {
             return -1;
         }
     }
-    else if (check_parentheses(p, q)) {
-        return eval(p +1, q - 1);
+    else if (!check_parentheses(p, q)) {
+            assert(0);
+            return -1;
     }
     else{
         int op = -1;
         int simple = 0;
         int precedence = 128;
+        bool flag = false;
+        if(tokens[p].type == LEFT && tokens[q].type == RIGHT){
+            flag = true;
+        }
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case LEFT:
@@ -227,13 +230,25 @@ int eval(int p, int q) {
                 case NOTEQ:
                 case AND:
        		    {
-                    if(simple == 0){
-                        int current_precedence = get_precedence(i);
-                        if(current_precedence <= precedence){
-                            op = i;
-                            precedence = current_precedence;
-                        }
+                    if(flag){
+                        if(simple == 1){
+                            int current_precedence = get_precedence(i);
+                            if(current_precedence <= precedence){
+                                op = i;
+                                precedence = current_precedence;
+                            }
 
+                        }
+                    }
+                    else{
+                        if(simple == 0){
+                            int current_precedence = get_precedence(i);
+                            if(current_precedence <= precedence){
+                                op = i;
+                                precedence = current_precedence;
+                            }
+
+                        }
                     }
                 }
                 break;
@@ -246,8 +261,8 @@ int eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-            int val1 = eval(p, op -1);
-            int val2 = eval(op + 1, q );
+            double val1 = eval(p, op -1);
+            double val2 = eval(op + 1, q );
             switch(tokens[op].type){
                   case PLUS:
                   return val1 + val2;

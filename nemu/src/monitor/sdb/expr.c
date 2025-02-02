@@ -121,23 +121,12 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
+                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
                         break;
-		     case REG:
-            		tokens[nr_token].type = rules[i].token_type;
-			if (substr_start[0] == '$' && (substr_start[1] < '0' || substr_start[1] > '9')) {// 去掉 $ 并复制剩余部分
-               			strncpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
-                		tokens[nr_token].str[substr_len - 1] = '\0';  // 确保字符串以 \0 结尾
-		    	}else{// 直接复制整个子字符串
-                		strncpy(tokens[nr_token].str, substr_start, substr_len);
-                		tokens[nr_token].str[substr_len] = '\0';  // 确保字符串以 \0 结尾
-           		 }
-
-            		nr_token++;
-            		break;
                     case TK_NOTYPE:
                         break;
                     default:
@@ -159,18 +148,29 @@ static bool make_token(char *e) {
 }
 
 bool check_parentheses(int p, int q) {
-	
+    if(tokens[p].type != LEFT || tokens[q].type != RIGHT){
+        return false;
+    }
     int simple = 0;
     for (int i = p; i <= q; i++) {
-        if (tokens[i].type == 6) {
+        if (tokens[i].type == LEFT){
             simple ++;
-        } else if (tokens[i].type == 7) {
+        } else if (tokens[i].type == RIGHT){
             simple --;
         }
-
+        if (simple < 0) {
+            return false;
+        }
+    }   
+    if(simple == 0){
+        return true;
     }
-    return true;
+    else{
+        return false;
+    }
 }
+
+
 
 int get_precedence(int i) {
     switch (tokens[i].type) {
@@ -184,7 +184,8 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-uint32_t eval(int p, int q) {
+int eval(int p, int q) {
+    printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -199,21 +200,24 @@ uint32_t eval(int p, int q) {
             return -1;
         }
     }
-    else if (!check_parentheses(p, q)) {
-        assert(0);
-        return -1;
+    else if (check_parentheses(p, q)) {
+        return eval(p +1, q - 1);
     }
     else{
         int op = -1;
-        int balence = 0;
-        int max_operator = 128;
+        int simple = 0;
+        int precedence = 128;
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case LEFT:
-                    balence ++;
+                    simple ++;
                     break;
                 case RIGHT:
-                    balence --;
+                    simple --;
+                    if(simple < 0){
+                        assert(0);
+                        return -1;
+                    }
                     break;
                 case PLUS:
                 case SUB:
@@ -222,11 +226,19 @@ uint32_t eval(int p, int q) {
                 case TK_EQ:
                 case NOTEQ:
                 case AND:
-                    if(balence < max_operator) {
-                        max_operator = balence;
-                        op = i;
+       		    {
+                    if(simple == 0){
+                        int current_precedence = get_precedence(i);
+                        if(current_precedence <= precedence){
+                            op = i;
+                            precedence = current_precedence;
+                        }
+
                     }
-                    break;
+                }
+                break;
+            default:
+                break;
             }
         }
         printf("aop=%d\n",op);
@@ -234,24 +246,23 @@ uint32_t eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-            uint32_t val1 = eval(p+1, op - 1);
-            uint32_t val2 = eval(op + 1, q-1);
-
-            switch (tokens[op].type) {
-                case PLUS:  return val1 + val2;
-                case SUB:   return val1 - val2;
-                case MUL:   return val1 * val2;
-                case DIV:   return val2 == 0 ? 0 : val1 / val2;
-                case TK_EQ: return val1 == val2;
-                case NOTEQ: return val1 != val2;
-                case AND:   return val1 && val2;
+            int val1 = eval(p, op -1);
+            int val2 = eval(op + 1, q );
+            switch(tokens[op].type){
+                  case PLUS:
+                  return val1 + val2;
+                case SUB:
+                    return val1 - val2;
+                case MUL:
+                    return val1 * val2;
+                case DIV:
+                    return val1 / val2;
                 default:
-                    assert(0);
-                    return -1;
+                    return 0;
             }
-    }
 
-  }
+        }
+    }
 }
 
 word_t expr(char *e, bool *success) {
@@ -300,7 +311,8 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == SUB && i == 0)
-           ){	
+           ){
+           //if(tokens[i].type == 3 && tokens[i - 1].type == 5 )	
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
@@ -375,7 +387,6 @@ word_t expr(char *e, bool *success) {
     }
     uint32_t result = eval(0, tokens_len - 1);
     printf("result= %d\n", result);
-    *success = true;
     memset(tokens, 0, sizeof(tokens));
     return result;
 }

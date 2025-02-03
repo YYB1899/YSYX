@@ -262,12 +262,13 @@ int eval(int p, int q) {
     }
 }
 word_t expr(char *e, bool *success) {
-    unsigned char m;
-    unsigned char *n;
+    int m;
+    int *n;
     m = 1;
     n = &m;
     printf("Address of m: %p\n", (void *)&m);
-    printf("Value of n (address of m): %p\n", (void *)n);
+    printf("Value of ptr (address of var): %p\n", (void*)n);
+    printf("Value pointed to by ptr: %d\n", *n);
     if (!make_token(e)) {
         *success = false;
         return 0;
@@ -344,7 +345,7 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i].type = TK_NOTYPE;
  	    int value = *tokens[i+1].str;
- 	    printf("str=%d\n",value);\
+ 	    printf("str=%d\n",value);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){

@@ -12,12 +12,6 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <regex.h>
-//#include <stdint.h>
-//#include <assert.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <isa.h>
@@ -268,6 +262,8 @@ int eval(int p, int q) {
 }
 
 word_t expr(char *e, bool *success) {
+    int b = 1;
+    printf("%p\n\n", (void *)&b);
     if (!make_token(e)) {
         *success = false;
         return 0;

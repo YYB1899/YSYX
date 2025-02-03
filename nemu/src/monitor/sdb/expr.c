@@ -272,6 +272,26 @@ int char2int(char s[]){
     res /= 10;
     return res;
 }
+void int2char(int x, char str[]){
+    int len = strlen(str);
+    memset(str, 0, len);
+    int tmp_index = 0;
+    int tmp_x = x;
+    int x_size = 0, flag = 1;
+    while(tmp_x){
+	tmp_x /= 10;
+	x_size ++;
+	flag *= 10;
+    }
+    flag /= 10;
+    while(x)
+    {
+	int a = x / flag; 
+	x %= flag;
+	flag /= 10;
+	str[tmp_index ++] = a + '0';
+    }
+}
 word_t expr(char *e, bool *success) {
     unsigned char m;
     unsigned char *n;
@@ -357,10 +377,12 @@ word_t expr(char *e, bool *success) {
 	    //int tmp = atoi(tokens[i+1].str);
 	    int tmp = char2int(tokens[i+1].str);
 	    printf("%d\n",tmp);
-	    uint32_t a = (uint32_t)tmp;
-	    int value = 0;
-	    memcpy(&value, &a, sizeof(int));
-	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
+	    uintptr_t a = (uintptr_t)tmp;
+	    //int value = 0;
+	    int value = *(int*)(uintptr_t)a;
+	    int2char(value, tokens[i+1].str);
+	    //memcpy(&value, &a, sizeof(int));
+	    //snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

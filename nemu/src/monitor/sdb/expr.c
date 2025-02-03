@@ -389,7 +389,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	}
     }
-    
+    printf("%d\n",tokens_len);
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

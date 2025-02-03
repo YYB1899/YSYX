@@ -338,16 +338,9 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    long int hex_value = strtol(tokens[i+1].str, NULL, 16);
-    printf("Parsed hexadecimal value: %lx\n", hex_value);
-
-    // 将地址转换为指针并读取其值
-    uint32_t *addr = (uint32_t *)(uintptr_t)hex_value;
-    uint32_t uint_value = *addr;
-
-    // 将 uint32_t 转换为 int
-    int value = (int)uint_value;
- 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
+	    long long tmp = strtol(tokens[i].str, NULL, 16);
+	    printf("Parsed hexadecimal value: %lld\n", tmp);
+ 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%lld", tmp);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

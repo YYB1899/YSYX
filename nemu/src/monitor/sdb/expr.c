@@ -261,6 +261,17 @@ int eval(int p, int q) {
         }
     }
 }
+int char2int(char s[]){
+    int s_size = strlen(s);
+    int res = 0 ;
+    for(int i = 0 ; i < s_size ; i ++)
+    {
+	res += s[i] - '0';
+	res *= 10;
+    }
+    res /= 10;
+    return res;
+}
 word_t expr(char *e, bool *success) {
     unsigned char m;
     unsigned char *n;
@@ -344,8 +355,8 @@ word_t expr(char *e, bool *success) {
            ){printf("a\n");
 	    tokens[i].type = TK_NOTYPE;
 	    //int tmp = atoi(tokens[i+1].str);
-	    long int tmp = strtol(tokens[i+1].str, NULL, 16);
-	    printf("%ld\n",tmp);
+	    int tmp = char2int(tokens[i+1].str);
+	    printf("%d\n",tmp);
 	    uint32_t a = (uint32_t)tmp;
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));

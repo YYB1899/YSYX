@@ -296,8 +296,8 @@ word_t expr(char *e, bool *success) {
     unsigned char *n;
     m = 10;
     n = &m;
-    printf("Address of m: 0x%p\n", (void *)&m);
-    printf("Value of n (address of m): 0x%p\n", (void *)n);
+    printf("Address of m: %p\n", (void *)&m);
+    printf("Value of n (address of m): %p\n", (void *)n);
     if (!make_token(e)) {
         *success = false;
         return 0;

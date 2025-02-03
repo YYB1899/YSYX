@@ -362,31 +362,37 @@ word_t expr(char *e, bool *success) {
 	  }
     }
     /*derefence*/
-   for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == MUL && i > 0 
-	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-	    && tokens[i+1].type == NUM
-	    )||
-	    (tokens[i].type == MUL && i > 0
-             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-             && tokens[i+1].type == HEX
-             )||
-             (tokens[i].type == MUL && i == 0)
-           ){
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == '*' && i > 0 
+		    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
+		    && tokens[i+1].type == NUM 
+		    )
+                ||
+		(tokens[i].type == '*' && i > 0
+                    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == '*' && i == 0)
+          )
+	{
 	    tokens[i].type = TK_NOTYPE;
 	    int tmp = char2int(tokens[i+1].str);
 	    uintptr_t a = (uintptr_t)tmp;
 	    int value = *((int*)a);
 	    int2char(value, tokens[i+1].str);	    
+	    // 
 	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == TK_NOTYPE){
+		if(tokens[j].type == TK_NOTYPE)
+		{
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }
 		    tokens_len -- ;
 		}
 	    }
-	  }
+	}
     }
     uint32_t result = eval(0, tokens_len - 1);
     printf("result= %d\n", result);

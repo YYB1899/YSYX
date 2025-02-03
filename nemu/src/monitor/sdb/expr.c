@@ -372,14 +372,13 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == MUL && i == 0)
-           ){printf("a\n");
+           ){
 	    tokens[i].type = TK_NOTYPE;
+	    printf("The string is: %s\n", tokens[i + 1].str);
 	    long tmp = strtol(tokens[i + 1].str, NULL , 16);
-	    printf("0x%lx\n",tmp);
-	    //int value = 0;
-	    uint32_t *addr = (uint32_t *)(uintptr_t)tmp;
-            uint32_t value = *addr;
-	    //memcpy(&value, &a, sizeof(int));
+	    uint32_t a = (uint32_t)tmp;
+	    int value = 0;
+	    memcpy(&value, &a, sizeof(int));
 	    printf("Value at address 0x%lx: 0x%" PRIx32 "\n", tmp, value);
 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
 	    for(int j = 0 ; j < tokens_len ; j ++){

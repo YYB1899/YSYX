@@ -266,7 +266,6 @@ word_t expr(char *e, bool *success) {
         *success = false;
         return 0;
     }
-
     int tokens_len = 0;
     for (int i = 0; i < 256; i++) {
         if (tokens[i].type == 0) break;
@@ -355,5 +354,6 @@ word_t expr(char *e, bool *success) {
     printf("result = %d\n", result);
     *success = true;
     memset(tokens, 0, sizeof(tokens));
+    memset(&tokens_len, 0, sizeof(tokens_len));
     return result;
 }

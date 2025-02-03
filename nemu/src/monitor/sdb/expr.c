@@ -280,7 +280,7 @@ word_t expr(char *e, bool *success) {
         if (tokens[i].type == 0) break;
         tokens_len++;
     }
-
+	printf("len=%d\n",tokens_len);
     //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == HEX) {

@@ -338,7 +338,7 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    long long tmp = strtol(tokens[i].str, NULL, 16);
+	    long long tmp = strtol(tokens[i+1].str, NULL, 16);
 	    printf("Parsed hexadecimal value: %llx\n", tmp);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%llx", tmp);
 	    for(int j = 0 ; j < tokens_len ; j ++){

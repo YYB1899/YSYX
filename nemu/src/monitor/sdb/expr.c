@@ -277,13 +277,10 @@ word_t expr(char *e, bool *success) {
     }
 
     int tokens_len = 0;
-    printf("len=%d\n",tokens_len);
     for (int i = 0; i < 256; i++) {
         if (tokens[i].type == STOP) break;
-        printf("z\n");
         tokens_len++;
     }
-	printf("len=%d\n",tokens_len);
     //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == HEX) {

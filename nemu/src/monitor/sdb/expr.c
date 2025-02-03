@@ -176,8 +176,6 @@ bool check_parentheses(int p, int q) {
     }
 }
 
-
-
 int get_precedence(int i) {
     switch (tokens[i].type) {
         case PLUS:
@@ -190,6 +188,7 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
+
 int eval(int p, int q) {
     if (p > q) {
       	/* Bad expression */
@@ -214,10 +213,6 @@ int eval(int p, int q) {
         int simple = 0;
         int precedence = INT_MAX;
         int op_simple = INT_MAX;
-        //bool flag = false;
-        //if(tokens[p].type == LEFT && tokens[q].type == RIGHT){
-            //flag = true;
-        //}
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case LEFT:
@@ -259,12 +254,12 @@ int eval(int p, int q) {
             int val1 = 0;
             int val2 = 0;
             if(op_simple > 0){
-                val1 = eval(p+1, op -1);
-                val2 = eval(op + 1, q -1);
+                val1 = eval(p + 1, op - 1);
+                val2 = eval(op + 1, q - 1);
             }
             else{
-                val1 = eval(p, op -1);
-                val2 = eval(op + 1, q );
+                val1 = eval(p, op - 1);
+                val2 = eval(op + 1, q);
             }
             switch(tokens[op].type){
                   case PLUS:
@@ -329,8 +324,7 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == SUB && i == 0)
-           ){
-           //if(tokens[i].type == 3 && tokens[i - 1].type == 5 )	
+           ){	
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
@@ -376,7 +370,7 @@ word_t expr(char *e, bool *success) {
 	  }
     }
     uint32_t result = eval(0, tokens_len - 1);
-    printf("result= %d\n", result);
+    printf("result = %d\n", result);
     *success = true;
     memset(tokens, 0, sizeof(tokens));
     return result;

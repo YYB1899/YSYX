@@ -344,7 +344,8 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
- 	    int value = *tokens[i+1].str;
+	    int value = atoi(tokens[i+1].str);
+ 	    //int value = *tmp;
  	    printf("str=%d\n",value);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){

@@ -264,13 +264,6 @@ int eval(int p, int q) {
     }
 }
 word_t expr(char *e, bool *success) {
-    int m;
-    int *n;
-    m = 1;
-    n = &m;
-    printf("Address of m: %p\n", (void *)&m);
-    printf("Value of ptr (address of var): %p\n", (void*)n);
-    printf("Value pointed to by ptr: %d\n", *n);
     if (!make_token(e)) {
         *success = false;
         return 0;
@@ -358,6 +351,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
+    
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

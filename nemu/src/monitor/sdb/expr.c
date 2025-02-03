@@ -344,7 +344,7 @@ word_t expr(char *e, bool *success) {
            ){printf("a\n");
 	    tokens[i].type = TK_NOTYPE;
 	    int tmp = atoi(tokens[i+1].str);
-	    printf("%d",tmp);
+	    printf("%d\n",tmp);
 	    uint32_t a = (uint32_t)tmp;
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));

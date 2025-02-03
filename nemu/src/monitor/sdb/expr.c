@@ -292,8 +292,8 @@ void int2char(int x, char str[]){
     }
 }
 word_t expr(char *e, bool *success) {
-    int b = 1;
-    printf("%p\n\n", (void *)&b);
+    int z = 1;
+    printf("%p\n\n", (void *)&z);
     if (!make_token(e)) {
         *success = false;
         return 0;
@@ -369,6 +369,7 @@ word_t expr(char *e, bool *success) {
              )||
              (tokens[i].type == MUL && i == 0)
            ){
+           printf("a");
 	    tokens[i].type = TK_NOTYPE;
 	    int tmp = char2int(tokens[i+1].str);
 	    uintptr_t a = (uintptr_t)tmp;

@@ -150,7 +150,7 @@ static int cmd_a(char *args){
             false_count++;
         }
         if (consecutive_false_count > total_count / 2) {
-            assert(false && "False results exceed half of the total count.");
+            assert(0);
         }
         }
 

@@ -374,11 +374,10 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    int tmp = atoi(tokens[i+1].str);
-	    uint32_t a = (uint32_t)tmp;
-	    int value = 0;
-	    memcpy(&value, &a, sizeof(int));
-	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	    
+	    int tmp = char2int(tokens[i+1].str);
+	    uintptr_t a = (uintptr_t)tmp;
+	    int value = *((int*)a);
+	    int2char(value, tokens[i+1].str);	    
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

@@ -190,7 +190,6 @@ int get_precedence(int i) {
     }
 }
 int eval(int p, int q) {
-    printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -248,7 +247,6 @@ int eval(int p, int q) {
                 break;
             }
         }
-        printf("aop=%d\n",op);
         if (op == -1) {
             return eval(p+1, q-1);
         }
@@ -336,35 +334,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-   /*strange positive*/  
-   for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == PLUS && i > 0 
-	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-	    && tokens[i+1].type == NUM
-	    )||
-	    (tokens[i].type == PLUS && i > 0
-             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-             && tokens[i+1].type == HEX
-             )||
-             (tokens[i].type == PLUS && i == 0)
-           ){	
-	    tokens[i].type = TK_NOTYPE;
-	    for(int j = 31 ; j >= 0 ; j --){
-		tokens[i+1].str[j] = tokens[i+1].str[j-1];
-	    }
-	    tokens[i+1].str[0] = '+' ;
-	    for(int j = 0 ; j < tokens_len ; j ++){
-	       if(tokens[j].type == TK_NOTYPE)
-	       {
-		    for(int k = j +1 ; k < tokens_len ; k ++){
-			tokens[k - 1] = tokens[k];
-		    }
-		   tokens_len -- ;
-	       }
-	    }
-	  }
-    }
-    /*derefence*/
+   /*derefence*/  
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == MUL && i > 0 
 	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT

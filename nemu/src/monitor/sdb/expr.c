@@ -264,7 +264,7 @@ int eval(int p, int q) {
 word_t expr(char *e, bool *success) {
     unsigned char m;
     unsigned char *n;
-    m = 10;
+    m = 1;
     n = &m;
     printf("Address of m: %p\n", (void *)&m);
     printf("Value of n (address of m): %p\n", (void *)n);

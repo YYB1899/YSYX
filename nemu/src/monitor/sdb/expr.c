@@ -335,9 +335,7 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    long long tmp = strtol(tokens[i+1].str, NULL, 16);
-	    uintptr_t a = (uintptr_t)tmp;
-	    int value = *((int*)a);
+	    int value = *tokens[i+1].str;
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){

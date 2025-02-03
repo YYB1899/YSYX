@@ -305,6 +305,7 @@ word_t expr(char *e, bool *success) {
         if (tokens[i].type == STOP) break;
         tokens_len++;
     }
+    printf("%d\n",tokens_len);
     //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == HEX) {
@@ -358,17 +359,17 @@ word_t expr(char *e, bool *success) {
     }
     for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if(	(tokens[i].type == '*' && i > 0 
+	if(	(tokens[i].type == MUL && i > 0 
 		    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
 		    && tokens[i+1].type == NUM 
 		    )
                 ||
-		(tokens[i].type == '*' && i > 0
+		(tokens[i].type == MUL && i > 0
                     && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
                     && tokens[i+1].type == HEX
                     )
 		||
-                (tokens[i].type == '*' && i == 0)
+                (tokens[i].type == MUL && i == 0)
           )
 	{
 	    tokens[i].type = TK_NOTYPE;

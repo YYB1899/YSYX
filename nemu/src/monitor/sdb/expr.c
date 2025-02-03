@@ -374,13 +374,8 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    printf("The string is: %s\n", tokens[i + 1].str);
-	    long tmp = strtol(tokens[i + 1].str, NULL , 16);
-	    uint32_t a = (uint32_t)tmp;
-	    int value = 0;
-	    memcpy(&value, &a, sizeof(int));
-	    printf("Value at address 0x%lx: 0x%" PRIx32 "\n", tmp, value);
-	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
+ 	    int value = *tokens[i+1].str;
+ 	    printf("%d\n",value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

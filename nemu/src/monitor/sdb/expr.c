@@ -373,7 +373,7 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == MUL && i == 0)
-           ){printf("a");
+           ){printf("a\n");
 	    tokens[i].type = TK_NOTYPE;
 	    int tmp = atoi(tokens[i+1].str);
 	    uint32_t a = (uint32_t)tmp;

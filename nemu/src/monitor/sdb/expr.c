@@ -44,7 +44,7 @@ static struct rule {
 	  /* TODO: Add more rules.
            * Pay attention to the precedence level of different rules.
            */
-	{"[ ]{10,}", STOP},           //stop
+	{"[ ]{100,}", STOP},           //stop
         {" +", TK_NOTYPE},    // spaces
         {"\\+", PLUS},         // plus
         {"\\-", SUB},         // sub

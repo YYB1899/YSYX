@@ -121,21 +121,12 @@ static bool make_token(char *e) {
                 switch (rules[i].token_type) {
                     case NUM:
                     case HEX:
+                    case REG:
                         tokens[nr_token].type = rules[i].token_type;
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
                         break;
-                    case REG:
-            		tokens[nr_token].type = rules[i].token_type;
-			if (substr_start[0] == '$' && (substr_start[1] < '0' || substr_start[1] > '9')) {// 去掉 $ 并复制剩余部分
-               			strncpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
-                		tokens[nr_token].str[substr_len - 1] = '\0';  // 确保字符串以 \0 结尾
-		    	}else{// 直接复制整个子字符串
-                		strncpy(tokens[nr_token].str, substr_start, substr_len);
-                		tokens[nr_token].str[substr_len] = '\0';  // 确保字符串以 \0 结尾
-           		 }
-            		nr_token++;
                     case TK_NOTYPE:
                         break;
                     default:
@@ -176,6 +167,8 @@ bool check_parentheses(int p, int q) {
     }
 }
 
+
+
 int get_precedence(int i) {
     switch (tokens[i].type) {
         case PLUS:
@@ -188,9 +181,8 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-
 int eval(int p, int q) {
-     printf("p=%d,q=%d\n",p,q);
+    printf("p=%d,q=%d\n",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -253,16 +245,8 @@ int eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-            int val1 = 0;
-            int val2 = 0;
-            if(op_simple > 0){
-                val1 = eval(p + 1, op - 1);
-                val2 = eval(op + 1, q - 1);
-            }
-            else{
-                val1 = eval(p, op - 1);
-                val2 = eval(op + 1, q);
-            }
+             int val1 = eval(p+op_simple, op -1);
+             int val2 = eval(op + 1, q - op_simple);
             switch(tokens[op].type){
                   case PLUS:
                   return val1 + val2;
@@ -326,7 +310,8 @@ word_t expr(char *e, bool *success) {
              && tokens[i+1].type == HEX
              )||
              (tokens[i].type == SUB && i == 0)
-           ){	
+           ){
+           //if(tokens[i].type == 3 && tokens[i - 1].type == 5 )	
 	    tokens[i].type = TK_NOTYPE;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
@@ -343,7 +328,35 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-   /*derefence*/
+   /*strange positive*/  
+   for(int i = 0 ; i < tokens_len ; i ++){
+	if((tokens[i].type == PLUS && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
+	    )||
+	    (tokens[i].type == PLUS && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+             && tokens[i+1].type == HEX
+             )||
+             (tokens[i].type == PLUS && i == 0)
+           ){	
+	    tokens[i].type = TK_NOTYPE;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '+' ;
+	    for(int j = 0 ; j < tokens_len ; j ++){
+	       if(tokens[j].type == TK_NOTYPE)
+	       {
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		   tokens_len -- ;
+	       }
+	    }
+	  }
+    }
+    /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == MUL && i > 0 
 	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
@@ -372,8 +385,7 @@ word_t expr(char *e, bool *success) {
 	  }
     }
     uint32_t result = eval(0, tokens_len - 1);
-    printf("result = %d\n", result);
-    *success = true;
+    printf("result= %d\n", result);
     memset(tokens, 0, sizeof(tokens));
     return result;
 }

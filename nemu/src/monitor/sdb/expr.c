@@ -374,8 +374,8 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){printf("a\n");
 	    tokens[i].type = TK_NOTYPE;
-	    int tmp = atoi(tokens[i+1].str);
-	    printf("%d\n",tmp);
+	    long tmp = strtol(tokens[i + 1].str, NULL , 16);
+	    printf("%lx\n",tmp);
 	    uint32_t a = (uint32_t)tmp;
 	    int value = 0;
 	    memcpy(&value, &a, sizeof(int));

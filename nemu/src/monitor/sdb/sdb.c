@@ -180,7 +180,7 @@ static int cmd_x(char *args){
 	sscanf(num,"%d",&len);
 	sscanf(firstaddr,"%x",&addr);
 	for(i = 0;i < len;i ++){
-		printf("a%x\n",paddr_read(addr,4));
+		printf("%x\n",paddr_read(addr,4));
 		addr = addr + 4;
 	}
 	return 0;

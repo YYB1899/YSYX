@@ -342,7 +342,7 @@ word_t expr(char *e, bool *success) {
              )||
              (tokens[i].type == MUL && i == 0)
            ){
-	    tokens[i+1].type = TK_NOTYPE;
+	    tokens[i].type = TK_NOTYPE;
  	    int value = *tokens[i].str;
  	    printf("str=%d\n",value);\
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);

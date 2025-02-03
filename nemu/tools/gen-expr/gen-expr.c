@@ -87,8 +87,7 @@ void gen_rand_expr(int depth) {
    if(depth > 1){
    	gen_num();
    	return;
-   }
-    //    buf[0] = '\0';	
+   }	
    if(index_buf > 65530)
        	printf("overSize\n");
     switch (choose(4)) {
@@ -97,7 +96,7 @@ void gen_rand_expr(int depth) {
 	    break;
 	case 1:
 	    gen('(');
-	    gen_num();
+	    gen_rand_expr(depth + 1);
 	    gen(')');
 	    break;	
          case 2: 
@@ -122,7 +121,7 @@ int main(int argc, char *argv[]) {
     int loop = 1;
     if (argc > 1) {
 	sscanf(argv[1], "%d", &loop);
-    }
+    }//获取循环次数
     int i;
     for (i = 0; i < loop; i ++) {
 	gen_rand_expr(0);	

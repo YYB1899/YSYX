@@ -160,6 +160,7 @@ bool check_parentheses(int p, int q) {
             return false;
         }
     }   
+    printf("simple=%d\n",simple);
     if(simple == 0){
         return true;
     }

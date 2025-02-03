@@ -18,7 +18,7 @@
 //#include <regex.h>
 //#include <stdint.h>
 //#include <assert.h>
-//#include <limits.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <isa.h>
 
@@ -183,7 +183,6 @@ int get_precedence(int i) {
 }
 int eval(int p, int q) {
     printf("p=%d,q=%d\n",p,q);
-
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -205,11 +204,12 @@ int eval(int p, int q) {
     else{
         int op = -1;
         int simple = 0;
-        int precedence = 128;
-        bool flag = false;
-        if(tokens[p].type == LEFT && tokens[q].type == RIGHT){
-            flag = true;
-        }
+        int precedence = INT_MAX;
+        int op_simple = INT_MAX;
+        //bool flag = false;
+        //if(tokens[p].type == LEFT && tokens[q].type == RIGHT){
+            //flag = true;
+        //}
         for (int i = p; i <= q; i++) {
             switch (tokens[i].type) {
                 case LEFT:
@@ -230,24 +230,12 @@ int eval(int p, int q) {
                 case NOTEQ:
                 case AND:
        		    {
-                    if(flag){
-                        if(simple == 1){
-                            int current_precedence = get_precedence(i);
-                            if(current_precedence <= precedence){
-                                op = i;
-                                precedence = current_precedence;
-                            }
-
-                        }
-                    }
-                    else{
-                        if(simple == 0){
-                            int current_precedence = get_precedence(i);
-                            if(current_precedence <= precedence){
-                                op = i;
-                                precedence = current_precedence;
-                            }
-
+                    if(simple <= op_simple){
+                        int current_precedence = get_precedence(i);
+                        if(simple < op_simple || (simple == op_simple && current_precedence <= precedence)){
+                            op = i;
+                            precedence = current_precedence;
+                            op_simple = simple;
                         }
                     }
                 }
@@ -263,7 +251,7 @@ int eval(int p, int q) {
         else{
             int val1 = 0;
             int val2 = 0;
-            if(flag){
+            if(op_simple > 0){
                 val1 = eval(p+1, op -1);
                 val2 = eval(op + 1, q -1);
             }

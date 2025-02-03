@@ -113,7 +113,10 @@ static int cmd_a(char *args){
         fclose(input_fp);
     }
 
-    char line[1024]; 
+    char line[1024];
+    int total_count = 0;
+    int false_count = 0;
+    int consecutive_false_count = 0;
     while (fgets(line, sizeof(line), input_fp) != NULL) {
         size_t len = strlen(line);
         if (len > 0 && line[len-1] == '\n') {
@@ -137,8 +140,18 @@ static int cmd_a(char *args){
         long int_line_res = strtol(line_res, NULL, 10);
         if(int_line_res == expr_res) {
         	fprintf(temp_fp, "\%s %s = %d true\n",line_res, line_buf, expr_res);
+        	consecutive_false_count = 0;
         }
-        else fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);
+        else {fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);
+              consecutive_false_count++;
+              }
+        total_count++;
+        if (!success) {
+            false_count++;
+        }
+        if (consecutive_false_count > total_count / 2) {
+            assert(false && "False results exceed half of the total count.");
+        }
         }
 
     fclose(input_fp);

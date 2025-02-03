@@ -21,7 +21,6 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <isa.h>
-
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -175,8 +174,6 @@ bool check_parentheses(int p, int q) {
     }
 }
 
-
-
 int get_precedence(int i) {
     switch (tokens[i].type) {
         case PLUS:
@@ -251,7 +248,7 @@ int eval(int p, int q) {
             return eval(p+1, q-1);
         }
         else{
-             int val1 = eval(p+op_simple, op -1);
+             int val1 = eval(p + op_simple, op -1);
              int val2 = eval(op + 1, q - op_simple);
             switch(tokens[op].type){
                   case PLUS:

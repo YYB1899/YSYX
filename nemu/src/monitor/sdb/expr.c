@@ -263,37 +263,6 @@ int eval(int p, int q) {
         }
     }
 }
-int char2int(char s[]){
-    int s_size = strlen(s);
-    int res = 0 ;
-    for(int i = 0 ; i < s_size ; i ++)
-    {
-	res += s[i] - '0';
-	res *= 10;
-    }
-    res /= 10;
-    return res;
-}
-void int2char(int x, char str[]){
-    int len = strlen(str);
-    memset(str, 0, len);
-    int tmp_index = 0;
-    int tmp_x = x;
-    int x_size = 0, flag = 1;
-    while(tmp_x){
-	tmp_x /= 10;
-	x_size ++;
-	flag *= 10;
-    }
-    flag /= 10;
-    while(x)
-    {
-	int a = x / flag; 
-	x %= flag;
-	flag /= 10;
-	str[tmp_index ++] = a + '0';
-    }
-}
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -305,7 +274,6 @@ word_t expr(char *e, bool *success) {
         if (tokens[i].type == STOP) break;
         tokens_len++;
     }
-    printf("%d\n",tokens_len);
     //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == HEX) {
@@ -357,39 +325,33 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-    for(int i = 0 ; i < tokens_len ; i ++)
-    {
-	if(	(tokens[i].type == MUL && i > 0 
-		    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
-		    && tokens[i+1].type == NUM 
-		    )
-                ||
-		(tokens[i].type == MUL && i > 0
-                    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
-                    && tokens[i+1].type == HEX
-                    )
-		||
-                (tokens[i].type == MUL && i == 0)
-          )
-	{
+   /*derefence*/
+   for(int i = 0 ; i < tokens_len ; i ++){
+	if((tokens[i].type == MUL && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
+	    )||
+	    (tokens[i].type == MUL && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+             && tokens[i+1].type == HEX
+             )||
+             (tokens[i].type == MUL && i == 0)
+           ){
 	    tokens[i].type = TK_NOTYPE;
-	    int tmp = char2int(tokens[i+1].str);
-	    uintptr_t a = (uintptr_t)tmp;
-	    int value = *((int*)a);
-	    int2char(value, tokens[i+1].str);	    
-	    // 
+ 	    int value = *tokens[i + 1].str;
+ 	    printf("str=%d\n",value);
+ 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
-		if(tokens[j].type == TK_NOTYPE)
-		{
+		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){
 			tokens[k - 1] = tokens[k];
 		    }
 		    tokens_len -- ;
 		}
 	    }
-	}
+	  }
     }
-    printf("%d\n",tokens_len);
+
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

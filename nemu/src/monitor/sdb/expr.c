@@ -181,6 +181,7 @@ int get_precedence(int i) {
     }
 }
 int eval(int p, int q) {
+	printf("p=%d,q=%d",p,q);
     if (p > q) {
       	/* Bad expression */
         assert(0);

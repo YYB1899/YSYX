@@ -365,17 +365,17 @@ word_t expr(char *e, bool *success) {
     /*derefence*/
     for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if(	(tokens[i].type == '*' && i > 0 
+	if(	(tokens[i].type == MUL && i > 0 
 		    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
 		    && tokens[i+1].type == NUM 
 		    )
                 ||
-		(tokens[i].type == '*' && i > 0
+		(tokens[i].type == MUL && i > 0
                     && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG
                     && tokens[i+1].type == HEX
                     )
 		||
-                (tokens[i].type == '*' && i == 0)
+                (tokens[i].type == MUL && i == 0)
           )
 	{
 	    tokens[i].type = TK_NOTYPE;

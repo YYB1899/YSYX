@@ -339,7 +339,7 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i].type = TK_NOTYPE;
 	    long int hex_value = strtol(tokens[i+1].str, NULL, 16);
-    printf("Parsed hexadecimal value: 0x%lx\n", hex_value);
+    printf("Parsed hexadecimal value: %lx\n", hex_value);
 
     // 将地址转换为指针并读取其值
     uint32_t *addr = (uint32_t *)(uintptr_t)hex_value;

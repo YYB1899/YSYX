@@ -261,37 +261,6 @@ int eval(int p, int q) {
         }
     }
 }
-int char2int(char s[]){
-    int s_size = strlen(s);
-    int res = 0 ;
-    for(int i = 0 ; i < s_size ; i ++)
-    {
-	res += s[i] - '0';
-	res *= 10;
-    }
-    res /= 10;
-    return res;
-}
-void int2char(int x, char str[]){
-    int len = strlen(str);
-    memset(str, 0, len);
-    int tmp_index = 0;
-    int tmp_x = x;
-    int x_size = 0, flag = 1;
-    while(tmp_x){
-	tmp_x /= 10;
-	x_size ++;
-	flag *= 10;
-    }
-    flag /= 10;
-    while(x)
-    {
-	int a = x / flag; 
-	x %= flag;
-	flag /= 10;
-	str[tmp_index ++] = a + '0';
-    }
-}
 word_t expr(char *e, bool *success) {
     unsigned char m;
     unsigned char *n;
@@ -375,7 +344,8 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i].type = TK_NOTYPE;
  	    int value = *tokens[i+1].str;
- 	    printf("%d\n",value);
+ 	    printf("%d\n",value);\
+ 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

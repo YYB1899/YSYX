@@ -188,7 +188,7 @@ int eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-        if(tokens[p].type == NUM || tokens[p].type == HEX) {
+        if(tokens[p].type == NUM || tokens[p].type == HEX || tokens[p].type == REG) {
             return atoi(tokens[p].str);
         }
         else{

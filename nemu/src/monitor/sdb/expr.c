@@ -377,12 +377,10 @@ word_t expr(char *e, bool *success) {
 	    //int tmp = atoi(tokens[i+1].str);
 	    int tmp = char2int(tokens[i+1].str);
 	    printf("%d\n",tmp);
-	    uintptr_t a = (uintptr_t)tmp;
-	    //int value = 0;
-	    int value = *(int*)(uintptr_t)a;
-	    int2char(value, tokens[i+1].str);
-	    //memcpy(&value, &a, sizeof(int));
-	    //snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
+	    uint32_t a = (uint32_t)tmp;
+	    int value = 0;
+	    memcpy(&value, &a, sizeof(int));
+	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str),"%d" ,value);	 
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

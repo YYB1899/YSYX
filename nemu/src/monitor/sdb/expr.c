@@ -21,7 +21,7 @@
 #include <regex.h>
 enum {
     TK_NOTYPE = 256,
-    //STOP = 0,
+    STOP = 0,
     NUM = 1,
     PLUS = 2,
     SUB = 3,
@@ -44,7 +44,7 @@ static struct rule {
 	  /* TODO: Add more rules.
            * Pay attention to the precedence level of different rules.
            */
-	//{"[ ]{100,}", STOP},           //stop
+	{"[ ]{100,}", STOP},           //stop
         {" +", TK_NOTYPE},    // spaces
         {"\\+", PLUS},         // plus
         {"\\-", SUB},         // sub
@@ -271,7 +271,7 @@ word_t expr(char *e, bool *success) {
 
     int tokens_len = 0;
     for (int i = 0; i < 256; i++) {
-        if (tokens[i].type == 0) break;
+        if (tokens[i].type == STOP) break;
         tokens_len++;
     }
     //HEX

@@ -346,7 +346,8 @@ word_t expr(char *e, bool *success) {
 	    tokens[i].type = TK_NOTYPE;
 	    long int tmp = strtol(tokens[i+1].str, NULL, 16);
  	    uint32_t *addr = (uint32_t *)(uintptr_t) tmp;
-            uint32_t value = *addr;
+            uint32_t uint_value = *addr;
+            int value = (int)uint_value;
  	    printf("str=%d\n",value);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){

@@ -188,7 +188,7 @@ int eval(int p, int q) {
         return -1;
     }
     else if (p == q) {
-        if(tokens[p].type == NUM || tokens[p].type == HEX || tokens[p].type == TK_NOTYPE) {
+        if(tokens[p].type == NUM || tokens[p].type == HEX) {
             return atoi(tokens[p].str);
         }
         else{
@@ -344,7 +344,7 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i+1].type = TK_NOTYPE;
  	    int value = *tokens[i].str;
- 	    printf("%d\n",value);\
+ 	    printf("str=%d\n",value);\
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){

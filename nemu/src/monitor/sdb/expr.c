@@ -280,6 +280,7 @@ word_t expr(char *e, bool *success) {
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
+            printf("%ld\n",reg_value);
             tokens[i].type = NUM;
             }else{
             	  printf("reg value error.\n");

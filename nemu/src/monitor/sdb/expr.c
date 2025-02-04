@@ -339,6 +339,7 @@ word_t expr(char *e, bool *success) {
 	    printf("%s\n",tokens[i+1].str);
 	    printf("%x\n",paddr_read(addr,4));
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", paddr_read(addr,4));
+ 	    tokens[i+1].type = NUM;
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){
@@ -348,17 +349,15 @@ word_t expr(char *e, bool *success) {
 		}
 	    }
 	  }
-	  else {   //HEX
-    	for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == HEX) {
-            long int hex_value = strtol(tokens[i].str, NULL, 16);
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = NUM;
+
+    }
+    for (int i = 0; i < tokens_len; i++) {
+    if (tokens[i].type == HEX) {
+         long int hex_value = strtol(tokens[i].str, NULL, 16);
+         snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
+         tokens[i].type = NUM;
          }
     }
-    }
-    }
-
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

@@ -160,7 +160,6 @@ bool check_parentheses(int p, int q) {
             return false;
         }
     }   
-    printf("simple=%d\n",simple);
     if(simple == 0){
         return true;
     }
@@ -270,7 +269,6 @@ word_t expr(char *e, bool *success) {
     for (int i = 0; i < 256; i++) {
         if (tokens[i].type == 0) break;
         tokens_len++;
-        printf("len=%d\n",tokens_len);
     }
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){

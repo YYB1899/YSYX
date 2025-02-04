@@ -351,11 +351,12 @@ word_t expr(char *e, bool *success) {
 	  }
 
     }
+    //HEX//
     for (int i = 0; i < tokens_len; i++) {
-    if (tokens[i].type == HEX) {
-         long int hex_value = strtol(tokens[i].str, NULL, 16);
-         snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-         tokens[i].type = NUM;
+    	if (tokens[i].type == HEX) {
+         	long int hex_value = strtol(tokens[i].str, NULL, 16);
+         	snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
+         	tokens[i].type = NUM;
          }
     }
     uint32_t result = eval(0, tokens_len - 1);

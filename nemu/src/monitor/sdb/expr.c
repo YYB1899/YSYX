@@ -271,7 +271,7 @@ word_t expr(char *e, bool *success) {
     for (int i = 0; i < 256; i++) {
         if (tokens[i].type == 0) break;
         tokens_len++;
-        printf("%d\n",tokens_len);
+        printf("len=%d\n",tokens_len);
     }
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
@@ -281,7 +281,7 @@ word_t expr(char *e, bool *success) {
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
-            printf("%ld\n",reg_value);
+            printf("reg=%ld\n",reg_value);
             tokens[i].type = NUM;
             }else{
             	  printf("reg value error.\n");

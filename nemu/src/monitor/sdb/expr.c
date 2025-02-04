@@ -275,6 +275,7 @@ word_t expr(char *e, bool *success) {
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
+  	printf("b\n");
   	    bool simple = true;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
@@ -317,10 +318,10 @@ word_t expr(char *e, bool *success) {
     }
    /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
-	if(//(tokens[i].type == MUL && i > 0 
-	    //&& tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-	    //&& tokens[i+1].type == NUM
-	    //)||
+	if((tokens[i].type == MUL && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
+	    )||
 	    (tokens[i].type == MUL && i > 0
              && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
              && tokens[i+1].type == HEX

@@ -124,8 +124,7 @@ static bool make_token(char *e) {
 			if (substr_start[0] == '$' && (substr_start[1] < '0' || substr_start[1] > '9')) {// 去掉 $ 并复制剩余部分
                			strncpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
                 		tokens[nr_token].str[substr_len - 1] = '\0';  // 确保字符串以 \0 结尾
-                		
-		    	}else{// 直接复制整个子字符串
+          		}else{// 直接复制整个子字符串
                 		strncpy(tokens[nr_token].str, substr_start, substr_len);
                 		tokens[nr_token].str[substr_len] = '\0';  // 确保字符串以 \0 结尾
            		 }
@@ -146,7 +145,6 @@ static bool make_token(char *e) {
             return false;
         }
     }
-
     return true;
 }
 
@@ -183,6 +181,7 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
+
 int eval(int p, int q) {
 	printf("p=%d,q=%d\n",p,q);
     if (p > q) {

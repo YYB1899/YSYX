@@ -354,7 +354,20 @@ word_t expr(char *e, bool *success) {
          	tokens[i].type = NUM;
          }
     }
-
+    for(int i = 0 ; i < tokens_len ; i ++){
+	if((tokens[i].type == SUB && i > 0 
+	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+	    && tokens[i+1].type == NUM
+	    )||
+	    (tokens[i].type == SUB && i > 0
+             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
+             && tokens[i+1].type == HEX
+             )||
+             (tokens[i].type == SUB && i == 0 && tokens[i+1].type == MUL && tokens[i+2].type == HEX) 
+           ){
+           printf("a\n");
+           }
+    }
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

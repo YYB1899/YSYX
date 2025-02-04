@@ -181,9 +181,7 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-
-int eval(int p, int q) {
-	printf("p=%d,q=%d\n",p,q);
+  int eval(int p, int q) {
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -277,12 +275,10 @@ word_t expr(char *e, bool *success) {
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){
-  	printf("b\n");
   	    bool simple = true;
   	    long int reg_value = isa_reg_str2val(tokens[i].str,&simple);
   	    if(simple == true){
             snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", reg_value);
-            printf("reg=%ld\n",reg_value);
             tokens[i].type = NUM;
             }else{
             	  printf("reg value error.\n");
@@ -331,7 +327,6 @@ word_t expr(char *e, bool *success) {
              )||
              (tokens[i].type == MUL && i == 0)
            ){
-           printf("a");
 	    tokens[i].type = TK_NOTYPE;
 	    char* firstaddr = tokens[i+1].str;  
 	    if (strncmp(firstaddr, "0x", 2) == 0) {
@@ -339,10 +334,7 @@ word_t expr(char *e, bool *success) {
     		memmove(firstaddr, firstaddr + 2, new_len); 
 		}
 	    paddr_t addr = 0;
-	    printf("%s\n",firstaddr);
 	    sscanf(firstaddr,"%x",&addr);
-	    printf("%s\n",tokens[i+1].str);
-	    printf("%x\n",paddr_read(addr,4));
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", paddr_read(addr,4));
  	    tokens[i+1].type = NUM;
 	    for(int j = 0 ; j < tokens_len ; j ++){

@@ -272,14 +272,6 @@ word_t expr(char *e, bool *success) {
         if (tokens[i].type == 0) break;
         tokens_len++;
     }
-    //HEX
-    for (int i = 0; i < tokens_len; i++) {
-        if (tokens[i].type == HEX) {
-            long int hex_value = strtol(tokens[i].str, NULL, 16);
-            snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-            tokens[i].type = NUM;
-         }
-    }
     //REG//
     for(int i = 0 ; i < tokens_len ; i ++){
   	if(tokens[i].type == REG){

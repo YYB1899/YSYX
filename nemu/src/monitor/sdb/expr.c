@@ -337,7 +337,7 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i].type = TK_NOTYPE;
 	    char* firstaddr;
-	    if (strncmp(tokens[i+1].str, "0x", 2) == 0) {
+	    if (strncmp(tokens[i+1].str, "0x", 2) == 1) {
 	        printf("a");
     		firstaddr = tokens[i+1].str + 2;  // 跳过前两个字符'0'和'x'
 	     } else {

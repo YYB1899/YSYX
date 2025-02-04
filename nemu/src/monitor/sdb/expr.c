@@ -302,6 +302,7 @@ word_t expr(char *e, bool *success) {
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-' ;
+	    tokens[i].type = NUM;
 	    for(int j = 0 ; j < tokens_len ; j ++){
 	       if(tokens[j].type == TK_NOTYPE)
 	       {

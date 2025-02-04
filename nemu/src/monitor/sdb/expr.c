@@ -285,34 +285,7 @@ word_t expr(char *e, bool *success) {
   	        
 	}
    }
-   /*negative*/  
-   for(int i = 0 ; i < tokens_len ; i ++){
-	if((tokens[i].type == SUB && i > 0 
-	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-	    && tokens[i+1].type == NUM
-	    )||
-	    (tokens[i].type == SUB && i > 0
-             && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
-             && tokens[i+1].type == HEX
-             )||
-             (tokens[i].type == SUB && i == 0)
-           ){	
-	    tokens[i].type = TK_NOTYPE;
-	    for(int j = 31 ; j >= 0 ; j --){
-		tokens[i+1].str[j] = tokens[i+1].str[j-1];
-	    }
-	    tokens[i+1].str[0] = '-' ;
-	    for(int j = 0 ; j < tokens_len ; j ++){
-	       if(tokens[j].type == TK_NOTYPE)
-	       {
-		    for(int k = j +1 ; k < tokens_len ; k ++){
-			tokens[k - 1] = tokens[k];
-		    }
-		   tokens_len -- ;
-	       }
-	    }
-	  }
-    }
+
    /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == MUL && i > 0 
@@ -346,15 +319,8 @@ word_t expr(char *e, bool *success) {
 	  }
 
     }
-    //HEX//
-    for (int i = 0; i < tokens_len; i++) {
-    	if (tokens[i].type == HEX) {
-         	long int hex_value = strtol(tokens[i].str, NULL, 16);
-         	snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
-         	tokens[i].type = NUM;
-         }
-    }
-    for(int i = 0 ; i < tokens_len ; i ++){
+       /*negative*/  
+   for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == SUB && i > 0 
 	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
 	    && tokens[i+1].type == NUM
@@ -363,10 +329,31 @@ word_t expr(char *e, bool *success) {
              && tokens[i-1].type != NUM && tokens[i-1].type !=HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
              && tokens[i+1].type == HEX
              )||
-             (tokens[i].type == SUB && i == 0 && tokens[i+1].type == MUL && tokens[i+2].type == HEX) 
-           ){
-           printf("a\n");
-           }
+             (tokens[i].type == SUB && i == 0)
+           ){	
+	    tokens[i].type = TK_NOTYPE;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-' ;
+	    for(int j = 0 ; j < tokens_len ; j ++){
+	       if(tokens[j].type == TK_NOTYPE)
+	       {
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		   tokens_len -- ;
+	       }
+	    }
+	  }
+    }
+    //HEX//
+    for (int i = 0; i < tokens_len; i++) {
+    	if (tokens[i].type == HEX) {
+         	long int hex_value = strtol(tokens[i].str, NULL, 16);
+         	snprintf(tokens[i].str, sizeof(tokens[i].str), "%ld", hex_value);
+         	tokens[i].type = NUM;
+         }
     }
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);

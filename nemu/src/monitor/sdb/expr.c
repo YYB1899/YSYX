@@ -330,12 +330,12 @@ word_t expr(char *e, bool *success) {
 	    tokens[i].type = TK_NOTYPE;
 	    char* firstaddr;
 	    if (strncmp(tokens[i+1].str, "0x", 2) == 0) {
-	        printf("a");
+	        printf("a\n");
     		firstaddr = tokens[i+1].str + 2;  // 跳过前两个字符'0'和'x'
     		printf("%s\n",firstaddr);
 	     } else {
     		firstaddr = tokens[i+1].str;      // 保持原样
-    		printf("b");
+    		printf("b\n");
             }
 	    paddr_t addr = 0;
 	    sscanf(firstaddr,"%x",&addr);

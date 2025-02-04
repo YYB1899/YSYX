@@ -337,7 +337,12 @@ word_t expr(char *e, bool *success) {
            ){
 	    tokens[i].type = TK_NOTYPE;
 	    char* firstaddr = tokens[i+1].str;
-	    printf("%s\n",firstaddr);
+	    char* num;
+	    if (strncmp(tokens[i + 1].str, "0x", 2) == 0){
+	    	num = strtok(tokens[i + 1].str,"x");
+		firstaddr = strtok(NULL,"x");
+	    }
+	    printf("%s\n",num);
 	    paddr_t addr = 0;
 	    sscanf(firstaddr,"%x",&addr);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", paddr_read(addr,4));

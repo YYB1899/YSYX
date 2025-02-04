@@ -327,6 +327,7 @@ word_t expr(char *e, bool *success) {
              )||
              (tokens[i].type == MUL && i == 0)
            ){
+           printf("a");
 	    tokens[i].type = TK_NOTYPE;
 	    char* firstaddr = tokens[i+1].str;  
 	    if (strncmp(firstaddr, "0x", 2) == 0) {

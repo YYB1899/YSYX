@@ -332,6 +332,7 @@ word_t expr(char *e, bool *success) {
 	    if (strncmp(tokens[i+1].str, "0x", 2) == 0) {
 	        printf("a");
     		firstaddr = tokens[i+1].str + 2;  // 跳过前两个字符'0'和'x'
+    		printf("%s\n",firstaddr);
 	     } else {
     		firstaddr = tokens[i+1].str;      // 保持原样
     		printf("b");
@@ -349,7 +350,7 @@ word_t expr(char *e, bool *success) {
 	    }
 	  }
     }
-        //HEX
+    //HEX
     for (int i = 0; i < tokens_len; i++) {
         if (tokens[i].type == HEX) {
             long int hex_value = strtol(tokens[i].str, NULL, 16);

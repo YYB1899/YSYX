@@ -328,12 +328,11 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    char* firstaddr = tokens[i+1].str;
-	    if (strncmp(tokens[i+1].str, "0x", 2) == 0) {
-	        printf("a\n");
-	        memmove(firstaddr, firstaddr + 2, strlen(firstaddr) - 1);  // 跳过前两个字符'0'和'x'
-    		printf("%s\n",firstaddr);
-	    } 
+	    char* firstaddr = tokens[i+1].str;  
+	    if (strncmp(firstaddr, "0x", 2) == 0) {
+    		size_t new_len = strlen(firstaddr + 2) + 1;
+    		memmove(firstaddr, firstaddr + 2, new_len); 
+		}
 	    paddr_t addr = 0;
 	    sscanf(firstaddr,"%x",&addr);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", paddr_read(addr,4));

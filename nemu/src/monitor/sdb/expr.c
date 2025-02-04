@@ -14,6 +14,7 @@
 ***************************************************************************************/
 #include <limits.h>
 #include <stdbool.h>
+#include <memory/paddr.h>
 #include <isa.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -338,7 +339,8 @@ word_t expr(char *e, bool *success) {
 	    char* firstaddr = tokens[i+1].str;
 	    paddr_t addr = 0;
 	    sscanf(firstaddr,"%x",&addr);
- 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", addr);
+	    int value = paddr_read(addr,4);
+ 	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){
 		    for(int k = j +1 ; k < tokens_len ; k ++){

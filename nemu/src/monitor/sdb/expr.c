@@ -336,10 +336,9 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
 	    tokens[i].type = TK_NOTYPE;
-	    char* firstaddr = tokens[i+1].str;
-	    paddr_t addr = 0;
-	    sscanf(firstaddr,"%x",&addr);
-	    int value = paddr_read(addr,4);
+	    long int tmp = strtol(tokens[i + 1].str, NULL, 16);
+	    int value = 0;
+	    value = paddr_read(tmp,4);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%d", value);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE){

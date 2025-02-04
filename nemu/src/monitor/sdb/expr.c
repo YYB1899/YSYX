@@ -336,6 +336,7 @@ word_t expr(char *e, bool *success) {
 	    paddr_t addr = 0;
 	    printf("%s\n",firstaddr);
 	    sscanf(firstaddr,"%x",&addr);
+	    printf("%d\n",addr);
 	    printf("%s\n",tokens[i+1].str);
  	    snprintf(tokens[i+1].str, sizeof(tokens[i+1].str), "%x", paddr_read(addr,4));
 	    for(int j = 0 ; j < tokens_len ; j ++){

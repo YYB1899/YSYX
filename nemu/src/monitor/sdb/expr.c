@@ -297,7 +297,7 @@ word_t expr(char *e, bool *success) {
              )||
              (tokens[i].type == MUL && i == 0)
            ){
-            if (strtoul(tokens[i+1].str, NULL, 16) < 0x80000000 || strtoul(tokens[i+1].str, NULL, 16) > 0x8fffffff) {
+            if (strtoul(tokens[i+1].str, NULL, 16) < 0x80000000 || strtoul(tokens[i+1].str, NULL, 16) > 0x87ffffff) {
             	printf("a\n");
             	assert(0);
             }

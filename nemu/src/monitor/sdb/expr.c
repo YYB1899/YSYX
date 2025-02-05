@@ -285,7 +285,6 @@ word_t expr(char *e, bool *success) {
   	        
 	}
    }
-
    /*derefence*/
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == MUL && i > 0 
@@ -319,7 +318,7 @@ word_t expr(char *e, bool *success) {
 	  }
 
     }
-       /*negative*/  
+    /*negative*/  
    for(int i = 0 ; i < tokens_len ; i ++){
 	if((tokens[i].type == SUB && i > 0 
 	    && tokens[i-1].type != NUM && tokens[i-1].type != HEX && tokens[i-1].type != REG && tokens[i-1].type != RIGHT
@@ -355,6 +354,7 @@ word_t expr(char *e, bool *success) {
          	tokens[i].type = NUM;
          }
     }
+    
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

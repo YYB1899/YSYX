@@ -298,7 +298,7 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == MUL && i == 0)
            ){
             if (strtoul(tokens[i+1].str, NULL, 16) < 0x80000000 || strtoul(tokens[i+1].str, NULL, 16) > 0x87ffffff) {
-            	printf("a\n");
+            	printf("Memory address is not within the range [0x80000000, 0x87ffffff].\n");
             	assert(0);
             }
 	    tokens[i].type = TK_NOTYPE;

@@ -187,7 +187,6 @@ static int cmd_w(char *args){
 static int cmd_x(char *args){
 	char* num = strtok(args," ");
 	char* firstaddr = strtok(NULL," ");
-	printf("%s\n",firstaddr);
 	int len = 0;
 	paddr_t addr = 0;
 	int i = 0;

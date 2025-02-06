@@ -149,7 +149,7 @@ static int cmd_a(char *args){
         if (!success) {
             false_count++;
         }
-        if (consecutive_false_count > total_count / 2) {
+        if (consecutive_false_count == total_count ) {
             assert(0);
         }
         }

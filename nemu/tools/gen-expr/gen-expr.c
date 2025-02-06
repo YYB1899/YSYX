@@ -84,7 +84,7 @@ void gen_rand_op_div(){
 	gen(')');
 }
 void gen_rand_expr(int depth) {
-   if(depth > 1){
+   if(depth > 3){
    	gen_num();
    	return;
    }	

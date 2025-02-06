@@ -141,6 +141,7 @@ static int cmd_a(char *args){
         else {fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);
               }
 	if (strstr(line_buf, "true") != NULL || strstr(line_buf, "false") != NULL) {
+	    printf("Repeat automated tests\n");
             assert(0); // 触发断言
         }
         }

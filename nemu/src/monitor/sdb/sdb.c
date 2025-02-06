@@ -114,10 +114,6 @@ static int cmd_a(char *args){
     }
 
     char line[1024];
-    int total_count = 0;
-    int false_count = 0;
-    int consecutive_false_count = 0;
-    
     while (fgets(line, sizeof(line), input_fp) != NULL) {
         size_t len = strlen(line);
         if (len > 0 && line[len-1] == '\n') {
@@ -141,21 +137,13 @@ static int cmd_a(char *args){
         long int_line_res = strtol(line_res, NULL, 10);
         if(int_line_res == expr_res) {
         	fprintf(temp_fp, "\%s %s = %d true\n",line_res, line_buf, expr_res);
-        	consecutive_false_count = 0;
         }
         else {fprintf(temp_fp, "\%s %s = %d false\n",line_res, line_buf, expr_res);
-              consecutive_false_count++;
               }
-        total_count++;
-        if (!success) {
-            false_count++;
-        }
 	if (strstr(line_buf, "true") != NULL || strstr(line_buf, "false") != NULL) {
             assert(0); // 触发断言
         }
         }
-        printf("false_count=%d\n",false_count);
-        printf("consecutive_false_count=%d\n",consecutive_false_count);
     fclose(input_fp);
     fclose(temp_fp);
 

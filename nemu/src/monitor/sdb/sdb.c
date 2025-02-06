@@ -150,6 +150,8 @@ static int cmd_a(char *args){
             false_count++;
         }
         if (consecutive_false_count == total_count ) {
+        printf("false_count=%d\n",false_count);
+        printf("consecutive_false_count=%d\n",consecutive_false_count);
             assert(0);
         }
         }

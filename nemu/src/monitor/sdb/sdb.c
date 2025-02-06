@@ -149,13 +149,12 @@ static int cmd_a(char *args){
         if (!success) {
             false_count++;
         }
+        }
         if (consecutive_false_count == total_count ) {
         printf("false_count=%d\n",false_count);
         printf("consecutive_false_count=%d\n",consecutive_false_count);
             assert(0);
         }
-        }
-
     fclose(input_fp);
     fclose(temp_fp);
 

@@ -100,7 +100,9 @@ static int cmd_si(char *args) {
 	cpu_exec(step);
 	return 0;
 }
-
+    int total_count = 0;
+    int false_count = 0;
+    int consecutive_false_count = 0;
 static int cmd_a(char *args){
     FILE *input_fp = fopen("/home/yyb/ysyx-workbench/nemu/tools/gen-expr/input", "r");
     if (input_fp == NULL) {
@@ -114,9 +116,7 @@ static int cmd_a(char *args){
     }
 
     char line[1024];
-    int total_count = 0;
-    int false_count = 0;
-    int consecutive_false_count = 0;
+
     while (fgets(line, sizeof(line), input_fp) != NULL) {
         size_t len = strlen(line);
         if (len > 0 && line[len-1] == '\n') {

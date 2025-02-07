@@ -261,6 +261,8 @@ int get_precedence(int i) {
     }
 }
 word_t expr(char *e, bool *success) {
+	int *s = (int *)100;
+	*s = 1;
     if (!make_token(e)) {
         *success = false;
         return 0;

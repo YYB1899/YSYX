@@ -180,7 +180,8 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-  int eval(int p, int q) {
+
+int eval(int p, int q) {
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -260,6 +261,7 @@ int get_precedence(int i) {
         }
     }
 }
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;

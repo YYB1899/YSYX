@@ -65,6 +65,7 @@ void gen_num(){
 	buf[index_buf ++] = c;
     }
 }
+
 void gen(char c){
     buf[index_buf ++] = c;
 }

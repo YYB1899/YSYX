@@ -360,7 +360,6 @@ word_t expr(char *e, bool *success) {
          	tokens[i].type = NUM;
          }
     }
-    
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

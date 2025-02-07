@@ -180,8 +180,7 @@ int get_precedence(int i) {
             return 0; // Not an operator
     }
 }
-
-int eval(int p, int q) {
+  int eval(int p, int q) {
     if (p > q) {
       	/* Bad expression */
         assert(0);
@@ -261,7 +260,6 @@ int eval(int p, int q) {
         }
     }
 }
-
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
@@ -360,6 +358,7 @@ word_t expr(char *e, bool *success) {
          	tokens[i].type = NUM;
          }
     }
+    
     uint32_t result = eval(0, tokens_len - 1);
     printf("result = %d\n", result);
     *success = true;

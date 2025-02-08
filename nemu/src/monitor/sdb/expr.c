@@ -252,7 +252,8 @@ int get_precedence(int i) {
                 case MUL:
                     return val1 * val2;
                 case DIV:
-                    return val2 == 0 ? 0 : val1 / val2;                                     
+                    if(val2 == 0) assert(0);
+                    else  return  val1 / val2;                                     
                 case TK_EQ: 
                      return val1 == val2;
                 case NOTEQ: 

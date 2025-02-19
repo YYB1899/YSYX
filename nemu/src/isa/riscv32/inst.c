@@ -35,9 +35,9 @@ enum {
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst;
-  int rs1 = BITS(i, 19, 15);
-  int rs2 = BITS(i, 24, 20);
-  *rd     = BITS(i, 11, 7);
+  int rs1 = BITS(i, 19, 15);//源操作数
+  int rs2 = BITS(i, 24, 20);//源操作数
+  *rd     = BITS(i, 11, 7);//目的操作数,首先统一调用
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
@@ -73,6 +73,6 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
-  s->isa.inst = inst_fetch(&s->snpc, 4);
-  return decode_exec(s);
+  s->isa.inst = inst_fetch(&s->snpc, 4);//取指:内存的访问
+  return decode_exec(s);//译码 执行
 }

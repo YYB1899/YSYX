@@ -19,7 +19,7 @@
 
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   uint32_t inst = vaddr_ifetch(*pc, len);
-  (*pc) += len;
+  (*pc) += len;//让s->snpc指向下一条指令
   return inst;
 }
 

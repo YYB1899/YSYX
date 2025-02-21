@@ -12,7 +12,6 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
 #include "local-include/reg.h"
 #include <cpu/cpu.h>
 #include <cpu/ifetch.h>
@@ -88,3 +87,4 @@ int isa_exec_once(Decode *s) {
   s->isa.inst = inst_fetch(&s->snpc, 4);//取指:内存的访问
   return decode_exec(s);//译码 执行
 }
+

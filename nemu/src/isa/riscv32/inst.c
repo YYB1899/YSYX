@@ -35,7 +35,7 @@ enum {
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immS() do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); } while(0)
-#define immB() do { *imm = SEXT((BITS(i, 11, 8) | (BITS(i, 30, 25) << 4 ) | (BITS(i, 7, 7) << 10 ) | (BITS(i, 31, 31) << 11 )) << 1, 13);} while(0)
+#define immB() do { *imm = SEXT((BITS(i, 11, 8) | (BITS(i, 30, 25) << 4 ) | (BITS(i, 7, 7) << 10 ) | (SEXT(BITS(i, 31, 31), 1) << 11 )) << 1, 13);} while(0)
 #define immJ() do { *imm = SEXT((BITS(i, 30, 21) | (BITS(i, 20, 20) << 10 ) | (BITS(i, 19, 12) << 11 ) | (BITS(i, 31, 31) << 19 )) << 1, 21);} while(0) 
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
@@ -77,15 +77,6 @@ static int decode_exec(Decode *s) {
   INSTPAT("? ?????????? ? ???????? ????? 11011 11", jal    , J, R(rd) = s->pc + 4; s->dnpc = s->pc + imm);
   INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw     , S, Mw(src1 + imm, 4, src2));
   INSTPAT("0000 0000 0000 0000 1000 0000 0110 0111", ret   , U, s -> dnpc = R(1));
-  INSTPAT("??????? ????? ????? ??? ????? ????? ??", li     , I, {
-    // Extract the immediate value from the instruction
-    word_t imm = (INSTPAT_INST(s) & 0xFFF); // Lower 12 bits for addi
-    word_t upper_imm = (INSTPAT_INST(s) >> 12) & 0xFFFFF; // Upper 20 bits for lui
-
-    // Generate lui and addi instructions
-    R(rd) = upper_imm << 12; // lui
-    R(rd) += imm; // addi
-  });
   INSTPAT_END();
 
   R(0) = 0; // reset $zero to 0

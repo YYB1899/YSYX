@@ -1,4 +1,4 @@
-modulmodule SignExtend (
+module sign_extend (
     input  [11:0] imm,
     output reg [31:0] imm_extended 
 );

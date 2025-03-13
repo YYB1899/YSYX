@@ -29,7 +29,6 @@ char *strcpy(char *dst, const char *src) {
 char *strncpy(char *dst, const char *src, size_t n) {
   //panic("Not implemented");
   char* ret = dst;
-  size_t i = n;
   while(n > 0 && *src != '\0'){
   	*dst = *src;
   	src ++;
@@ -103,11 +102,11 @@ void *memmove(void *dst, const void *src, size_t n) {
   unsigned char *d = (unsigned char*)dst;
   const unsigned char *s = (const unsigned char*)src;
   if(s < d && d < s + n){
-  	for(size_t i = n;i > 0:i --){
+  	for(size_t i = n;i > 0;i --){
 		d[i - 1] = s[i - 1];
 	}
   }else{
-  	for(size_t i = 0; i < n; i ++)P
+  	for(size_t i = 0; i < n; i ++){
   		d[i] = s[i];
   	}
   }

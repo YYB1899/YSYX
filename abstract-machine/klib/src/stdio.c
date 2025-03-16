@@ -7,12 +7,12 @@
 
 int printf(const char *fmt, ...) {
   //panic("Not implemented");
-  va_list ap;
-  va_start(ap,fmt);
+  va_list ap;//声明一个可变参数列表 ap
+  va_start(ap,fmt);//初始化 ap，使其指向第一个可变参数fmt
   char buffer[2048];
   unsigned int i = vsprintf(buffer,fmt,ap);
-  putstr(buffer);
-  va_end(ap);
+  putstr(buffer);//字符串buffer输出到标准输出设备
+  va_end(ap);//清理可变参数列表 ap
   return i;
 }
 
@@ -79,10 +79,10 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 int sprintf(char *out, const char *fmt, ...) {
   //panic("Not implemented");
   va_list ap;//声明一个可变参数列表 ap
-  va_start(ap,fmt);//初始化 ap，使其指向第一个可变参数
+  va_start(ap,fmt);//初始化 ap，使其指向第一个可变参数fmt
   unsigned int i = vsprintf(out,fmt,ap);
-  va_end(ap);
-  return i;//清理可变参数列表 ap
+  va_end(ap);//清理可变参数列表 ap
+  return i;
 }
 
 //int snprintf(char *out, size_t n, const char *fmt, ...) {

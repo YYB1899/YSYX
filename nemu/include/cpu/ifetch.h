@@ -16,11 +16,12 @@
 #ifndef __CPU_IFETCH_H__
 
 #include <memory/vaddr.h>
+#include "/home/yyb/ysyx-workbench/nemu/src/utils/trace.h"
 
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   uint32_t inst = vaddr_ifetch(*pc, len);
+  trace_inst((word_t) *pc, inst);
   (*pc) += len;//让s->snpc指向下一条指令
   return inst;
 }
-
 #endif

@@ -160,7 +160,7 @@ config DIFFTEST
     Note that this will significantly reduce the performance of NEMU.
 
 config IRINGBUF
-  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  depends on IRINGBUF
   bool "Enable instruction ring buffer"
   default y
   

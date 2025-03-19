@@ -30,3 +30,11 @@ void display_inst(){
     } while (i != end);
 }
 
+void display_memory_read(paddr_t addr, int len){
+	printf("read memory: %u, the len is %d\n.", addr, len);
+}
+
+void display_memory_write(paddr_t addr, int len, word_t data){
+	printf("wirte memory: %u, the len is %d\n, the written data is %u.", addr, len, data);
+}
+

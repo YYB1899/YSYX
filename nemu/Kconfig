@@ -169,6 +169,11 @@ config MTARCE
   bool "Enable memory tracer"
   default n
 
+config FTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable function call tracer"
+  default n
+  
 choice
   prompt "Reference design"
   default DIFFTEST_REF_SPIKE if ISA_riscv

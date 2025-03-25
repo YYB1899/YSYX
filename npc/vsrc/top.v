@@ -16,6 +16,7 @@ module top (
     wire [31:0] alu_result;         // ALU 计算结果
     wire [11:0] imm;
 
+
     // 实例化 PC 模块
     pc pc_inst (
         .clk         (clk),
@@ -75,5 +76,12 @@ module top (
         .sum        (alu_result),
         .overflow   (overflow)
     );
-
+    
+    trap trap(
+    	.clk(clk),
+    	.rst(rst),
+    	.pc(pc),
+    	.instruction(instruction),
+    	.overflow(overflow)
+    );
 endmodule

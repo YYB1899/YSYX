@@ -22,7 +22,7 @@ module trap (
                 $finish(0);
             end
             // BAD TRAP 检测（非法指令或溢出）
-            else if (overflow || (instruction[6:0] == 7'b1111111)) begin
+            else begin
                  $display("\n=================================");
             	$display(`RED,"  HIT BAD TRAP (X_X)",`RESET);
             	$display(`BOLD,"  PC:        %h",`RESET, pc);

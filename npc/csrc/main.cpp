@@ -47,21 +47,20 @@ void step_and_dump_wave() {
 // 检查系统命令执行结果
 void check_system_call(const std::string& cmd) {
     int ret = system(cmd.c_str());//执行传入的命令字符串
-    if (ret != 0) {
+    if (ret != 0) {//命令执行失败
         fprintf(stderr, "Command failed (code %d): %s\n", ret, cmd.c_str());
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);//终止程序
     }
 }
 
 // 从ELF文件生成指令hex文件
-void prepare_instructions(const char* elf_path) {
+void prepare_instructions(const char* elf_path) {//ELF文件路径elf_path
     // 生成Verilog格式的指令文件
-    std::string cmd = "riscv64-unknown-elf-objcopy -O verilog --only-section=.text ";//只提取.text段,输出格式为Verilog兼容的十六进制
+    std::string cmd = "riscv64-unknown-elf-objcopy -O verilog --only-section=.text ";//字符串类,只提取.text段,输出格式为Verilog兼容的十六进制
     cmd += elf_path;
-    cmd += " build/inst.hex";
+    cmd += " build/inst.hex";//输出的 Verilog 十六进制文件
     check_system_call(cmd);
-
-    // 移除地址标记（可选）
+    //删除@ 地址行，仅保留指令数据
     check_system_call("sed -i '/@/d' build/inst.hex");
 }
 
@@ -70,10 +69,10 @@ int main(int argc, char** argv) {
     sim_init();
 
     // 处理程序加载
-    if (argc > 1) {
+    if (argc > 1) {//带参数
         printf("Loading program: %s\n", argv[1]);
-        prepare_instructions(argv[1]);
-    } else {
+        prepare_instructions(argv[1]);//第二个为elf文件的路径
+    } else {//无参数
         printf("Loading default program\n");
         prepare_instructions("build/dummy-riscv32e-npc.elf");
     }

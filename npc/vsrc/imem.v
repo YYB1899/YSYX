@@ -11,11 +11,12 @@ module imem (
         integer i;
         // 初始化全部为0（nop）
         for (i = 0; i < 2048; i = i + 1) begin
-            rom[i] = 32'h00000013;  // nop
+            rom[i] = 32'h00000013;  // 指令的效果是将 x0 加 0 再写入 x0 寄存器，实际上什么都不做
         end
         
         // 使用readmemh加载处理后的指令文件
         $readmemh("build/inst.hex", rom);
+        // 调试打印前10条指令
         $display("===== Instruction Memory Initialization =====");
         for (i = 0; i < 10; i = i + 1) begin
             $display("imem[%h] = %h", 32'h80000000 + i*4, rom[i]);

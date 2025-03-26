@@ -16,7 +16,7 @@ module imem (
         
         // 使用readmemh加载处理后的指令文件
         $readmemh("build/inst.hex", rom);
-        
+     end   
   // 地址转换（按字寻址，支持80000000起始地址）
     wire [31:0] word_addr = (pc - 32'h80000000) >> 2;
     

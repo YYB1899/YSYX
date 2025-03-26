@@ -37,8 +37,5 @@ run: $(BIN)
 
 clean:
 	rm -rf $(BUILD_DIR) wave.vcd
-
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-
-.PHONY: default all clean run sim

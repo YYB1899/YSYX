@@ -1,64 +1,102 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "Vtop.h" 
+#include "Vtop.h"
+#include <fstream>
+#include <vector>
+#include <cstdint>
+#include <cstdlib>  // for system()
 
 VerilatedContext* contextp = nullptr;
 VerilatedVcdC* tfp = nullptr;
-static Vtop* top; 
+static Vtop* top;
+
+extern "C" void end_simulation() {
+    printf("Simulation ended by ebreak instruction\n");
+    if (contextp) contextp->gotFinish(true);
+}
 
 // 仿真初始化
 void sim_init() {
     contextp = new VerilatedContext;
     tfp = new VerilatedVcdC;
-    top = new Vtop{contextp}; 
-    contextp->traceEverOn(true); 
-    top->trace(tfp, 0); 
-    tfp->open("wave.vcd"); 
+    top = new Vtop{contextp};
+    contextp->traceEverOn(true);
+    top->trace(tfp, 0);
+    tfp->open("wave.vcd");
 }
 
 // 仿真退出
 void sim_exit() {
     if (tfp) {
-        tfp->close();  // 关闭波形文件
+        tfp->close();
         delete tfp;
     }
     delete top;
     delete contextp;
 }
-//DPI-C 函数定义
-extern "C" void end_simulation() {
-    printf("Ending simulation due to ebreak instruction.\n");
-    contextp -> gotFinish(true);// 设置标志位
-}
 
 // 单步仿真并输出波形
 void step_and_dump_wave() {
     top->eval();
-    contextp->timeInc(1); 
+    contextp->timeInc(1);
     if (tfp) {
-        tfp->dump(contextp->time());  // 输出波形
+        tfp->dump(contextp->time());
     }
 }
 
-int main() {
+// 检查系统命令执行结果
+void check_system_call(const std::string& cmd) {
+    int ret = system(cmd.c_str());//执行传入的命令字符串
+    if (ret != 0) {
+        fprintf(stderr, "Command failed (code %d): %s\n", ret, cmd.c_str());
+        exit(EXIT_FAILURE);
+    }
+}
+
+// 从ELF文件生成指令hex文件
+void prepare_instructions(const char* elf_path) {
+    // 生成Verilog格式的指令文件
+    std::string cmd = "riscv64-unknown-elf-objcopy -O verilog --only-section=.text ";//只提取.text段,输出格式为Verilog兼容的十六进制
+    cmd += elf_path;
+    cmd += " build/inst.hex";
+    check_system_call(cmd);
+
+    // 移除地址标记（可选）
+    check_system_call("sed -i '/@/d' build/inst.hex");
+}
+
+int main(int argc, char** argv) {
+    // 初始化仿真环境
     sim_init();
 
-    top->rst = 1; 
+    // 处理程序加载
+    if (argc > 1) {
+        printf("Loading program: %s\n", argv[1]);
+        prepare_instructions(argv[1]);
+    } else {
+        printf("Loading default program\n");
+        prepare_instructions("build/dummy-riscv32e-npc.elf");
+    }
+
+    // 复位序列
+    top->rst = 1;
     top->clk = 0;
     step_and_dump_wave();
     top->clk = 1;
     step_and_dump_wave();
-    top->rst = 0; 
+    top->rst = 0;
     top->clk = 0;
     step_and_dump_wave();
 
-    for (int i = 0; i < 10; i++) {
+    // 主仿真循环
+    for (int i = 0; i < 1000; i++) {  // 最大周期数限制
         top->clk = 0;
         step_and_dump_wave();
-        top->clk = 1; 
+        top->clk = 1;
         step_and_dump_wave();
-        if(contextp -> gotFinish()) {//使用标志位
-        	break;
+
+        if (contextp->gotFinish()) {
+            break;
         }
     }
 
@@ -66,3 +104,4 @@ int main() {
     sim_exit();
     return 0;
 }
+

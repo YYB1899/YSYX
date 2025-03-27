@@ -3,14 +3,23 @@ module alu(
     input wire [31:0] r2,         
     input wire [2:0] sub,              
     output reg [31:0] sum,      
-    output reg overflow
+    output reg overflow,
+    input wire alu_enable //enable=1正常执行ALU操作
 );      
       
     reg [32:0] temp_sum;      
     reg [31:0] r2_complement;    
     reg [31:0] s;
     
-always @(*) begin    
+always @(*) begin  
+    if(!alu_enable) begin
+    	    sum = 32'b0;
+    	    overflow = 1'b0;
+            temp_sum = 33'b0;
+            r2_complement = 32'b0;
+            s = 32'b0;
+        end
+    else begin  
     case(sub)   
         3'b000: begin    
             temp_sum = {1'b0, r1} + {1'b0, r2};    
@@ -71,6 +80,7 @@ always @(*) begin
             overflow = 1'b0;
             s = 32'b0;
         end  
-    endcase    
-end    
+    endcase     
+    end
+    end
 endmodule

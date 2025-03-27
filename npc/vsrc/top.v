@@ -81,7 +81,6 @@ module top (
     	.rst(rst),
     	.pc(pc),
     	.instruction(instruction),
-    	.overflow(overflow),
-    	.program_finished(pc == 80000004)
+    	.overflow(overflow)
     );
 endmodule

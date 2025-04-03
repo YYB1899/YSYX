@@ -17,12 +17,19 @@ module top (
     wire        wb_src;             // 写回数据选择 (0: ALU结果, 1: 立即数)
     wire        alu_enable;         // alu使能信号
     wire        alu_r1;             // AUIPC用PC，其他用rs1
-
+    wire        is_jal;   	    // JAL 指令标志
+    wire        is_jalr; 	    // JALR 指令标志
+    wire [31:0] pc_jal;
     // 实例化 PC 模块
     pc pc_inst (
         .clk         (clk),
         .rst         (rst),
-        .pc          (pc)
+        .pc          (pc),
+        .is_jalr     (is_jalr),
+        .is_jal      (is_jal),
+        .imm         (imm),
+        .rs1_data    (rs1_data),
+        .pc_jal      (pc_jal)
     );
 
     // 实例化 IMEM 模块
@@ -51,7 +58,9 @@ module top (
         .alu_ctrl    (alu_ctrl),
         .wb_src      (wb_src),
         .alu_enable  (alu_enable),
-        .alu_r1      (alu_r1)
+        .alu_r1      (alu_r1),
+        .is_jalr     (is_jalr),
+        .is_jal      (is_jal)        
     );
 
     // 实例化 Register File 模块
@@ -61,7 +70,7 @@ module top (
         .rs2        (rs2),
         .rd         (rd), 
         .wen        (reg_write),
-        .wdata      (wb_src ? imm : alu_result),
+        .wdata      ((is_jal | is_jalr) ? pc_jal : (wb_src ? imm : alu_result)),
         .rs1_data   (rs1_data),
         .rs2_data   (rs2_data)
     );
@@ -73,7 +82,8 @@ module top (
         .sub        (alu_ctrl), // 仅支持加法，SUB 固定为 0
         .sum        (alu_result),
         .overflow   (overflow),
-        .alu_enable (alu_enable)
+        .alu_enable (alu_enable),
+        .is_jalr    (is_jalr)
     );
     
     trap trap(

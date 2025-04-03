@@ -21,8 +21,6 @@ module register_file #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   assign rs2_data = (rs2 == 0) ? 0 : rf[rs2];
   
   always @(posedge clk) begin
-    if (wen && rd!= 0) begin
-    	rf[rd] <= wdata;
-    end
+    if (wen) rf[rd] <= wdata;
   end
 endmodule

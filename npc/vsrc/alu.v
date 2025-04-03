@@ -4,7 +4,8 @@ module alu(
     input wire [2:0] sub,              
     output reg [31:0] sum,      
     output reg overflow,
-    input wire alu_enable //enable=1正常执行ALU操作
+    input wire alu_enable, //enable=1正常执行ALU操作
+    input wire is_jalr
 );      
       
     reg [32:0] temp_sum;      
@@ -80,7 +81,7 @@ always @(*) begin
             overflow = 1'b0;
             s = 32'b0;
         end  
-    endcase     
+    endcase   
     end
-    end
+    end    
 endmodule

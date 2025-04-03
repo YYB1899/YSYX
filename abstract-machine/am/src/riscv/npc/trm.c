@@ -15,7 +15,15 @@ void putch(char ch) {
 }
 
 void halt(int code) {
-  while (1);
+      // 将退出码写入特定内存地址（用于调试）
+    volatile uint32_t *exit_code = (volatile uint32_t *)0x100000;
+    *exit_code = code;
+
+    // 内联汇编插入 ebreak
+    asm volatile("ebreak");
+
+    // 防止继续执行（冗余保护）
+    while(1);
 }
 
 void _trm_init() {

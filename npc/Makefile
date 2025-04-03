@@ -43,7 +43,7 @@ all: default
 
 run: $(BIN)
 	@mkdir -p build
-	@$(BIN) $(if $(ELF),$(ELF),build/dummy-riscv32e-npc.elf)
+	@$(BIN) $(if $(ELF),$(ELF),build/dummy-riscv32e-npc.elf) $(if $(DEBUG),--debug,)
 
 clean:
 	rm -rf $(BUILD_DIR) wave.vcd build/inst.hex

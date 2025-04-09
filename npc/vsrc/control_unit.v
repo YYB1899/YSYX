@@ -16,8 +16,7 @@ module control_unit(
 	wire [6:0] opcode = instruction[6:0];
 	wire [2:0] funct = instruction[14:12];
 	wire [6:0] funct_r = instruction[31:25];
-		
-    // 立即数生成（数据流）
+  // 立即数生成（数据流）
     assign imm = (opcode == 7'b0110111) ? {instruction[31:12], 12'b0} :               // LUI
                 (opcode == 7'b0010111) ? {instruction[31:12], 12'b0} :               // AUIPC
                 (opcode == 7'b0010011) ? {{20{instruction[31]}}, instruction[31:20]} :     // ADDI

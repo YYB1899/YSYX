@@ -3,7 +3,7 @@ module top (
     input  wire        rst,          // 复位信号
     output wire [31:0] pc,           // 程序计数器
     output wire [31:0] instruction,  // 当前指令
-    output wire        overflow      // ALU 溢出信号
+    output wire        overflow     // ALU 溢出信号
 );
 
     // 内部信号
@@ -93,4 +93,5 @@ module top (
     	.instruction(instruction),
     	.overflow(overflow)
     );
+
 endmodule

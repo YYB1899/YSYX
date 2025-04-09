@@ -127,5 +127,5 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   checkregs(&ref_r, pc);
 }
 #else
-void init_difftest(char *ref_so_file, long img_size, int port) { }
+void init_difftest(char *ref_so_file, long img_size, int port) { printf("NEMU PC: 0x%08x, Spike PC: 0x%08x\n", cpu.pc, ref_r.pc);}
 #endif

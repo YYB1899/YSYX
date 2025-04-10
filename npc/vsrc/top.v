@@ -77,7 +77,7 @@ module top (
 
     // 实例化 ALU 模块
     alu alu_inst (
-        .r1         (alu_r1 ? pc : rs1_data),
+        .r1         (alu_r1 ? pc : rs2_data),
         .r2         (alu_src ? imm : rs2_data), // 选择立即数或 rs2_data
         .sub        (alu_ctrl), // 仅支持加法，SUB 固定为 0
         .sum        (alu_result),

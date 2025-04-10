@@ -33,14 +33,16 @@ module control_unit(
                      (opcode == 7'b0010111) |                          // AUIPC
                      (opcode == 7'b0010011) |                          // ADDI
                      (opcode == 7'b1101111) |                          // JAL
-                     (opcode == 7'b1100111);                           // JALR
+                     (opcode == 7'b1100111) |                           // JALR
+                     (opcode == 7'b0110011);				// ADD,SUB
+
     
     assign alu_src = (opcode == 7'b0010011) |   		    // ADDI
     		   (opcode == 7'b1100111) |                          // JALR
     		   (opcode == 7'b1101111) |			     // JAL
     		   (opcode == 7'b0010111);                           // AUIPC
     
-    assign alu_ctrl = 3'b000;                                           // 默认加法
+    assign alu_ctrl = (opcode == 7'b0110011 && funct_r == 7'b0100000) ? 3'b001 : 3'b000;                                          // 默认加法
     
     assign wb_src = (opcode == 7'b0110111);
      	

@@ -33,6 +33,20 @@ void cpu_exec(uint64_t cycles);
 void run_to_completion();
 void cmd_x(const std::string& args);
 void log_memory_access();
+ //DPI相关函数
+extern "C" void end_simulation() {
+    printf("Simulation ended by ebreak instruction\n");
+    if (contextp) contextp->gotFinish(true);
+}
+
+extern "C" {
+    int get_reg_value(int reg_num);
+    void register_file_scope();
+}
+
+extern "C" void register_file_scope() {
+    // 空实现，用来设置上下文
+}
 
 // 初始化 Capstone
 void init_capstone() {
@@ -63,20 +77,7 @@ void init_capstone() {
     capstone_initialized = true;
 }
 
- //DPI相关函数
-extern "C" void end_simulation() {
-    printf("Simulation ended by ebreak instruction\n");
-    if (contextp) contextp->gotFinish(true);
-}
 
-extern "C" {
-    int get_reg_value(int reg_num);
-    void register_file_scope();
-}
-
-extern "C" void register_file_scope() {
-    // 空实现，用来设置上下文
-}
 // 内存相关函数
 void log_memory_access() {
     uint32_t op = top->instruction;
@@ -178,12 +179,10 @@ int main(int argc, char** argv) {
             break;
         }
     }
-
     // 初始化仿真环境和内存
     sim_init(argc, argv);
-
     if (!debug_mode) {
-        // 非调试模式：直接运行到程序结束
+        // 非调试模式
         printf("Starting simulation in batch mode...\n");
         run_to_completion();
     } else {
@@ -197,8 +196,7 @@ int main(int argc, char** argv) {
 
         while (!contextp->gotFinish() && main_time < 100000) {
             printf("(npc) ");
-            fflush(stdout);
-            
+            fflush(stdout);            
             std::string cmd;
             std::getline(std::cin, cmd);
 

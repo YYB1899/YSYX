@@ -14,7 +14,7 @@
 #include <dlfcn.h> 
 // 内存配置
 #define CONFIG_MBASE 0x80000000
-#define CONFIG_MSIZE 0x10000000  // 256MB
+#define CONFIG_SIZE 0x10000000  // 256MB
 
 // 全局变量
 VerilatedContext* contextp = nullptr;

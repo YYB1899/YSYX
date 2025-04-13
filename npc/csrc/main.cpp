@@ -6,6 +6,8 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <cstdint>
+#include <fstream>
 #include <map>
 #include <svdpi.h>
 #include "/home/yyb/ysyx-workbench/nemu/tools/capstone/repo/include/capstone/capstone.h"
@@ -23,6 +25,7 @@ bool debug_mode = false;
 std::map<uint32_t, uint32_t> mem_access_log;
 static csh handle;
 static bool capstone_initialized = false;
+static std::map<uint32_t, uint32_t> memory;
 
 // 函数声明
 void sim_init(int argc, char** argv);
@@ -34,6 +37,49 @@ void run_to_completion();
 void cmd_x(const std::string& args);
 void log_memory_access();
  //DPI相关函数
+extern "C" void load_program(const char* filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) {
+        std::cerr << "Error: Failed to open " << filename << std::endl;
+        exit(1);
+    }
+
+    uint32_t addr = 0;
+    uint32_t word;
+    while (file.read(reinterpret_cast<char*>(&word), sizeof(word))) {
+        memory[addr] = word;
+        addr += 4;
+    }
+    std::cout << "Loaded " << addr << " bytes into memory" << std::endl;
+}
+
+// 内存读取函数
+extern "C" int pmem_read(int raddr) {
+    uint32_t aligned_addr = static_cast<uint32_t>(raddr) & ~0x3u;
+    auto it = memory.find(aligned_addr);
+    if (it != memory.end()) {
+        return it->second;
+    }
+    std::cerr << "Warning: Read from uninitialized address 0x" 
+              << std::hex << aligned_addr << std::endl;
+    return 0;
+}
+
+extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+    uint32_t aligned_addr = waddr & ~0x3u;
+    uint32_t current = pmem_read(aligned_addr);
+    uint32_t new_data = current;
+    
+    // 按字节掩码更新数据
+    for (int i = 0; i < 4; i++) {
+        if (wmask & (1 << i)) {
+            new_data &= ~(0xFF << (i*8));       // 清除目标字节
+            new_data |= (wdata & (0xFF << (i*8))); // 设置新字节
+        }
+    }
+    
+    memory[aligned_addr] = new_data;
+}
 extern "C" void end_simulation() {
     printf("Simulation ended by ebreak instruction\n");
     if (contextp) contextp->gotFinish(true);

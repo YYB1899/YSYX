@@ -3,6 +3,9 @@ module pc (
 	input wire rst,
 	output reg [31:0] pc,
 	input [31:0] imm,
+	input [31:0] sum,
+	input [2:0]  b_type,
+	input        is_b,
 	input [31:0] rs1_data,
 	input wire is_jal,
 	input wire is_jalr,
@@ -10,6 +13,15 @@ module pc (
 );
     reg [31:0] next_pc;
     wire [31:0] jal_pc_plus4 = pc + 4;  // 计算jal的PC+4
+    wire should_jump = is_jal || 
+                  (is_b && 
+                   ((b_type == 3'b001 && sum[0]) ||  // BEQ: sum=1 跳转
+                   (b_type == 3'b010 && !sum[0]) ||  // BNE: sum=0 跳转
+                   (b_type == 3'b011 && sum[0]) ||   // BLT: sum=1 跳转
+                   (b_type == 3'b100 && !sum[0]) ||  // BGE: sum=0 跳转
+                   (b_type == 3'b101 && sum[0]) ||   // BLTU: sum=1 跳转
+                   (b_type == 3'b110 && !sum[0])     // BGEU: sum=0 跳转
+                  ));
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -19,7 +31,7 @@ module pc (
             // 计算下一条PC值
             if (is_jalr) begin
                 next_pc <= (rs1_data + imm) & ~32'b1;  // JALR: (rs1 + imm) & ~1
-            end else if (is_jal) begin
+            end else if (should_jump) begin
                 next_pc <= pc + imm;                  // JAL: PC + 立即数偏移
             end else begin
                 next_pc <= pc + 4;                    // 默认顺序执行

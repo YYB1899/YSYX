@@ -83,7 +83,7 @@ module top (
         .rs2        (rs2),
         .rd         (rd), 
         .wen        (reg_write),
-        .wdata      ((use_wdata) ? rd_data : ((is_jal | is_jalr) ? pc_jal : (wb_src ? imm : alu_result))), //(use_wdata) ? rd_data : ((is_jal | is_jalr) ? pc_jal : (wb_src ? imm : alu_result))
+        .wdata      ((use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result))), 
         .rs1_data   (rs1_data),
         .rs2_data   (rs2_data)
     );
@@ -107,13 +107,13 @@ module top (
     );
 
     memory_interface memory_interface(
-	.clk(clk),
-	.rst(rst),
-	.alu_result(alu_result),
+	.clk         (clk),
+	.rst         (rst),
+	.alu_result  (alu_result),
         .is_load     (is_load),
         .is_store    (is_store),
-	.wdata (rs2_data),
-	.rdata (rd_data),
-	.use_wdata(use_wdata)
+	.wdata       (rs2_data),
+	.rdata       (rd_data),
+	.use_wdata   (use_wdata)
     );
 endmodule

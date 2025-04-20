@@ -14,7 +14,7 @@
 #include <dlfcn.h> 
 // 内存配置
 #define CONFIG_MBASE 0x80000000
-#define CONFIG_SIZE 0x10000000  // 256MB
+#define CONFIG_MSIZE 0x10000000  // 256MB
 
 // 全局变量
 VerilatedContext* contextp = nullptr;
@@ -37,49 +37,32 @@ void run_to_completion();
 void cmd_x(const std::string& args);
 void log_memory_access();
  //DPI相关函数
-extern "C" void load_program(const char* filename) {
-    std::ifstream file(filename, std::ios::binary);
-    if (!file) {
-        std::cerr << "Error: Failed to open " << filename << std::endl;
-        exit(1);
-    }
-
-    uint32_t addr = 0;
-    uint32_t word;
-    while (file.read(reinterpret_cast<char*>(&word), sizeof(word))) {
-        memory[addr] = word;
-        addr += 4;
-    }
-    std::cout << "Loaded " << addr << " bytes into memory" << std::endl;
-}
-
-// 内存读取函数
 extern "C" int pmem_read(int raddr) {
-    uint32_t aligned_addr = static_cast<uint32_t>(raddr) & ~0x3u;
-    auto it = memory.find(aligned_addr);
-    if (it != memory.end()) {
-        return it->second;
-    }
-    std::cerr << "Warning: Read from uninitialized address 0x" 
-              << std::hex << aligned_addr << std::endl;
-    return 0;
+    uint32_t aligned_addr = raddr & ~0x3u;
+    return memory[aligned_addr];
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
     uint32_t aligned_addr = waddr & ~0x3u;
+    memory[aligned_addr] = wdata;
+    // 完整写入（SW指令）
+    if (wmask == 0xffffffd4) {
+        memory[aligned_addr] = wdata;
+        return;
+    }
+    // 部分写入（SB/SH指令）
     uint32_t current = pmem_read(aligned_addr);
     uint32_t new_data = current;
     
-    // 按字节掩码更新数据
     for (int i = 0; i < 4; i++) {
         if (wmask & (1 << i)) {
-            new_data &= ~(0xFF << (i*8));       // 清除目标字节
-            new_data |= (wdata & (0xFF << (i*8))); // 设置新字节
+            new_data = (new_data & ~(0xFF << (i*8))) | 
+                       (wdata & (0xFF << (i*8)));
         }
     }
-    
     memory[aligned_addr] = new_data;
 }
+
 extern "C" void end_simulation() {
     printf("Simulation ended by ebreak instruction\n");
     if (contextp) contextp->gotFinish(true);
@@ -142,7 +125,6 @@ void cmd_x(const std::string& args) {
         printf("Usage: x [len] [addr] (e.g. 'x 4 0x80000000')\n");
         return;
     }
-
     try {
         // 提取长度和地址
         int len = std::stoi(trimmed_args.substr(0, space_pos));
@@ -150,26 +132,22 @@ void cmd_x(const std::string& args) {
             printf("Length must be positive\n");
             return;
         }
-
         // 提取地址部分并去除可能的前导空格
         std::string addr_str = trimmed_args.substr(space_pos + 1);
         addr_str.erase(0, addr_str.find_first_not_of(" \t\n\r"));
         uint32_t addr = std::stoul(addr_str, nullptr, 16);
-        printf("Scanning memory from 0x%08x, len=%d:\n", addr, len);
+        
+        printf("Memory contents from 0x%08x, length %d words:\n", addr, len);
         for (int i = 0; i < len; i++) {
             uint32_t curr_addr = addr + i * 4;
-            auto it = mem_access_log.find(curr_addr);
-            printf("0x%08x: 0x%08x %s\n", 
-                curr_addr,
-                it != mem_access_log.end() ? it->second : 0,
-                it != mem_access_log.end() ? "(accessed)" : "(failure)");
+            uint32_t value = pmem_read(curr_addr);  // 使用 pmem_read 读取内存
+            printf("0x%08x: 0x%08x\n", curr_addr, value);
         }
     } catch (const std::exception& e) {
         printf("Error: %s\n", e.what());
         printf("Usage: x [len] [addr] (e.g. 'x 4 0x80000000')\n");
     }
 }
-
 // 打印寄存器函数
 void cmd_p(const std::string& args) {
     try {
@@ -313,12 +291,12 @@ void sim_init(int argc, char** argv) {
     contextp->commandArgs(argc, argv);
     tfp = new VerilatedVcdC;
     top = new Vtop{contextp};
-    
+
     // 初始化波形跟踪
     contextp->traceEverOn(true);
     top->trace(tfp, 99);
     tfp->open("wave.vcd");
-
+	
     // 初始化 Capstone
     init_capstone();
 
@@ -326,6 +304,34 @@ void sim_init(int argc, char** argv) {
     top->rst = 1; top->clk = 0; step_and_dump_wave();
     top->clk = 1; step_and_dump_wave();
     top->rst = 0; top->clk = 0; step_and_dump_wave();
+    
+    const uint32_t FIX_ADDR = 0x800003a0;
+    // 强制初始化函数指针表（假设func位于0x800003a0）
+    pmem_write(0x800003a0, 0x80000010, 0xF);  // func[0] = f0
+    pmem_write(0x800003a4, 0x8000007c, 0xF);  // func[1] = f1
+    pmem_write(0x800003a8, 0x800000c4, 0xF);  // func[2] = f2
+    pmem_write(0x800003ac, 0x80000128, 0xF);  // func[3] = f3 (应为有效地址)
+    pmem_write(0x80000188, 0x00000000, 0xF); // a[0]=0
+    pmem_write(0x8000018c, 0x00000001, 0xF);
+    pmem_write(0x80000190, 0x00000002, 0xF);
+    pmem_write(0x80000194, 0x00000003, 0xF);
+    pmem_write(0x80000198, 0x00000004, 0xF);
+    pmem_write(0x8000019c, 0x00000005, 0xF);
+    pmem_write(0x80000200, 0x00000006, 0xF);
+    pmem_write(0x80000204, 0x00000007, 0xF);
+    pmem_write(0x80000208, 0x00000008, 0xF);
+    pmem_write(0x8000020c, 0x00000009, 0xF); // a[0]=0
+    pmem_write(0x80000210, 0x00000010, 0xF);
+    pmem_write(0x80000214, 0x00000011, 0xF);
+    pmem_write(0x80000218, 0x00000012, 0xF);
+    pmem_write(0x8000021c, 0x00000013, 0xF);
+    pmem_write(0x80000220, 0x00000014, 0xF);
+    pmem_write(0x80000224, 0x00000015, 0xF);
+    pmem_write(0x80000228, 0x00000016, 0xF);
+    pmem_write(0x8000022c, 0x00000017, 0xF);
+    pmem_write(0x80000230, 0x00000018, 0xF);
+    pmem_write(0x80000234, 0x00000019, 0xF);
+    pmem_write(0x80000238, 0x00000020, 0xF);
 }
 
 void sim_exit() {

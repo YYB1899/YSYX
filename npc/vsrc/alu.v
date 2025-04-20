@@ -63,13 +63,22 @@ always @(*) begin
             overflow = 1'b0;
             s = 32'b0;
         end  
-        4'b0110: begin  //带符号数
-            r2_complement = ~r2 + 1'b1;    
-            temp_sum = {1'b0, r1} + {1'b0, r2_complement};  
-            s = temp_sum[31:0];    
-   	    overflow =  (~s[31]&r1[31]&(~r2[31])) | (s[31]&(~r1[31])&r2[31]);
-   	    sum = (r1[31] ^ r2[31]) ? (r1[31] ? 32'b1 : 32'b0) :  (temp_sum[31] ? 32'b1 : 32'b0); 
-        end   
+4'b0110: begin  // 带符号数比较 (r1 >= r2 ? 0 : 1)
+    r2_complement = ~r2 + 1'b1;    // 计算r2的补码
+    temp_sum = {1'b0, r1} + {1'b0, r2_complement};  // r1 - r2
+    s = temp_sum[31:0];    // 取结果的低32位
+    
+    // 判断r1 >= r2
+    if (r1[31] == r2[31]) begin  // 符号相同
+        sum = (temp_sum[31] == 0) ? 32'b0 : 32'b1;  // 直接比较结果
+    end
+    else begin  // 符号不同
+        sum = (r1[31] == 0) ? 32'b0 : 32'b1;  // 正数肯定大于负数
+    end
+    
+    // 溢出标志保持不变
+    overflow = (~s[31]&r1[31]&(~r2[31])) | (s[31]&(~r1[31])&r2[31]);
+end  
 	4'b0111: begin  // 无符号数
     	    temp_sum = {1'b0, r1} - {1'b0, r2};  // 33位减法保留借位
     	    sum = temp_sum[32] ? 32'b1 : 32'b0;  // 若发生借位（r1 < r2），sum=1

@@ -11,6 +11,7 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 DUMMY_ELF = $(BUILD_DIR)/dummy-riscv32e-npc.elf
 CXXFLAGS += -g -ggdb3  # 添加调试信息
 VERILATOR_CFLAGS += --debug
+CFLAGS += -fno-omit-frame-pointer -O0
 # DiffTest配置
 DIFFTEST_REF ?= $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 # Capstone 相关配置
@@ -32,9 +33,11 @@ $(DUMMY_ELF):
 	@mkdir -p $(BUILD_DIR)
 	@echo "int main(){ return 0; }" > $(BUILD_DIR)/dummy.c
 	riscv64-unknown-elf-gcc -g -ggdb3 -march=rv32e -mabi=ilp32e \
-		-nostdlib -nostartfiles -ffreestanding \
+		-nostdlib -nostartfiles -ffreestanding -T linker.ld \
 		-o $@ $(BUILD_DIR)/dummy.c
 	@rm $(BUILD_DIR)/dummy.c
+	@echo "验证函数指针表:"
+	@riscv64-unknown-elf-objdump -D $@ | grep -A4 "800003a0" || (echo "验证失败"; exit 1)
 debug: CXXFLAGS += -DDEBUG -O0  # 禁用优化以便更好调试
 debug: VERILATOR_CFLAGS += --debug
 debug: default

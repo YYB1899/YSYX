@@ -1,47 +1,38 @@
 module pc (
-	input wire clk,
-	input wire rst,
-	output reg [31:0] pc,
-	input [31:0] imm,
-	input [31:0] sum,
-	input [2:0]  b_type,
-	input        is_b,
-	input [31:0] rs1_data,
-	input wire is_jal,
-	input wire is_jalr,
-	output wire [31:0] pc_jal
+    input wire        clk,
+    input wire        rst,
+    output reg [31:0] pc,
+    input [31:0]      imm,
+    input [31:0]      sum,
+    input [2:0]       b_type,
+    input             is_b,
+    input [31:0]      rs1_data,
+    input wire        is_jal,
+    input wire        is_jalr,
+    output wire [31:0] pc_jal
 );
-    reg [31:0] next_pc;
-    wire [31:0] jal_pc_plus4 = pc + 4;  // 计算jal的PC+4
-    wire should_jump = is_jal || 
-                  (is_b && 
-                   ((b_type == 3'b001 && sum[0]) ||  // BEQ: sum=1 跳转
-                   (b_type == 3'b010 && !sum[0]) ||  // BNE: sum=0 跳转
-                   (b_type == 3'b011 && sum[0]) ||   // BLT: sum=1 跳转
-                   (b_type == 3'b100 && !sum[0]) ||  // BGE: sum=0 跳转
-                   (b_type == 3'b101 && sum[0]) ||   // BLTU: sum=1 跳转
-                   (b_type == 3'b110 && !sum[0])     // BGEU: sum=0 跳转
-                  ));
-
+    // 单周期处理器不需要next_pc寄存器
+    wire [31:0] next_pc;
+    
+    // 组合逻辑计算下一条PC
+assign next_pc = 
+    is_jalr ? (rs1_data + imm) & ~32'b1 :  // JALR
+    (is_jal ||   
+     (is_b && 
+      ((b_type == 3'b001 && sum == 32'b1) ||  // BEQ
+       (b_type == 3'b010 && sum == 32'b0) ||  // BNE
+       (b_type == 3'b011 && sum == 32'b1) ||  // BLT
+       (b_type == 3'b100 && sum == 32'b0) ||  // BGE
+       (b_type == 3'b101 && sum == 32'b1) ||  // BLTU
+       (b_type == 3'b110 && sum == 32'b0))))  // BGEU
+    ? pc + imm : pc + 32'h80000004;
+    
+    // 时序逻辑更新PC
     always @(posedge clk or posedge rst) begin
-        if (rst) begin
-            pc <= 32'h80000000; // 复位时初始PC
-            next_pc <= 32'h80000000;
-        end else begin
-            // 计算下一条PC值
-            if (is_jalr) begin
-                next_pc <= (rs1_data + imm) & ~32'b1;  // JALR: (rs1 + imm) & ~1
-            end else if (should_jump) begin
-                next_pc <= pc + imm;                  // JAL: PC + 立即数偏移
-            end else begin
-                next_pc <= pc + 4;                    // 默认顺序执行
-            end
-            
-            // 更新PC寄存器
-            pc <= next_pc;
+        if (rst) pc <= 32'h80000000;
+        else pc <= next_pc;
     end
 
-    // 输出jal的PC+4值
-    assign pc_jal = jal_pc_plus4;
-    end
+    // 组合逻辑计算返回地址
+    assign pc_jal = pc + 32'h80000004;
 endmodule

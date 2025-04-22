@@ -119,28 +119,26 @@ void init_memory(const char* filename) {
         memory[i] = 0x00000013;
     }
 
-    // 2. 读取指令文件
+    // 2. 读取指令文件（按空格分隔的连续字节）
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Error: Failed to open instruction file: " << filename << std::endl;
         exit(1);
     }
 
-    // 3. 读取所有字节
+    // 3. 读取所有字节（按空格分隔）
     std::vector<uint8_t> bytes;
-    std::string line;
-    while (std::getline(file, line)) {
-        // 跳过空行和注释
-        line.erase(0, line.find_first_not_of(" \t\r\n"));
-        line.erase(line.find_last_not_of(" \t\r\n") + 1);
-        if (line.empty() || line[0] == '#') continue;
-        
-        // 解析字节（支持1字节或2字符的十六进制）
+    std::string all_bytes;
+    std::getline(file, all_bytes, '\0'); // 读取整个文件
+    
+    std::istringstream iss(all_bytes);
+    std::string byte_str;
+    while (iss >> byte_str) {
         try {
-            uint8_t byte = static_cast<uint8_t>(std::stoul(line, nullptr, 16));
+            uint8_t byte = static_cast<uint8_t>(std::stoul(byte_str, nullptr, 16));
             bytes.push_back(byte);
         } catch (...) {
-            std::cerr << "Error: Invalid hex byte in file: " << line << std::endl;
+            std::cerr << "Error: Invalid hex byte in file: " << byte_str << std::endl;
             exit(1);
         }
     }
@@ -155,17 +153,17 @@ void init_memory(const char* filename) {
         
         // 小端序组合：bytes[i]是最低字节
         uint32_t word = (bytes[i] << 0)   | (bytes[i+1] << 8) | 
-                        (bytes[i+2] << 16) | (bytes[i+3] << 24);
+                       (bytes[i+2] << 16) | (bytes[i+3] << 24);
         memory[addr/4] = word;
         
         // 调试输出
         std::cout << "mem[0x" << std::hex << std::setw(8) << std::setfill('0') 
-                  << (CONFIG_MBASE + addr) << "] = 0x"
-                  << std::setw(2) << static_cast<int>(bytes[i]) << " "
-                  << std::setw(2) << static_cast<int>(bytes[i+1]) << " "
-                  << std::setw(2) << static_cast<int>(bytes[i+2]) << " "
-                  << std::setw(2) << static_cast<int>(bytes[i+3]) << " -> 0x"
-                  << std::setw(8) << word << std::endl;
+                 << (CONFIG_MBASE + addr) << "] = 0x"
+                 << std::setw(2) << static_cast<int>(bytes[i]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+1]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+2]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+3]) << " -> 0x"
+                 << std::setw(8) << word << std::endl;
         
         addr += 4;
     }
@@ -365,7 +363,7 @@ void sim_init(int argc, char** argv) {
     top->trace(tfp, 99);
     tfp->open("wave.vcd");
     
-    // 初始化内存 - 添加这行
+    // 初始化内存
     init_memory("build/inst.hex");  // 确保路径正确
     
     // 初始化 Capstone

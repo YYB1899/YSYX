@@ -370,7 +370,7 @@ void sim_init(int argc, char** argv) {
     init_capstone();
 
     // 复位序列
-    top->rst = 1; top->clk = 0; step_and_dump_wave();
+    top->rst = 0; top->clk = 0; step_and_dump_wave();
     top->rst = 0; top->clk = 1; step_and_dump_wave();  // 确保复位释放后有一个时钟上升沿
     
     // 调试打印初始内存状态

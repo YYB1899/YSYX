@@ -12,6 +12,7 @@
 #include <svdpi.h>
 #include "/home/yyb/ysyx-workbench/nemu/tools/capstone/repo/include/capstone/capstone.h"
 #include <dlfcn.h> 
+#include <iomanip>
 // 内存配置
 #define CONFIG_MBASE 0x80000000
 #define CONFIG_MSIZE 0x10000000  // 256MB
@@ -49,7 +50,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
     if (wmask == 0xffffffd4) {
         memory[aligned_addr] = wdata;
         return;
-    }
+    }else {
     // 部分写入（SB/SH指令）
     uint32_t current = pmem_read(aligned_addr);
     uint32_t new_data = current;
@@ -61,6 +62,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
         }
     }
     memory[aligned_addr] = new_data;
+    }
 }
 
 extern "C" void end_simulation() {
@@ -84,8 +86,8 @@ void init_capstone() {
     // 动态加载 Capstone 库
     void* dl_handle = dlopen("libcapstone.so.5", RTLD_LAZY); //动态加载库
     if (!dl_handle) { //缺少这部分代码,dl_handle缺少备用路径
-        fprintf(stderr, "Failed to load Capstone: %s\n", dlerror());
-        fprintf(stderr, "Trying default path...\n");
+        //fprintf(stderr, "Failed to load Capstone: %s\n", dlerror());
+        //fprintf(stderr, "Trying default path...\n");
         dl_handle = dlopen("/home/yyb/ysyx-workbench/nemu/tools/capstone/repo/libcapstone.so.5", RTLD_LAZY);
         if (!dl_handle) {
             fprintf(stderr, "Failed again: %s\n", dlerror());
@@ -105,6 +107,71 @@ void init_capstone() {
     }
     capstone_initialized = true;
 }
+
+#include <iomanip>
+#include <vector>
+#include <fstream>
+#include <cstdint>
+
+void init_memory(const char* filename) {
+    // 1. 初始化内存为NOP指令 (0x00000013)
+    for (uint32_t i = 0; i < CONFIG_MSIZE/4; i++) {
+        memory[i] = 0x00000013;
+    }
+
+    // 2. 读取指令文件
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Failed to open instruction file: " << filename << std::endl;
+        exit(1);
+    }
+
+    // 3. 读取所有字节
+    std::vector<uint8_t> bytes;
+    std::string line;
+    while (std::getline(file, line)) {
+        // 跳过空行和注释
+        line.erase(0, line.find_first_not_of(" \t\r\n"));
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);
+        if (line.empty() || line[0] == '#') continue;
+        
+        // 解析字节（支持1字节或2字符的十六进制）
+        try {
+            uint8_t byte = static_cast<uint8_t>(std::stoul(line, nullptr, 16));
+            bytes.push_back(byte);
+        } catch (...) {
+            std::cerr << "Error: Invalid hex byte in file: " << line << std::endl;
+            exit(1);
+        }
+    }
+
+    // 4. 组合为32位指令（小端序）
+    uint32_t addr = 0;
+    for (size_t i = 0; i + 3 < bytes.size(); i += 4) {
+        if (addr >= CONFIG_MSIZE) {
+            std::cerr << "Error: Program too large for memory" << std::endl;
+            exit(1);
+        }
+        
+        // 小端序组合：bytes[i]是最低字节
+        uint32_t word = (bytes[i] << 0)   | (bytes[i+1] << 8) | 
+                        (bytes[i+2] << 16) | (bytes[i+3] << 24);
+        memory[addr/4] = word;
+        
+        // 调试输出
+        std::cout << "mem[0x" << std::hex << std::setw(8) << std::setfill('0') 
+                  << (CONFIG_MBASE + addr) << "] = 0x"
+                  << std::setw(2) << static_cast<int>(bytes[i]) << " "
+                  << std::setw(2) << static_cast<int>(bytes[i+1]) << " "
+                  << std::setw(2) << static_cast<int>(bytes[i+2]) << " "
+                  << std::setw(2) << static_cast<int>(bytes[i+3]) << " -> 0x"
+                  << std::setw(8) << word << std::endl;
+        
+        addr += 4;
+    }
+
+}
+
 
 
 // 内存相关函数
@@ -285,6 +352,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+// 修改sim_init函数
 void sim_init(int argc, char** argv) {
     register_file_scope();
     contextp = new VerilatedContext;
@@ -296,42 +364,24 @@ void sim_init(int argc, char** argv) {
     contextp->traceEverOn(true);
     top->trace(tfp, 99);
     tfp->open("wave.vcd");
-	
+    
+    // 初始化内存 - 添加这行
+    init_memory("build/inst.hex");  // 确保路径正确
+    
     // 初始化 Capstone
     init_capstone();
 
     // 复位序列
     top->rst = 1; top->clk = 0; step_and_dump_wave();
-    top->clk = 1; step_and_dump_wave();
-    top->rst = 0; top->clk = 0; step_and_dump_wave();
+    top->rst = 0; top->clk = 1; step_and_dump_wave();  // 确保复位释放后有一个时钟上升沿
     
-    const uint32_t FIX_ADDR = 0x800003a0;
-    // 强制初始化函数指针表（假设func位于0x800003a0）
-    pmem_write(0x800003a0, 0x80000010, 0xF);  // func[0] = f0
-    pmem_write(0x800003a4, 0x8000007c, 0xF);  // func[1] = f1
-    pmem_write(0x800003a8, 0x800000c4, 0xF);  // func[2] = f2
-    pmem_write(0x800003ac, 0x80000128, 0xF);  // func[3] = f3 (应为有效地址)
-    pmem_write(0x80000188, 0x00000000, 0xF); // a[0]=0
-    pmem_write(0x8000018c, 0x00000001, 0xF);
-    pmem_write(0x80000190, 0x00000002, 0xF);
-    pmem_write(0x80000194, 0x00000003, 0xF);
-    pmem_write(0x80000198, 0x00000004, 0xF);
-    pmem_write(0x8000019c, 0x00000005, 0xF);
-    pmem_write(0x80000200, 0x00000006, 0xF);
-    pmem_write(0x80000204, 0x00000007, 0xF);
-    pmem_write(0x80000208, 0x00000008, 0xF);
-    pmem_write(0x8000020c, 0x00000009, 0xF); // a[0]=0
-    pmem_write(0x80000210, 0x00000010, 0xF);
-    pmem_write(0x80000214, 0x00000011, 0xF);
-    pmem_write(0x80000218, 0x00000012, 0xF);
-    pmem_write(0x8000021c, 0x00000013, 0xF);
-    pmem_write(0x80000220, 0x00000014, 0xF);
-    pmem_write(0x80000224, 0x00000015, 0xF);
-    pmem_write(0x80000228, 0x00000016, 0xF);
-    pmem_write(0x8000022c, 0x00000017, 0xF);
-    pmem_write(0x80000230, 0x00000018, 0xF);
-    pmem_write(0x80000234, 0x00000019, 0xF);
-    pmem_write(0x80000238, 0x00000020, 0xF);
+    // 调试打印初始内存状态
+    printf("\n=== Memory Initialization Check ===\n");
+    for (int i = 0; i < 4; i++) {
+        uint32_t addr = i * 4;
+        printf("mem[0x%08x] = 0x%08x\n", 
+               CONFIG_MBASE + addr, pmem_read(addr));
+    }
 }
 
 void sim_exit() {

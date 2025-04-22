@@ -17,16 +17,20 @@ module top (
     wire        wb_src;             // 写回数据选择 (0: ALU结果, 1: 立即数)
     wire        alu_enable;         // alu使能信号
     wire        alu_r1;             // AUIPC用PC，其他用rs1
-    wire        is_jal;   	    // JAL 指令标志
-    wire        is_jalr; 	    // JALR 指令标志
-    wire [31:0] pc_jal;	            // 输出JAL的PC+4值
-    wire [2:0]  b_type;		    // B-type 指令类型标志 
-    wire        is_b;		    // B-type 指令志 
-    wire [2:0]  is_load;	    //Load 指令
-    wire [2:0]  is_store;	    //Store 指令
+    wire        is_jal;             // JAL 指令标志
+    wire        is_jalr;            // JALR 指令标志
+    wire [31:0] pc_jal;             // 输出JAL的PC+4值
+    wire [2:0]  b_type;             // B-type 指令类型标志 
+    wire        is_b;               // B-type 指令标志 
+    wire [2:0]  is_load;            // Load 指令
+    wire [2:0]  is_store;           // Store 指令
     wire        use_wdata;
     
-    // 实例化 PC 模块	
+    // 声明 DPI-C 函数
+    import "DPI-C" function int pmem_read(input int raddr);
+    //import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
+
+    // 实例化 PC 模块    
     pc pc_inst (
         .clk         (clk),
         .rst         (rst),
@@ -41,18 +45,15 @@ module top (
         .sum         (alu_result)
     );
 
-    // 实例化 IMEM 模块
-    imem imem_inst (
-        .pc         (pc),
-        .instruction(instruction)
-    );
+    // 使用 pmem_read 获取指令
+    assign instruction = pmem_read(pc);
     
-    //ebreak结束仿真
+    // ebreak结束仿真
     ebreak_detector ebreak_detector_inst (
         .clk         (clk),
         .rst         (rst),
         .pc          (pc),
-        .instruction(instruction)
+        .instruction (instruction)
     ); 
     
     // 实例化 Control Unit 模块
@@ -99,21 +100,21 @@ module top (
     );
     
     trap trap(
-    	.clk(clk),
-    	.rst(rst),
-    	.pc(pc),
-    	.instruction(instruction),
-    	.overflow(overflow)
+        .clk(clk),
+        .rst(rst),
+        .pc(pc),
+        .instruction(instruction),
+        .overflow(overflow)
     );
 
     memory_interface memory_interface(
-	.clk         (clk),
-	.rst         (rst),
-	.alu_result  (alu_result),
+        .clk         (clk),
+        .rst         (rst),
+        .alu_result  (alu_result),
         .is_load     (is_load),
         .is_store    (is_store),
-	.wdata       (rs2_data),
-	.rdata       (rd_data),
-	.use_wdata   (use_wdata)
+        .wdata       (rs2_data),
+        .rdata       (rd_data),
+        .use_wdata   (use_wdata)
     );
 endmodule

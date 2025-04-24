@@ -76,7 +76,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   return len;
 }
 
-int sprintf(char *out, const char *fmt, ...) {
+int sprintf(char *out, const char *fmt, ...) { //不直接输出，是将结果写入 out 缓冲区
   //panic("Not implemented");
   va_list ap;//声明一个可变参数列表 ap
   va_start(ap,fmt);//初始化 ap，使其指向第一个可变参数fmt

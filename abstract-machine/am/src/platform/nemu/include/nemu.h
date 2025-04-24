@@ -19,21 +19,21 @@
 #endif
 
 #if defined(__ARCH_X86_NEMU)
-# define DEVICE_BASE 0x0
+# define DEVICE_BASE 0x0 //设备寄存器的基地址
 #else
 # define DEVICE_BASE 0xa0000000
 #endif
 
 #define MMIO_BASE 0xa0000000
-
-#define SERIAL_PORT     (DEVICE_BASE + 0x00003f8)
-#define KBD_ADDR        (DEVICE_BASE + 0x0000060)
-#define RTC_ADDR        (DEVICE_BASE + 0x0000048)
-#define VGACTL_ADDR     (DEVICE_BASE + 0x0000100)
+//常见设备的 MMIO 地址
+#define SERIAL_PORT     (DEVICE_BASE + 0x00003f8) //串口
+#define KBD_ADDR        (DEVICE_BASE + 0x0000060) //键盘
+#define RTC_ADDR        (DEVICE_BASE + 0x0000048) //实时时钟
+#define VGACTL_ADDR     (DEVICE_BASE + 0x0000100) //显卡
 #define AUDIO_ADDR      (DEVICE_BASE + 0x0000200)
 #define DISK_ADDR       (DEVICE_BASE + 0x0000300)
 #define FB_ADDR         (MMIO_BASE   + 0x1000000)
-#define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000)
+#define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000) //音频
 
 extern char _pmem_start;
 #define PMEM_SIZE (128 * 1024 * 1024)

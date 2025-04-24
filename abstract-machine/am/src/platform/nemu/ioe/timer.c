@@ -5,11 +5,8 @@ void __am_timer_init() {
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  //uint32_t hi = inl(MMIO_BASE + 0x4c);
-  //uint32_t lo = inl(MMIO_BASE + 0x48);
-  //uint64_t time = ((uint64_t)hi << 32) | lo;
-  //uptime->us = time - boot_time;
-  uptime -> us = (((uint64_t)inl(RTC_ADDR + 4)) << 32) | ((uint64_t)inl(RTC_ADDR));
+  uptime -> us = (((uint64_t)inl(RTC_ADDR + 4)) << 32)  //读取 RTC 的高 32 位
+                 | ((uint64_t)inl(RTC_ADDR)); //读取 RTC 的低 32 位
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {

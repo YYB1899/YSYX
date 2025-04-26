@@ -51,7 +51,6 @@ LDFLAGS += $(CFLAGS_BUILD)
 
 # 禁用严格的类型检查选项
 CFLAGS += -Wno-error=narrowing
-# Include rules for menuconfig
 include $(NEMU_HOME)/scripts/config.mk
 
 ifdef CONFIG_TARGET_AM

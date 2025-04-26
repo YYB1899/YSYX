@@ -75,7 +75,7 @@ void parse_elf(const char *elf_file){
 			exit(0);
 		}
 		if(shdr.sh_type == SHT_STRTAB){//查找字符串表
-			string_table = malloc(shdr.sh_size);
+			string_table = (char*)malloc(shdr.sh_size);
 			fseek(fp, shdr.sh_offset, SEEK_SET);
 			if(fread(string_table, shdr.sh_size, 1, fp) <= 0){
 				printf("Fail to read the strtab.\n");
@@ -95,7 +95,7 @@ void parse_elf(const char *elf_file){
 			fseek(fp, shdr.sh_offset, SEEK_SET);
 			Elf32_Sym sym;
 			size_t sym_count = shdr.sh_size / shdr.sh_entsize;//表中符号的数量
-			symbol = malloc(sizeof(Symbol) * sym_count);
+			symbol = (Symbol*)malloc(sizeof(Symbol) * sym_count);
 			for(size_t j = 0; j < sym_count; j ++){//遍历符号表中的所有符号
 				if(fread(&sym, sizeof(Elf32_Sym), 1, fp) <= 0){
 					printf("Fail to read the symtab.\n");

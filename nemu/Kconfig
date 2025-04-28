@@ -126,6 +126,12 @@ endmenu
 
 menu "Testing and Debugging"
 
+config WATCHPOINT
+  bool "Enable watchpoint functionality"
+  default n
+  help
+    Enable watchpoint functionality in the emulator.
+    Watchpoints allow you to monitor changes in expressions during execution.
 
 config TRACE
   bool "Enable tracer"

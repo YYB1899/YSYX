@@ -144,3 +144,16 @@ void display_ret_func(word_t pc){//显示函数返回的信息,pc:调用指令�
     for(int k = 0; k < rec_depth; k++) printf("  ");
     printf("ret  [%s]\n", symbol[i].name);
 }
+
+//DTRACE
+void display_device_read(paddr_t addr, int len, IOMap *map)
+{
+    log_write(ANSI_FMT("read memory: ", ANSI_FG_BLUE) FMT_PADDR ", the len is %d, the read device is " 
+                    ANSI_FMT(" %s ", ANSI_BG_BLUE) "\n", addr, len, map->name);
+}
+
+void display_device_write(paddr_t addr, int len, word_t data, IOMap *map)
+{
+    log_write(ANSI_FMT("write memory: ", ANSI_FG_YELLOW) FMT_PADDR ", the len is %d, the written data is " FMT_WORD 
+                    ", the written device is "ANSI_FMT(" %s ", ANSI_BG_YELLOW)"\n", addr, len, data, map->name);
+}

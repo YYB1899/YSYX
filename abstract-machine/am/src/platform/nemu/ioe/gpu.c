@@ -5,9 +5,11 @@
 
 void __am_gpu_init() {
   int i;
-  uint32_t space = inl(VGACTL_ADDR);
-  int w = space >> 16; // TODO: get the correct width
-  int h = space & 0x0000ffff;  // TODO: get the correct height
+  //uint32_t space = inl(VGACTL_ADDR);
+  //int w = space >> 16; // TODO: get the correct width
+ // int h = space & 0x0000ffff;  // TODO: get the correct height
+ int w = 0;
+ int h = 0;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i ++) fb[i] = i;
   outl(SYNC_ADDR, 1);

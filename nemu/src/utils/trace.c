@@ -12,7 +12,7 @@ void trace_inst(word_t pc, uint32_t inst){
 	iringbuf[cur_inst].inst = inst;
 	cur_inst = (cur_inst + 1) % INST_NUM;
 } 
-/*
+
 #ifdef ENABLE_TRACE
 void display_inst(){
     int end = cur_inst;//16
@@ -33,7 +33,7 @@ void display_inst(){
 #else
 void display_inst() {}
 #endif
-*/
+
 //MTRACE
 void display_memory_read(paddr_t addr, int len){
 	printf("Read memory: " FMT_PADDR ", the len is %d\n.", addr, len);

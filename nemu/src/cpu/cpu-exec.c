@@ -40,7 +40,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-#ifdef CONFIG_WZTCHPOINT  
   for(int i = 0; i < NR_WP; i ++){
 	if(wp_pool[i].flag == true){
 		bool success = false;
@@ -58,7 +57,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 			}
 		}
 	}
-#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -113,11 +111,9 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
-    isa_reg_display();
-
-    IFDEF(CONFIG_TRACE, IFDEF(CONFIG_IRINGBUF, display_inst()));
-
-    statistic();
+  isa_reg_display();
+  IFDEF(CONFIG_IRINGBUF,display_inst());//启用了环形缓冲区，显示指令历史
+  statistic();
 }
 
 /* Simulate how the CPU works. */

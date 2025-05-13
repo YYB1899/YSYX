@@ -17,19 +17,18 @@
 #define __DEVICE_MAP_H__
 
 #include <cpu/difftest.h>
-#include "/home/yyb/ysyx-workbench/nemu/src/utils/trace.h"
 
-//typedef void(*io_callback_t)(uint32_t, int, bool);
+typedef void(*io_callback_t)(uint32_t, int, bool);
 uint8_t* new_space(int size);
 
-//typedef struct {
-//  const char *name;
-//  // we treat ioaddr_t as paddr_t here
-//  paddr_t low;
-//  paddr_t high;
-//  void *space;
-//  io_callback_t callback;
-//} IOMap;
+typedef struct {
+  const char *name;
+  // we treat ioaddr_t as paddr_t here
+  paddr_t low;
+  paddr_t high;
+  void *space;
+  io_callback_t callback;
+} IOMap;
 
 static inline bool map_inside(IOMap *map, paddr_t addr) {
   return (addr >= map->low && addr <= map->high);

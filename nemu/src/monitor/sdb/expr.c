@@ -339,7 +339,7 @@ word_t expr(char *e, bool *success) {
              (tokens[i].type == SUB && i == 0)
            ){	
 	    tokens[i].type = TK_NOTYPE;
-	    for(int j = 31 ; j > 0 ; j --){
+	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-' ;

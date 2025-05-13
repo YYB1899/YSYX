@@ -13,7 +13,6 @@ void trace_inst(word_t pc, uint32_t inst){
 	cur_inst = (cur_inst + 1) % INST_NUM;
 } 
 
-IFDEF(CONFIG_TRACE,
 void display_inst(){
     int end = cur_inst;//16
     char buf[128];
@@ -30,8 +29,6 @@ void display_inst(){
         i = (i + 1) % INST_NUM;
     } while (i != end);
 }
-)
-
 //MTRACE
 void display_memory_read(paddr_t addr, int len){
 	printf("Read memory: " FMT_PADDR ", the len is %d\n.", addr, len);
@@ -78,7 +75,7 @@ void parse_elf(const char *elf_file){
 			exit(0);
 		}
 		if(shdr.sh_type == SHT_STRTAB){//查找字符串表
-			string_table = (char*)malloc(shdr.sh_size);
+			string_table = malloc(shdr.sh_size);
 			fseek(fp, shdr.sh_offset, SEEK_SET);
 			if(fread(string_table, shdr.sh_size, 1, fp) <= 0){
 				printf("Fail to read the strtab.\n");
@@ -98,7 +95,7 @@ void parse_elf(const char *elf_file){
 			fseek(fp, shdr.sh_offset, SEEK_SET);
 			Elf32_Sym sym;
 			size_t sym_count = shdr.sh_size / shdr.sh_entsize;//表中符号的数量
-			symbol = (Symbol*)malloc(sizeof(Symbol) * sym_count);
+			symbol = malloc(sizeof(Symbol) * sym_count);
 			for(size_t j = 0; j < sym_count; j ++){//遍历符号表中的所有符号
 				if(fread(&sym, sizeof(Elf32_Sym), 1, fp) <= 0){
 					printf("Fail to read the symtab.\n");
@@ -145,17 +142,4 @@ void display_ret_func(word_t pc){//显示函数返回的信息,pc:调用指令�
     rec_depth--;
     for(int k = 0; k < rec_depth; k++) printf("  ");
     printf("ret  [%s]\n", symbol[i].name);
-}
-
-//DTRACE
-void display_device_read(paddr_t addr, int len, IOMap *map)
-{
-    log_write(ANSI_FMT("read memory: ", ANSI_FG_BLUE) FMT_PADDR ", the len is %d, the read device is " 
-                    ANSI_FMT(" %s ", ANSI_BG_BLUE) "\n", addr, len, map->name);
-}
-
-void display_device_write(paddr_t addr, int len, word_t data, IOMap *map)
-{
-    log_write(ANSI_FMT("write memory: ", ANSI_FG_YELLOW) FMT_PADDR ", the len is %d, the written data is " FMT_WORD 
-                    ", the written device is "ANSI_FMT(" %s ", ANSI_BG_YELLOW)"\n", addr, len, data, map->name);
 }

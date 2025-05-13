@@ -3,24 +3,34 @@ module top (
     input  wire        rst,          // 复位信号
     output wire [31:0] pc,           // 程序计数器
     output wire [31:0] instruction,  // 当前指令
-    output wire        overflow      // ALU 溢出信号
+    output wire        overflow     // ALU 溢出信号
 );
 
     // 内部信号
     wire [4:0]  rs1, rs2, rd;       // 寄存器地址
-    wire [31:0] rs1_data, rs2_data; // 寄存器数据
+    wire [31:0] rs1_data, rs2_data, rd_data; // 寄存器数据
     wire        reg_write;          // 寄存器写使能
     wire        alu_src;            // ALU 操作数选择
-    wire [2:0]  alu_ctrl;           // ALU 控制信号
+    wire [3:0]  alu_ctrl;           // ALU 控制信号
     wire [31:0] alu_result;         // ALU 计算结果
     wire [31:0] imm;                // 符号扩展后的立即数
     wire        wb_src;             // 写回数据选择 (0: ALU结果, 1: 立即数)
     wire        alu_enable;         // alu使能信号
     wire        alu_r1;             // AUIPC用PC，其他用rs1
-    wire        is_jal;   	    // JAL 指令标志
-    wire        is_jalr; 	    // JALR 指令标志
-    wire [31:0] pc_jal;
-    // 实例化 PC 模块
+    wire        is_jal;             // JAL 指令标志
+    wire        is_jalr;            // JALR 指令标志
+    wire [31:0] pc_jal;             // 输出JAL的PC+4值
+    wire [2:0]  b_type;             // B-type 指令类型标志 
+    wire        is_b;               // B-type 指令标志 
+    wire [2:0]  is_load;            // Load 指令
+    wire [2:0]  is_store;           // Store 指令
+    wire        use_wdata;
+    
+    // 声明 DPI-C 函数
+    import "DPI-C" function int pmem_read(input int raddr);
+    //import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
+
+    // 实例化 PC 模块    
     pc pc_inst (
         .clk         (clk),
         .rst         (rst),
@@ -29,21 +39,21 @@ module top (
         .is_jal      (is_jal),
         .imm         (imm),
         .rs1_data    (rs1_data),
-        .pc_jal      (pc_jal)
+        .pc_jal      (pc_jal),
+        .b_type      (b_type),
+        .is_b        (is_b),
+        .sum         (alu_result)
     );
 
-    // 实例化 IMEM 模块
-    imem imem_inst (
-        .pc         (pc),
-        .instruction(instruction)
-    );
+    // 使用 pmem_read 获取指令
+    assign instruction = pmem_read(pc);
     
-    //ebreak结束仿真
+    // ebreak结束仿真
     ebreak_detector ebreak_detector_inst (
         .clk         (clk),
         .rst         (rst),
         .pc          (pc),
-        .instruction(instruction)
+        .instruction (instruction)
     ); 
     
     // 实例化 Control Unit 模块
@@ -60,7 +70,11 @@ module top (
         .alu_enable  (alu_enable),
         .alu_r1      (alu_r1),
         .is_jalr     (is_jalr),
-        .is_jal      (is_jal)        
+        .is_jal      (is_jal),
+        .b_type      (b_type),
+        .is_b        (is_b),
+        .is_load     (is_load),
+        .is_store    (is_store)
     );
 
     // 实例化 Register File 模块
@@ -70,7 +84,7 @@ module top (
         .rs2        (rs2),
         .rd         (rd), 
         .wen        (reg_write),
-        .wdata      ((is_jal | is_jalr) ? pc_jal : (wb_src ? imm : alu_result)),
+        .wdata      ((use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result))), 
         .rs1_data   (rs1_data),
         .rs2_data   (rs2_data)
     );
@@ -82,15 +96,25 @@ module top (
         .sub        (alu_ctrl), // 仅支持加法，SUB 固定为 0
         .sum        (alu_result),
         .overflow   (overflow),
-        .alu_enable (alu_enable),
-        .is_jalr    (is_jalr)
+        .alu_enable (alu_enable)
     );
     
     trap trap(
-    	.clk(clk),
-    	.rst(rst),
-    	.pc(pc),
-    	.instruction(instruction),
-    	.overflow(overflow)
+        .clk(clk),
+        .rst(rst),
+        .pc(pc),
+        .instruction(instruction),
+        .overflow(overflow)
+    );
+
+    memory_interface memory_interface(
+        .clk         (clk),
+        .rst         (rst),
+        .alu_result  (alu_result),
+        .is_load     (is_load),
+        .is_store    (is_store),
+        .wdata       (rs2_data),
+        .rdata       (rd_data),
+        .use_wdata   (use_wdata)
     );
 endmodule

@@ -6,10 +6,13 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <cstdint>
+#include <fstream>
 #include <map>
 #include <svdpi.h>
 #include "/home/yyb/ysyx-workbench/nemu/tools/capstone/repo/include/capstone/capstone.h"
 #include <dlfcn.h> 
+#include <iomanip>
 // 内存配置
 #define CONFIG_MBASE 0x80000000
 #define CONFIG_MSIZE 0x10000000  // 256MB
@@ -23,6 +26,7 @@ bool debug_mode = false;
 std::map<uint32_t, uint32_t> mem_access_log;
 static csh handle;
 static bool capstone_initialized = false;
+static std::map<uint32_t, uint32_t> memory;
 
 // 函数声明
 void sim_init(int argc, char** argv);
@@ -33,6 +37,47 @@ void cpu_exec(uint64_t cycles);
 void run_to_completion();
 void cmd_x(const std::string& args);
 void log_memory_access();
+ //DPI相关函数
+extern "C" int pmem_read(int raddr) {
+    uint32_t aligned_addr = raddr & ~0x3u;
+    return memory[aligned_addr];
+}
+
+extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+    uint32_t aligned_addr = waddr & ~0x3u;
+    memory[aligned_addr] = wdata;
+    // 完整写入（SW指令）
+    if (wmask == 0xffffffd4) {
+        memory[aligned_addr] = wdata;
+        return;
+    }else {
+    // 部分写入（SB/SH指令）
+    uint32_t current = pmem_read(aligned_addr);
+    uint32_t new_data = current;
+    
+    for (int i = 0; i < 4; i++) {
+        if (wmask & (1 << i)) {
+            new_data = (new_data & ~(0xFF << (i*8))) | 
+                       (wdata & (0xFF << (i*8)));
+        }
+    }
+    memory[aligned_addr] = new_data;
+    }
+}
+
+extern "C" void end_simulation() {
+    printf("Simulation ended by ebreak instruction\n");
+    if (contextp) contextp->gotFinish(true);
+}
+
+extern "C" {
+    int get_reg_value(int reg_num);
+    void register_file_scope();
+}
+
+extern "C" void register_file_scope() {
+    // 空实现，用来设置上下文
+}
 
 // 初始化 Capstone
 void init_capstone() {
@@ -41,8 +86,8 @@ void init_capstone() {
     // 动态加载 Capstone 库
     void* dl_handle = dlopen("libcapstone.so.5", RTLD_LAZY); //动态加载库
     if (!dl_handle) { //缺少这部分代码,dl_handle缺少备用路径
-        fprintf(stderr, "Failed to load Capstone: %s\n", dlerror());
-        fprintf(stderr, "Trying default path...\n");
+        //fprintf(stderr, "Failed to load Capstone: %s\n", dlerror());
+        //fprintf(stderr, "Trying default path...\n");
         dl_handle = dlopen("/home/yyb/ysyx-workbench/nemu/tools/capstone/repo/libcapstone.so.5", RTLD_LAZY);
         if (!dl_handle) {
             fprintf(stderr, "Failed again: %s\n", dlerror());
@@ -63,20 +108,70 @@ void init_capstone() {
     capstone_initialized = true;
 }
 
- //DPI相关函数
-extern "C" void end_simulation() {
-    printf("Simulation ended by ebreak instruction\n");
-    if (contextp) contextp->gotFinish(true);
+#include <iomanip>
+#include <vector>
+#include <fstream>
+#include <cstdint>
+
+void init_memory(const char* filename) {
+    // 1. 初始化内存为NOP指令 (0x00000013)
+    for (uint32_t i = 0; i < CONFIG_MSIZE/4; i++) {
+        memory[i] = 0x00000013;
+    }
+
+    // 2. 读取指令文件（按空格分隔的连续字节）
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: Failed to open instruction file: " << filename << std::endl;
+        exit(1);
+    }
+
+    // 3. 读取所有字节（按空格分隔）
+    std::vector<uint8_t> bytes;
+    std::string all_bytes;
+    std::getline(file, all_bytes, '\0'); // 读取整个文件
+    
+    std::istringstream iss(all_bytes);
+    std::string byte_str;
+    while (iss >> byte_str) {
+        try {
+            uint8_t byte = static_cast<uint8_t>(std::stoul(byte_str, nullptr, 16));
+            bytes.push_back(byte);
+        } catch (...) {
+            std::cerr << "Error: Invalid hex byte in file: " << byte_str << std::endl;
+            exit(1);
+        }
+    }
+
+    // 4. 组合为32位指令（小端序）
+    uint32_t addr = 0;
+    for (size_t i = 0; i + 3 < bytes.size(); i += 4) {
+        if (addr >= CONFIG_MSIZE) {
+            std::cerr << "Error: Program too large for memory" << std::endl;
+            exit(1);
+        }
+        
+        // 小端序组合：bytes[i]是最低字节
+        uint32_t word = (bytes[i] << 0)   | (bytes[i+1] << 8) | 
+                       (bytes[i+2] << 16) | (bytes[i+3] << 24);
+        memory[addr/4] = word;
+        
+        // 调试输出
+        std::cout << "mem[0x" << std::hex << std::setw(8) << std::setfill('0') 
+                 << (CONFIG_MBASE + addr) << "] = 0x"
+                 << std::setw(2) << static_cast<int>(bytes[i]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+1]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+2]) << " "
+                 << std::setw(2) << static_cast<int>(bytes[i+3]) << " -> 0x"
+                 << std::setw(8) << word << std::endl;
+        
+        addr += 4;
+    }
+
 }
 
-extern "C" {
-    int get_reg_value(int reg_num);
-    void register_file_scope();
-}
 
-extern "C" void register_file_scope() {
-    // 空实现，用来设置上下文
-}
+
 // 内存相关函数
 void log_memory_access() {
     uint32_t op = top->instruction;
@@ -95,7 +190,6 @@ void cmd_x(const std::string& args) {
         printf("Usage: x [len] [addr] (e.g. 'x 4 0x80000000')\n");
         return;
     }
-
     try {
         // 提取长度和地址
         int len = std::stoi(trimmed_args.substr(0, space_pos));
@@ -103,26 +197,22 @@ void cmd_x(const std::string& args) {
             printf("Length must be positive\n");
             return;
         }
-
         // 提取地址部分并去除可能的前导空格
         std::string addr_str = trimmed_args.substr(space_pos + 1);
         addr_str.erase(0, addr_str.find_first_not_of(" \t\n\r"));
         uint32_t addr = std::stoul(addr_str, nullptr, 16);
-        printf("Scanning memory from 0x%08x, len=%d:\n", addr, len);
+        
+        printf("Memory contents from 0x%08x, length %d words:\n", addr, len);
         for (int i = 0; i < len; i++) {
             uint32_t curr_addr = addr + i * 4;
-            auto it = mem_access_log.find(curr_addr);
-            printf("0x%08x: 0x%08x %s\n", 
-                curr_addr,
-                it != mem_access_log.end() ? it->second : 0,
-                it != mem_access_log.end() ? "(accessed)" : "(failure)");
+            uint32_t value = pmem_read(curr_addr);  // 使用 pmem_read 读取内存
+            printf("0x%08x: 0x%08x\n", curr_addr, value);
         }
     } catch (const std::exception& e) {
         printf("Error: %s\n", e.what());
         printf("Usage: x [len] [addr] (e.g. 'x 4 0x80000000')\n");
     }
 }
-
 // 打印寄存器函数
 void cmd_p(const std::string& args) {
     try {
@@ -178,12 +268,10 @@ int main(int argc, char** argv) {
             break;
         }
     }
-
     // 初始化仿真环境和内存
     sim_init(argc, argv);
-
     if (!debug_mode) {
-        // 非调试模式：直接运行到程序结束
+        // 非调试模式
         printf("Starting simulation in batch mode...\n");
         run_to_completion();
     } else {
@@ -197,8 +285,7 @@ int main(int argc, char** argv) {
 
         while (!contextp->gotFinish() && main_time < 100000) {
             printf("(npc) ");
-            fflush(stdout);
-            
+            fflush(stdout);            
             std::string cmd;
             std::getline(std::cin, cmd);
 
@@ -263,25 +350,36 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+// 修改sim_init函数
 void sim_init(int argc, char** argv) {
     register_file_scope();
     contextp = new VerilatedContext;
     contextp->commandArgs(argc, argv);
     tfp = new VerilatedVcdC;
     top = new Vtop{contextp};
-    
+
     // 初始化波形跟踪
     contextp->traceEverOn(true);
     top->trace(tfp, 99);
     tfp->open("wave.vcd");
-
+    
+    // 初始化内存
+    init_memory("build/inst.hex");  // 确保路径正确
+    
     // 初始化 Capstone
     init_capstone();
 
     // 复位序列
-    top->rst = 1; top->clk = 0; step_and_dump_wave();
-    top->clk = 1; step_and_dump_wave();
     top->rst = 0; top->clk = 0; step_and_dump_wave();
+    top->rst = 0; top->clk = 1; step_and_dump_wave();  // 确保复位释放后有一个时钟上升沿
+    
+    // 调试打印初始内存状态
+    printf("\n=== Memory Initialization Check ===\n");
+    for (int i = 0; i < 4; i++) {
+        uint32_t addr = i * 4;
+        printf("mem[0x%08x] = 0x%08x\n", 
+               CONFIG_MBASE + addr, pmem_read(addr));
+    }
 }
 
 void sim_exit() {

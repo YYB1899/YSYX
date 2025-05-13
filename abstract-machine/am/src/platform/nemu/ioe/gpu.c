@@ -30,8 +30,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   uint32_t screen_w = inl(VGACTL_ADDR) >> 16;
   for (int i = y; i < y+h; i++) {
     for (int j = x; j < x+w; j++) {
-      fb[screen_w*i+j]  //目标屏幕
-      = pixels[w*(i-y)+(j-x)]; //源像素数据
+      fb[screen_w*i+j] = pixels[w*(i-y)+(j-x)]; //源像素数据 = 源像素数据
     }
   }//将指定矩形区域的像素数据写入帧缓冲区对应位置
   if (ctl->sync) {

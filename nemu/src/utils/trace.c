@@ -13,7 +13,7 @@ void trace_inst(word_t pc, uint32_t inst){
 	cur_inst = (cur_inst + 1) % INST_NUM;
 } 
 
-#ifdef ENABLE_TRACE
+IFDEF(CONFIG_TRACE,
 void display_inst(){
     int end = cur_inst;//16
     char buf[128];
@@ -30,9 +30,7 @@ void display_inst(){
         i = (i + 1) % INST_NUM;
     } while (i != end);
 }
-#else
-void display_inst() {}
-#endif
+)
 
 //MTRACE
 void display_memory_read(paddr_t addr, int len){

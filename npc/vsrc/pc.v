@@ -19,20 +19,20 @@ assign next_pc =
     is_jalr ? (rs1_data + imm) & ~32'b1 :  // JALR
     (is_jal ||   
      (is_b && 
-      ((b_type == 3'b001 && sum == 32'b1) ||  // BEQ
+      ((b_type == 3'b001 && sum == 32'b0) ||  // BEQ
        (b_type == 3'b010 && sum == 32'b0) ||  // BNE
        (b_type == 3'b011 && sum == 32'b1) ||  // BLT
        (b_type == 3'b100 && sum == 32'b0) ||  // BGE
        (b_type == 3'b101 && sum == 32'b1) ||  // BLTU
        (b_type == 3'b110 && sum == 32'b0))))  // BGEU
-    ? pc + imm : pc + 32'h80000004;
-    
+    ? pc + imm : pc + 32'h00000004;
+  
+assign pc_jal = pc + 32'h00000004;
+  
     // 时序逻辑更新PC
     always @(posedge clk or posedge rst) begin
         if (rst) pc <= 32'h80000000;
         else pc <= next_pc;
     end
 
-    // 组合逻辑计算返回地址
-    assign pc_jal = pc + 32'h80000004;
 endmodule

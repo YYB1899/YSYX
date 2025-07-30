@@ -54,6 +54,20 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
+static vaddr_t *csr_register(word_t imm) {
+  switch (imm)
+  {
+  case 0x341: return &(cpu.csr.mepc);
+  case 0x342: return &(cpu.csr.mcause);
+  case 0x300: return &(cpu.csr.mstatus);
+  case 0x305: return &(cpu.csr.mtvec);
+  default: panic("Unknown csr");
+  }
+}
+ 
+#define ECALL(dnpc) { bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc)); }
+#define CSR(i) *csr_register(i)
+
 static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
 
@@ -64,7 +78,6 @@ static int decode_exec(Decode *s) {
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
-
 
   INSTPAT_START();//指示指令模式匹配的开始。
   INSTPAT("??????? ????? ????? ??? ????? 01101 11", lui    , U, R(rd) = imm);
@@ -122,6 +135,11 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 011 ????? 00100 11", sltiu  , I, R(rd) = (uint32_t)src1 < (uint32_t)imm ? 1: 0);
   INSTPAT("??????? ????? ????? 010 ????? 00100 11", slti   , I, R(rd) = (int32_t)src1 < (int32_t)imm ? 1: 0);
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10)));
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm) = src1);
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
+  INSTPAT("??????? ????? ????? 011 ????? 11100 11", csrrc  , I, R(rd) = CSR(imm); CSR(imm) &= ~src1);
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, ECALL(s->dnpc));
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, s->dnpc = cpu.csr.mepc);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc)); // 对所有模式都无法匹配的指令，判定为非法指令
   INSTPAT_END();
 

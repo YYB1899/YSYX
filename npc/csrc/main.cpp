@@ -40,7 +40,7 @@ void log_memory_access();
  //DPI相关函数
 extern "C" int pmem_read(int raddr) {
     uint32_t aligned_addr = raddr & ~0x3u;
-    return memory[aligned_addr];
+    return memory[aligned_addr / 4];
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
@@ -369,9 +369,16 @@ void sim_init(int argc, char** argv) {
     // 初始化 Capstone
     init_capstone();
 
-    // 复位序列
-    top->rst = 0; top->clk = 0; step_and_dump_wave();
-    top->rst = 0; top->clk = 1; step_and_dump_wave();  // 确保复位释放后有一个时钟上升沿
+
+    // 复位序列 - 产生一个有效的复位脉冲
+    top->rst = 1;  // 复位信号置高
+    top->clk = 0; step_and_dump_wave();  // 第一个半周期
+    top->clk = 1; step_and_dump_wave();  // 第一个完整周期
+    top->clk = 0; step_and_dump_wave();  // 第二个半周期
+    top->clk = 1; step_and_dump_wave();  // 第二个完整周期
+    top->clk = 0; step_and_dump_wave();  // 第三个半周期
+    top->rst = 0;  // 释放复位信号
+    top->clk = 1; step_and_dump_wave();  // 第三个完整周期（复位已释放）
     
     // 调试打印初始内存状态
     printf("\n=== Memory Initialization Check ===\n");

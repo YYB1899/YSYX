@@ -50,6 +50,7 @@ CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += $(CFLAGS_BUILD)
 # 禁用严格的类型检查选项
 CFLAGS += -Wno-error=narrowing
+#CFLAGS += -DCONFIG_ITRACE
 include $(NEMU_HOME)/scripts/config.mk
 
 ifdef CONFIG_TARGET_AM

@@ -26,9 +26,6 @@ module top (
     wire [2:0]  is_store;           // Store 指令
     wire        use_wdata;
     
-    // 声明 DPI-C 函数
-    import "DPI-C" function int pmem_read(input int raddr);
-    //import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
     // 实例化 PC 模块    
     pc pc_inst (
@@ -46,8 +43,10 @@ module top (
     );
 
     // 使用 pmem_read 获取指令
-    assign instruction = pmem_read(pc);
-    
+     imem imem_inst (
+        .pc          (pc),
+        .instruction (instruction)
+    );    
     // ebreak结束仿真
     ebreak_detector ebreak_detector_inst (
         .clk         (clk),

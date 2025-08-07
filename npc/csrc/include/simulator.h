@@ -20,10 +20,13 @@ extern VerilatedVcdC* tfp;
 extern Vtop* top;
 extern vluint64_t main_time;
 extern bool debug_mode;
+extern bool difftest_enabled;  // 添加 DiffTest 开关声明
 extern std::map<uint32_t, uint32_t> mem_access_log;
 extern csh handle;
 extern bool capstone_initialized;
-extern std::map<uint32_t, uint32_t> memory;
+extern long mem_size;        
+extern uint32_t reg_file[32];  
+//extern std::map<uint32_t, uint32_t> memory;
 
 // 函数声明
 void sim_init(int argc, char** argv);

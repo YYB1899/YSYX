@@ -43,10 +43,10 @@ module top (
     );
 
     // 使用 pmem_read 获取指令
-     imem imem_inst (
-        .pc          (pc),
-        .instruction (instruction)
-    );    
+imem imem_inst (
+    .pc         (pc),          // 连接程序计数器
+    .instruction(instruction) // 输出指令
+);  
     // ebreak结束仿真
     ebreak_detector ebreak_detector_inst (
         .clk         (clk),

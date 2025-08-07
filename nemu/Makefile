@@ -47,7 +47,11 @@ CFLAGS_BUILD += $(if $(CONFIG_CC_DEBUG),-Og -ggdb3,)
 CFLAGS_BUILD += $(if $(CONFIG_CC_ASAN),-fsanitize=address,)
 CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(CONFIG_ITRACE_COND)),true)
 CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA) 
+CFLAGS  += -g
 LDFLAGS += $(CFLAGS_BUILD)
+LDLIBS += -lreadline -lopcodes -lbfd -ldl
+LDFLAGS += -lreadline
+#CFLAGS += g
 # 禁用严格的类型检查选项
 CFLAGS += -Wno-error=narrowing
 #CFLAGS += -DCONFIG_ITRACE

@@ -2,6 +2,7 @@
 #include "include/memory.h"
 #include "include/debugger.h"
 #include "include/trace.h"
+#include "include/difftest.h"  // 添加 DiffTest 头文件
 #include <iostream>
 #include <dlfcn.h>
 #include <iomanip>
@@ -15,33 +16,46 @@ bool debug_mode = false;
 std::map<uint32_t, uint32_t> mem_access_log;
 csh handle;
 bool capstone_initialized = false;
-std::map<uint32_t, uint32_t> memory;
 
 // DPI函数实现
 extern "C" int pmem_read(int raddr) {
-    uint32_t aligned_addr = raddr & ~0x3u;
-    return memory[aligned_addr / 4];
+    // 转换为相对于基地址的偏移
+    uint32_t offset = raddr - CONFIG_MBASE;
+    if (offset >= CONFIG_MSIZE) {
+        //printf("Warning: Invalid read at 0x%08x\n", raddr);
+        return 0;
+    }
+    
+    uint32_t aligned_offset = offset & ~0x3u;
+    return memory[aligned_offset / 4];
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
-    uint32_t aligned_addr = waddr & ~0x3u;
-    memory[aligned_addr] = wdata;
+    // 转换为相对于基地址的偏移
+    uint32_t offset = waddr - CONFIG_MBASE;
+    if (offset >= CONFIG_MSIZE) {
+        //printf("Warning: Invalid write at 0x%08x\n", waddr);
+        return;
+    }
+    
+    uint32_t aligned_offset = offset & ~0x3u;
+    
     // 完整写入（SW指令）
     if (wmask == 0xffffffd4) {
-        memory[aligned_addr] = wdata;
+        memory[aligned_offset / 4] = wdata;
         return;
-    }else {
-    // 部分写入（SB/SH指令）
-    uint32_t current = pmem_read(aligned_addr);
-    uint32_t new_data = current;
-    
-    for (int i = 0; i < 4; i++) {
-        if (wmask & (1 << i)) {
-            new_data = (new_data & ~(0xFF << (i*8))) | 
-                       (wdata & (0xFF << (i*8)));
+    } else {
+        // 部分写入（SB/SH指令）
+        uint32_t current = memory[aligned_offset / 4];
+        uint32_t new_data = current;
+        
+        for (int i = 0; i < 4; i++) {
+            if (wmask & (1 << i)) {
+                new_data = (new_data & ~(0xFF << (i*8))) | 
+                           (wdata & (0xFF << (i*8)));
+            }
         }
-    }
-    memory[aligned_addr] = new_data;
+        memory[aligned_offset / 4] = new_data;
     }
 }
 
@@ -68,17 +82,21 @@ void sim_init(int argc, char** argv) {
   
   // 初始化内存
   init_memory("build/inst.hex");  // 确保路径正确
-  
+   for (int i = 0; i < 4; i++) {
+        uint32_t addr = CONFIG_MBASE + i * 4;
+        printf("CHECK: mem[0x%08x] = 0x%08x\n", 
+               addr, pmem_read(addr));
+    }
   // 初始化 Capstone
   init_capstone();
   
   // 初始化 trace 功能
   #ifdef CONFIG_ITRACE
-  printf("ITRACE enabled\n");
+  //printf("ITRACE enabled\n");
   #endif
   
   #ifdef CONFIG_FTRACE
-  printf("FTRACE enabled\n");
+  //printf("FTRACE enabled\n");
   // 解析ELF文件获取符号表
   if (argc > 1) {
     parse_elf(argv[1]);
@@ -94,14 +112,6 @@ void sim_init(int argc, char** argv) {
     top->clk = 0; step_and_dump_wave();  // 第三个半周期
     top->rst = 0;  // 释放复位信号
     top->clk = 1; step_and_dump_wave();  // 第三个完整周期（复位已释放）
-    
-    // 调试打印初始内存状态
-    printf("\n=== Memory Initialization Check ===\n");
-    for (int i = 0; i < 4; i++) {
-        uint32_t addr = i * 4;
-        printf("mem[0x%08x] = 0x%08x\n", 
-               CONFIG_MBASE + addr, pmem_read(addr));
-    }
 }
 
 void sim_exit() {
@@ -193,6 +203,12 @@ void run_to_completion() {
     while (!contextp->gotFinish() && main_time < 100000) {
         top->clk = 0; step_and_dump_wave();
         top->clk = 1; step_and_dump_wave();
+        
+        // 如果启用了 DiffTest，在每个时钟周期后调用
+        if (difftest_enabled) {
+            difftest_exec(1);
+        }
+        
         if (contextp->gotFinish()) break;
     }
 } 

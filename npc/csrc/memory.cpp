@@ -6,6 +6,10 @@
 #include <iomanip>
 #include <vector>
 
+uint32_t memory[CONFIG_MSIZE/4];  // 内存数组，按32位字存储
+long mem_size = CONFIG_MSIZE;  // 内存大小
+uint32_t reg_file[32];         // 寄存器文件
+
 void init_memory(const char* filename) {
     // 1. 初始化内存为NOP指令 (0x00000013)
     for (uint32_t i = 0; i < CONFIG_MSIZE/4; i++) {
@@ -61,7 +65,6 @@ void init_memory(const char* filename) {
         addr += 4;
     }
 }
-
 void log_memory_access() {
     uint32_t op = top->instruction;
     mem_access_log[top->pc] = top->instruction;

@@ -110,8 +110,8 @@ module control_unit(
     
     assign wb_src = (opcode == 7'b0110111);
      	
-    assign alu_enable = (opcode != 7'b0110111) | //LUI不需要alu
-    			(opcode != 7'b1101111) | //JAL不需要alu
+    assign alu_enable = (opcode != 7'b0110111) & //LUI不需要alu
+    			(opcode != 7'b1101111) & //JAL不需要alu
     			(opcode != 7'b1100111);  //JALR不需要alu
     
     assign alu_r1 = (opcode == 7'b0010111); // AUIPC用PC

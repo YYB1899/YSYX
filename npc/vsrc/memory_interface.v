@@ -14,7 +14,7 @@ module memory_interface(
 	reg [31:0] mem_rdata;
 	
     	wire valid = (is_load != 3'b111) || (is_store != 3'b111);
-    	wire ren = (is_store == 3'b111) && (is_load != 3'b111);
+    	wire ren = (is_load != 3'b111) && (is_store == 3'b111);
     	wire wen = (is_store != 3'b111) && (is_load == 3'b111);
     	wire [31:0] addr = alu_result;
 	

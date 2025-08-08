@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
                difftest_enabled ? "enabled" : "disabled");
         printf("  q    - Quit simulation\n");
 
-        while (!contextp->gotFinish() && main_time < 100000) {
+        while (!contextp->gotFinish() && main_time < 1000000) {  // 增加到1,000,000步
             printf("(npc) ");
             fflush(stdout);            
             std::string cmd;

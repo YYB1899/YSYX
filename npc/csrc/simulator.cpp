@@ -200,7 +200,7 @@ void cpu_exec(uint64_t cycles) {
 
 void run_to_completion() {
     printf("Running to completion...\n");
-    while (!contextp->gotFinish() && main_time < 100000) {
+    while (!contextp->gotFinish() && main_time < 1000000) {  // 增加到1,000,000步
         top->clk = 0; step_and_dump_wave();
         top->clk = 1; step_and_dump_wave();
         
@@ -210,5 +210,11 @@ void run_to_completion() {
         }
         
         if (contextp->gotFinish()) break;
+    }
+    
+    // 如果达到最大步数限制，输出警告
+    if (main_time >= 1000000) {
+        printf("Warning: Simulation reached maximum step limit (%lu steps)\n", (unsigned long)main_time);
+        printf("Program may not have completed normally\n");
     }
 } 

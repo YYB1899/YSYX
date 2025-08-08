@@ -1,7 +1,7 @@
 module trap (
 	input wire clk,
 	input wire rst,
-	output reg [31:0] pc,
+	input wire [31:0] pc,
 	input wire [31:0] instruction,
 	input wire overflow
 );
@@ -11,8 +11,23 @@ module trap (
 `define BOLD  "\033[1m"
 `define RESET "\033[0m"
 
+// 添加计数器来控制调试输出频率
+reg [31:0] debug_counter = 0;
+
 always @(posedge clk) begin
     if (!rst) begin
+        debug_counter <= debug_counter + 1;
+        
+        // 每10000个周期打印一次PC，帮助调试
+        if (debug_counter % 10000 == 0) begin
+            $display("DEBUG: Cycle %d, PC = %h, Instruction = %h", debug_counter, pc, instruction);
+        end
+        
+        // 特别关注接近目标地址的PC
+        if (pc >= 32'h80000130 && pc <= 32'h80000150) begin
+            $display("NEAR TARGET: PC = %h, Instruction = %h", pc, instruction);
+        end
+        
         // GOOD TRAP 检测（ebreak）
         if (instruction == 32'h00100073) begin
             $display("\n=================================");

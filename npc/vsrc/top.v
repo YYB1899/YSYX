@@ -87,12 +87,32 @@ imem imem_inst (
         .rs1_data   (rs1_data),
         .rs2_data   (rs2_data)
     );
+    
+    // 添加调试信息
+    always @(posedge clk) begin
+        if (!rst && reg_write) begin
+            $display("WB DEBUG: rd=%d, use_wdata=%b, is_jal=%b, is_jalr=%b, wb_src=%b", 
+                     rd, use_wdata, is_jal, is_jalr, wb_src);
+            $display("WB DEBUG: rd_data=%h, pc_jal=%h, imm=%h, alu_result=%h", 
+                     rd_data, pc_jal, imm, alu_result);
+            $display("WB DEBUG: final_wdata=%h", 
+                     (use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result)));
+        end
+        
+        // 添加Load/Store指令的详细调试信息
+        if (!rst && (is_load != 3'b111 || is_store != 3'b111)) begin
+            $display("INST DEBUG: PC=%h, instruction=%h, is_load=%b, is_store=%b", 
+                     pc, instruction, is_load, is_store);
+            $display("INST DEBUG: rs1=%d, rs2=%d, rd=%d, imm=%h", 
+                     rs1, rs2, rd, imm);
+        end
+    end
 
     // 实例化 ALU 模块
     alu alu_inst (
         .r1         (alu_r1 ? pc : rs1_data),
         .r2         (alu_src ? imm : rs2_data), // 选择立即数或 rs2_data
-        .sub        (alu_ctrl), // 仅支持加法，SUB 固定为 0
+        .sub        (alu_ctrl), 
         .sum        (alu_result),
         .overflow   (overflow),
         .alu_enable (alu_enable)

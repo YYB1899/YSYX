@@ -12,7 +12,8 @@ module ebreak_detector (
         end else begin
             if (instruction == 32'b000000000001_00000_000_00000_1110011) begin
                 $display("Detected ebreak instruction at PC = %h", pc);
-                end_simulation();  // 调用DPI-C函数结束仿真
+                // 注释掉自动结束仿真，让trap模块处理
+                // end_simulation();  // 调用DPI-C函数结束仿真
             end
         end
     end

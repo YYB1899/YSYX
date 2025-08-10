@@ -44,12 +44,7 @@ void init_difftest() {
         printf("Syncing register state...\n");
         printf("NPC PC = 0x%08x\n", top->pc);
         
-        // 创建 CPU_state 结构体来同步寄存器状态
-        struct {
-            uint32_t gpr[32];  // 32个通用寄存器
-            uint32_t pc;       // 程序计数器
-            uint32_t csr[4];   // CSR寄存器（简化）
-        } cpu_state;
+        // 使用全局的 CPU_state 结构体来同步寄存器状态
         
         // 复制通用寄存器（从 reg_file 数组）
         for (int i = 0; i < 32; i++) {

@@ -31,7 +31,7 @@ module top (
     pc pc_inst (
         .clk         (clk),
         .rst         (rst),
-        .pc          (pc),
+        .pc_out      (pc),
         .is_jalr     (is_jalr),
         .is_jal      (is_jal),
         .imm         (imm),
@@ -97,6 +97,34 @@ imem imem_inst (
                      rd_data, pc_jal, imm, alu_result);
             $display("WB DEBUG: final_wdata=%h", 
                      (use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result)));
+        end
+        
+        // 专门调试关键的算术指令
+        if (!rst && alu_enable) begin
+            // 检测ADD指令 (opcode=0110011, funct3=000, funct7=0000000)
+            if (instruction[6:0] == 7'b0110011 && instruction[14:12] == 3'b000 && instruction[31:25] == 7'b0000000) begin
+                $display("CRITICAL DEBUG: ADD instruction at PC=%h", pc);
+                $display("  rs1=%d(0x%08x) + rs2=%d(0x%08x) = 0x%08x", 
+                         rs1, rs1_data, rs2, rs2_data, alu_result);
+            end
+            
+            // 检测SUB指令 (opcode=0110011, funct3=000, funct7=0100000)
+            if (instruction[6:0] == 7'b0110011 && instruction[14:12] == 3'b000 && instruction[31:25] == 7'b0100000) begin
+                $display("CRITICAL DEBUG: SUB instruction at PC=%h", pc);
+                $display("  rs1=%d(0x%08x) - rs2=%d(0x%08x) = 0x%08x", 
+                         rs1, rs1_data, rs2, rs2_data, alu_result);
+            end
+            
+            // 检测SLTIU指令 (opcode=0010011, funct3=011) - 这就是SEQZ
+            if (instruction[6:0] == 7'b0010011 && instruction[14:12] == 3'b011) begin
+                $display("CRITICAL DEBUG: SLTIU/SEQZ instruction at PC=%h", pc);
+                $display("  rs1=%d(0x%08x) < imm=%d ? result=0x%08x", 
+                         rs1, rs1_data, imm, alu_result);
+                if (imm == 32'h1) begin
+                    $display("  This is SEQZ: checking if rs1==0, result should be %d", 
+                             (rs1_data == 0) ? 1 : 0);
+                end
+            end
         end
         
         // 添加Load/Store指令的详细调试信息

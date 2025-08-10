@@ -17,8 +17,6 @@ static void (*ref_difftest_init)() = NULL;
 static int DIFFTEST_TO_DUT = 0;
 static int DIFFTEST_TO_REF = 1;
 
-
-
 extern "C" {
 void difftest_init(const char *ref_so_file, long img_size, uint32_t inst_start, void *img_buf, void *regfile_buf) {
     assert(ref_so_file != NULL);
@@ -55,7 +53,33 @@ void difftest_regcpy(void *dut, bool direction) {
 
 void difftest_exec(uint32_t n) {
     assert(ref_difftest_exec);
+    
+    // 执行NEMU的n条指令
     ref_difftest_exec(n);
+    
+    // 从NEMU获取状态
+    cpu_state_t ref_state;
+    ref_difftest_regcpy(&ref_state, DIFFTEST_TO_DUT);
+    
+    // 对比PC
+    if (cpu_state.pc != ref_state.pc) {
+        printf("DiffTest FAILED: PC mismatch!\n");
+        printf("  NPC PC = 0x%08x\n", cpu_state.pc);
+        printf("  NEMU PC = 0x%08x\n", ref_state.pc);
+        exit(1);
+    }
+    
+    // 对比通用寄存器
+    for (int i = 0; i < 32; i++) {
+        if (cpu_state.gpr[i] != ref_state.gpr[i]) {
+            printf("DiffTest FAILED: Register x%d mismatch!\n", i);
+            printf("  NPC x%d = 0x%08x\n", i, cpu_state.gpr[i]);
+            printf("  NEMU x%d = 0x%08x\n", i, ref_state.gpr[i]);
+            exit(1);
+        }
+    }
+    
+    // 只在有错误时输出，正常情况下不输出PASSED信息
 }
 
 void difftest_raise_intr(uint32_t NO) {

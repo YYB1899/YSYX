@@ -1,19 +1,29 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include <string>
+#include <stdint.h>
+#include <cstdio>
 #include <map>
-#include <cstdint>
-#include "simulator.h"
+#include <string>
 
-extern uint32_t memory[CONFIG_MSIZE/4];
+// 使用simulator.h中的定义，避免重复定义
+#ifndef CONFIG_MBASE
+#define CONFIG_MBASE 0x80000000
+#endif
+#ifndef CONFIG_MSIZE
+#define CONFIG_MSIZE 0x10000000  // 256MB
+#endif
 
-// 内存管理函数声明
+extern uint8_t memory[CONFIG_MSIZE];
+extern long mem_size;
+extern uint32_t reg_file[32];
+extern std::map<uint32_t, uint32_t> mem_access_log;
+
+// 函数声明
 void init_memory(const char* filename);
+void load_elf_to_memory(const char* elf_file);
+void cmd_x(const std::string& args);
 void log_memory_access();
 
-// 内存访问命令函数
-void cmd_x(const std::string& args);
-
-#endif // MEMORY_H 
+#endif 
 

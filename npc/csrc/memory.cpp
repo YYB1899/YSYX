@@ -1,20 +1,20 @@
-#include "include/memory.h"
 #include "include/simulator.h"
+#include "include/memory.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <elf.h>
+#include <cstring>
 
-uint32_t memory[CONFIG_MSIZE/4];  // 内存数组，按32位字存储
+uint8_t memory[CONFIG_MSIZE];  // 内存数组，按字节存储
 long mem_size = CONFIG_MSIZE;  // 内存大小
 uint32_t reg_file[32];         // 寄存器文件
 
 void init_memory(const char* filename) {
-    // 1. 初始化内存为NOP指令 (0x00000013)
-    for (uint32_t i = 0; i < CONFIG_MSIZE/4; i++) {
-        memory[i] = 0x00000013;
-    }
+    // 1. 初始化内存为0（而不是NOP指令）
+    memset(memory, 0, CONFIG_MSIZE);
 
     // 2. 读取指令文件（按空格分隔的连续字节）
     std::ifstream file(filename);
@@ -65,6 +65,98 @@ void init_memory(const char* filename) {
         addr += 4;
     }
 }
+
+void load_elf_to_memory(const char* elf_file) {
+    if (elf_file == NULL) return;
+    
+    // 打开 ELF 文件
+    FILE *fp = fopen(elf_file, "rb");
+    if (fp == NULL) {
+        printf("Fail to open the elf file: %s\n", elf_file);
+        return;
+    }
+    
+    // 读取 ELF 文件头
+    Elf32_Ehdr ehdr;
+    if (fread(&ehdr, sizeof(Elf32_Ehdr), 1, fp) <= 0) {
+        printf("Fail to read the elf_head.\n");
+        fclose(fp);
+        return;
+    }
+    
+    // 检查是否是有效的 ELF 文件
+    if (ehdr.e_ident[0] != 0x7f || ehdr.e_ident[1] != 'E' || 
+        ehdr.e_ident[2] != 'L' || ehdr.e_ident[3] != 'F') {
+        printf("The opened file isn't a elf file.\n");
+        fclose(fp);
+        return;
+    }
+    
+    printf("Loading ELF file: %s\n", elf_file);
+    printf("Entry point: 0x%08x\n", ehdr.e_entry);
+    
+    // 读取程序头表
+    printf("Reading %d program headers from offset 0x%x\n", ehdr.e_phnum, ehdr.e_phoff);
+    
+    for (int i = 0; i < ehdr.e_phnum; i++) {
+        // 确保每次都从正确的位置开始读取
+        fseek(fp, ehdr.e_phoff + i * sizeof(Elf32_Phdr), SEEK_SET);
+        
+        Elf32_Phdr phdr;
+        if (fread(&phdr, sizeof(Elf32_Phdr), 1, fp) <= 0) {
+            printf("Fail to read program header %d.\n", i);
+            fclose(fp);
+            return;
+        }
+        
+        printf("Program header %d: type=0x%x, vaddr=0x%08x, filesz=0x%08x, memsz=0x%08x, offset=0x%08x\n", 
+               i, phdr.p_type, phdr.p_vaddr, phdr.p_filesz, phdr.p_memsz, phdr.p_offset);
+        
+        // 只加载LOAD类型的段 (PT_LOAD = 1)
+        if (phdr.p_type == 1) {
+            printf("Loading segment %d: vaddr=0x%08x, filesz=0x%08x, memsz=0x%08x\n", 
+                   i, phdr.p_vaddr, phdr.p_filesz, phdr.p_memsz);
+            
+            // 检查地址范围
+            if (phdr.p_vaddr < CONFIG_MBASE || 
+                phdr.p_vaddr + phdr.p_memsz > CONFIG_MBASE + CONFIG_MSIZE) {
+                printf("Warning: Segment %d address out of range\n", i);
+                continue;
+            }
+            
+            // 计算在内存数组中的偏移
+            uint32_t mem_offset = phdr.p_vaddr - CONFIG_MBASE;
+            
+            // 先清零整个段（处理BSS段）
+            memset(memory + mem_offset, 0, phdr.p_memsz);
+            
+            // 如果有文件数据，则加载
+            if (phdr.p_filesz > 0) {
+                fseek(fp, phdr.p_offset, SEEK_SET);
+                if (fread(memory + mem_offset, phdr.p_filesz, 1, fp) <= 0) {
+                    printf("Fail to read segment %d data.\n", i);
+                    fclose(fp);
+                    return;
+                }
+                
+                // 调试输出：显示加载的数据
+                printf("Loaded %d bytes to 0x%08x\n", phdr.p_filesz, phdr.p_vaddr);
+                if (phdr.p_filesz >= 4) {
+                    uint32_t* data_ptr = (uint32_t*)(memory + mem_offset);
+                    printf("First few words: ");
+                    for (int j = 0; j < std::min(4, (int)(phdr.p_filesz / 4)); j++) {
+                        printf("0x%08x ", data_ptr[j]);
+                    }
+                    printf("\n");
+                }
+            }
+        }
+    }
+    
+    fclose(fp);
+    printf("ELF file loaded successfully.\n");
+}
+
 void log_memory_access() {
     uint32_t op = top->instruction;
     mem_access_log[top->pc] = top->instruction;

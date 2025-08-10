@@ -13,6 +13,7 @@ VerilatedVcdC* tfp = nullptr;
 Vtop* top = nullptr;
 vluint64_t main_time = 0;
 bool debug_mode = false;
+cpu_state_t cpu_state;  // 全局CPU状态
 std::map<uint32_t, uint32_t> mem_access_log;
 csh handle;
 bool capstone_initialized = false;
@@ -27,36 +28,46 @@ extern "C" int pmem_read(int raddr) {
     }
     
     uint32_t aligned_offset = offset & ~0x3u;
-    return memory[aligned_offset / 4];
+    uint32_t result = *(uint32_t*)(memory + aligned_offset);
+    
+    // 调试特定地址
+    if (raddr == 0x80000154) {
+        printf("PMEM_READ DEBUG: addr=0x%08x, offset=0x%08x, aligned_offset=0x%08x\n", 
+               raddr, offset, aligned_offset);
+        printf("  memory bytes: %02x %02x %02x %02x\n", 
+               memory[aligned_offset], memory[aligned_offset+1], 
+               memory[aligned_offset+2], memory[aligned_offset+3]);
+        printf("  result=0x%08x\n", result);
+    }
+    
+    return result;
 }
 
-extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+extern "C" void pmem_write(int waddr, int wdata, unsigned char wmask) {
     // 转换为相对于基地址的偏移
     uint32_t offset = waddr - CONFIG_MBASE;
     if (offset >= CONFIG_MSIZE) {
         //printf("Warning: Invalid write at 0x%08x\n", waddr);
         return;
     }
-    
     uint32_t aligned_offset = offset & ~0x3u;
+    uint32_t current = *(uint32_t*)(memory + aligned_offset);
+    uint32_t new_data = current;
     
-    // 完整写入（SW指令）
-    if (wmask == 0xffffffd4) {
-        memory[aligned_offset / 4] = wdata;
-        return;
-    } else {
-        // 部分写入（SB/SH指令）
-        uint32_t current = memory[aligned_offset / 4];
-        uint32_t new_data = current;
-        
-        for (int i = 0; i < 4; i++) {
-            if (wmask & (1 << i)) {
-                new_data = (new_data & ~(0xFF << (i*8))) | 
-                           (wdata & (0xFF << (i*8)));
-            }
+    // 根据字节掩码更新对应的字节
+    for (int i = 0; i < 4; i++) {
+        if (wmask & (1 << i)) {
+            // 清除目标字节，然后设置新值
+            new_data = (new_data & ~(0xFF << (i*8))) | 
+                       ((wdata >> (i*8)) & 0xFF) << (i*8);
         }
-        memory[aligned_offset / 4] = new_data;
     }
+    
+    *(uint32_t*)(memory + aligned_offset) = new_data;
+    
+    // 调试输出
+    printf("PMEM WRITE: addr=0x%08x, wdata=0x%08x, wmask=0x%02x, old=0x%08x, new=0x%08x\n", 
+           waddr, wdata, wmask & 0xFF, current, new_data);
 }
 
 extern "C" void end_simulation() {
@@ -80,27 +91,41 @@ void sim_init(int argc, char** argv) {
   top->trace(tfp, 99);
   tfp->open("wave.vcd");
   
-  // 初始化内存
-  init_memory("build/inst.hex");  // 确保路径正确
-   for (int i = 0; i < 4; i++) {
+  // 初始化内存并加载ELF文件
+  if (argc > 1) {
+    // 直接从ELF文件加载所有段到内存
+    load_elf_to_memory(argv[1]);
+    
+    // 解析ELF文件获取符号表
+    #ifdef CONFIG_FTRACE
+    parse_elf(argv[1]);
+    #endif
+  } else {
+    // 如果没有ELF文件，使用传统的hex文件加载方式
+    init_memory("build/inst.hex");
+  }
+  
+  // 检查内存加载情况
+  for (int i = 0; i < 4; i++) {
         uint32_t addr = CONFIG_MBASE + i * 4;
         printf("CHECK: mem[0x%08x] = 0x%08x\n", 
                addr, pmem_read(addr));
     }
+  
+  // 检查func数组的内容
+  printf("CHECK: func array at 0x800003a0:\n");
+  for (int i = 0; i < 4; i++) {
+      uint32_t addr = 0x800003a0 + i * 4;
+      uint32_t value = pmem_read(addr);
+      printf("  func[%d] = 0x%08x\n", i, value);
+  }
+  
   // 初始化 Capstone
   init_capstone();
   
   // 初始化 trace 功能
   #ifdef CONFIG_ITRACE
   //printf("ITRACE enabled\n");
-  #endif
-  
-  #ifdef CONFIG_FTRACE
-  //printf("FTRACE enabled\n");
-  // 解析ELF文件获取符号表
-  if (argc > 1) {
-    parse_elf(argv[1]);
-  }
   #endif
 
     // 复位序列 - 产生一个有效的复位脉冲
@@ -200,13 +225,24 @@ void cpu_exec(uint64_t cycles) {
 
 void run_to_completion() {
     printf("Running to completion...\n");
+    uint32_t last_pc = top->pc;  // 记录上一次的PC值
+    
     while (!contextp->gotFinish() && main_time < 1000000) {  // 增加到1,000,000步
         top->clk = 0; step_and_dump_wave();
         top->clk = 1; step_and_dump_wave();
         
-        // 如果启用了 DiffTest，在每个时钟周期后调用
-        if (difftest_enabled) {
+        // 如果启用了 DiffTest，只在PC发生变化时调用（表示指令执行完成）
+        if (difftest_enabled && top->pc != last_pc) {
+            // 更新NPC的CPU状态
+            cpu_state.pc = top->pc;
+            for (int i = 0; i < 32; i++) {
+                cpu_state.gpr[i] = get_reg_value(i);
+            }
+            
+            // 执行difftest对比
             difftest_exec(1);
+            
+            last_pc = top->pc;
         }
         
         if (contextp->gotFinish()) break;

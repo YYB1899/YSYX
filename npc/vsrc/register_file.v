@@ -36,15 +36,15 @@ module register_file #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   assign rs2_data = (rs2 == 0) ? 0 : rf[rs2];
   
   always @(posedge clk) begin
-    if (wen) begin
+    if (wen && rd != 5'd0) begin  // 禁止写入x0寄存器
       rf[rd] <= wdata;
       // 调试信息：跟踪寄存器写入，特别关注x1寄存器
       if (rd == 5'd1) begin
         $display("REG DEBUG: Writing to x1 (ra): %h", wdata);
       end
-      if (rd != 5'd0) begin
-        $display("REG DEBUG: x%d <= %h", rd, wdata);
-      end
+      $display("REG DEBUG: x%d <= %h", rd, wdata);
+    end else if (wen && rd == 5'd0) begin
+      $display("REG DEBUG: Attempted write to x0 (ignored): %h", wdata);
     end
     
     // 调试信息：当读取x1寄存器时显示其值

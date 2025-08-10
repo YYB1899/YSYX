@@ -72,7 +72,10 @@ module memory_interface(
 				$display("STACK READ: addr=%h, index=%d, data=%h", addr, stack_index, stack_mem[stack_index]);
 			end else begin
 				// 使用 DPI-C 函数
-				mem_rdata = pmem_read(addr);   
+				mem_rdata = pmem_read(addr);
+				if (addr == 32'h80000154) begin
+					$display("VERILOG DEBUG: addr=0x%08x, pmem_read returned=0x%08x", addr, mem_rdata);
+				end   
 			end
 			// 特别关注80008ff0地址的读取
 			if (addr == 32'h80008ff0) begin
@@ -86,9 +89,34 @@ module memory_interface(
 		if (!rst) begin
 			if (wen == 1'b1) begin // 有写请求时
 				if (is_stack_addr) begin
-					// 写入内部栈内存
-					stack_mem[stack_index] <= wdata;
-					$display("STACK WRITE: addr=%h, index=%d, data=%h", addr, stack_index, wdata);
+					// 写入内部栈内存 - 支持字节级写入
+					case (is_store)
+						3'b000: begin // SB - 字节存储
+							case (addr[1:0])
+								2'b00: stack_mem[stack_index][7:0]   <= wdata[7:0];
+								2'b01: stack_mem[stack_index][15:8]  <= wdata[7:0];
+								2'b10: stack_mem[stack_index][23:16] <= wdata[7:0];
+								2'b11: stack_mem[stack_index][31:24] <= wdata[7:0];
+							endcase
+							$display("STACK BYTE WRITE: addr=%h, index=%d, byte_offset=%d, byte_data=%h", 
+							         addr, stack_index, addr[1:0], wdata[7:0]);
+						end
+						3'b001: begin // SH - 半字存储
+							case (addr[1])
+								1'b0: stack_mem[stack_index][15:0]  <= wdata[15:0];
+								1'b1: stack_mem[stack_index][31:16] <= wdata[15:0];
+							endcase
+							$display("STACK HALF WRITE: addr=%h, index=%d, half_offset=%d, half_data=%h", 
+							         addr, stack_index, addr[1], wdata[15:0]);
+						end
+						3'b010: begin // SW - 字存储
+							stack_mem[stack_index] <= wdata;
+							$display("STACK WORD WRITE: addr=%h, index=%d, data=%h", addr, stack_index, wdata);
+						end
+						default: begin // 其他情况，不执行写入
+							$display("STACK WRITE: Unsupported store type %b", is_store);
+						end
+					endcase
 				end else begin
 					// 使用 DPI-C 函数
 					pmem_write(addr, wdata, wmask);

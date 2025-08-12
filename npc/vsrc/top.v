@@ -9,6 +9,7 @@ module top (
     // 内部信号
     wire [4:0]  rs1, rs2, rd;       // 寄存器地址
     wire [31:0] rs1_data, rs2_data, rd_data; // 寄存器数据
+    
     wire        reg_write;          // 寄存器写使能
     wire        alu_src;            // ALU 操作数选择
     wire [3:0]  alu_ctrl;           // ALU 控制信号
@@ -25,7 +26,6 @@ module top (
     wire [2:0]  is_load;            // Load 指令
     wire [2:0]  is_store;           // Store 指令
     wire        use_wdata;
-    
 
     // 实例化 PC 模块    
     pc pc_inst (
@@ -83,7 +83,7 @@ imem imem_inst (
         .rs2        (rs2),
         .rd         (rd), 
         .wen        (reg_write),
-        .wdata      ((use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result))), 
+        .wdata      ((is_load == 3'b010) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result))), 
         .rs1_data   (rs1_data),
         .rs2_data   (rs2_data)
     );
@@ -91,48 +91,25 @@ imem imem_inst (
     // 添加调试信息
     always @(posedge clk) begin
         if (!rst && reg_write) begin
-            $display("WB DEBUG: rd=%d, use_wdata=%b, is_jal=%b, is_jalr=%b, wb_src=%b", 
-                     rd, use_wdata, is_jal, is_jalr, wb_src);
+            $display("WB DEBUG: rd=%d, is_load=%b, is_jal=%b, is_jalr=%b, wb_src=%b", 
+                     rd, is_load, is_jal, is_jalr, wb_src);
             $display("WB DEBUG: rd_data=%h, pc_jal=%h, imm=%h, alu_result=%h", 
                      rd_data, pc_jal, imm, alu_result);
             $display("WB DEBUG: final_wdata=%h", 
-                     (use_wdata) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result)));
+                     ((is_load == 3'b010) ? rd_data : ((is_jal || is_jalr) ? pc_jal : (wb_src ? imm : alu_result))));
         end
         
-        // 专门调试关键的算术指令
-        if (!rst && alu_enable) begin
-            // 检测ADD指令 (opcode=0110011, funct3=000, funct7=0000000)
-            if (instruction[6:0] == 7'b0110011 && instruction[14:12] == 3'b000 && instruction[31:25] == 7'b0000000) begin
-                $display("CRITICAL DEBUG: ADD instruction at PC=%h", pc);
-                $display("  rs1=%d(0x%08x) + rs2=%d(0x%08x) = 0x%08x", 
-                         rs1, rs1_data, rs2, rs2_data, alu_result);
-            end
-            
-            // 检测SUB指令 (opcode=0110011, funct3=000, funct7=0100000)
-            if (instruction[6:0] == 7'b0110011 && instruction[14:12] == 3'b000 && instruction[31:25] == 7'b0100000) begin
-                $display("CRITICAL DEBUG: SUB instruction at PC=%h", pc);
-                $display("  rs1=%d(0x%08x) - rs2=%d(0x%08x) = 0x%08x", 
-                         rs1, rs1_data, rs2, rs2_data, alu_result);
-            end
-            
-            // 检测SLTIU指令 (opcode=0010011, funct3=011) - 这就是SEQZ
-            if (instruction[6:0] == 7'b0010011 && instruction[14:12] == 3'b011) begin
-                $display("CRITICAL DEBUG: SLTIU/SEQZ instruction at PC=%h", pc);
-                $display("  rs1=%d(0x%08x) < imm=%d ? result=0x%08x", 
-                         rs1, rs1_data, imm, alu_result);
-                if (imm == 32'h1) begin
-                    $display("  This is SEQZ: checking if rs1==0, result should be %d", 
-                             (rs1_data == 0) ? 1 : 0);
-                end
-            end
-        end
-        
-        // 添加Load/Store指令的详细调试信息
+        // Load/Store 调试
         if (!rst && (is_load != 3'b111 || is_store != 3'b111)) begin
             $display("INST DEBUG: PC=%h, instruction=%h, is_load=%b, is_store=%b", 
                      pc, instruction, is_load, is_store);
-            $display("INST DEBUG: rs1=%d, rs2=%d, rd=%d, imm=%h", 
+            $display("INST DEBUG: rs1=%0d, rs2=%0d, rd=%0d, imm=%h", 
                      rs1, rs2, rd, imm);
+        end
+
+        // 观察组合读数
+        if (!rst && (is_load == 3'b010)) begin
+            $display("RD_DATA DEBUG: rd_data=%h, is_load=%b", rd_data, is_load);
         end
     end
 

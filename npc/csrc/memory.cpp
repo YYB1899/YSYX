@@ -51,9 +51,14 @@ void init_memory(const char* filename) {
         // 小端序组合：bytes[i]是最低字节
         uint32_t word = (bytes[i] << 0)   | (bytes[i+1] << 8) | 
                        (bytes[i+2] << 16) | (bytes[i+3] << 24);
-        memory[addr/4] = word;
+
+    // 按字节小端序写入到memory（memory是uint8_t数组）
+    memory[addr + 0] = bytes[i];
+    memory[addr + 1] = bytes[i + 1];
+    memory[addr + 2] = bytes[i + 2];
+    memory[addr + 3] = bytes[i + 3];
         
-        // 调试输出
+    // 调试输出（可留可去）
         std::cout << "mem[0x" << std::hex << std::setw(8) << std::setfill('0') 
                  << (CONFIG_MBASE + addr) << "] = 0x"
                  << std::setw(2) << static_cast<int>(bytes[i]) << " "
@@ -133,19 +138,29 @@ void load_elf_to_memory(const char* elf_file) {
             // 如果有文件数据，则加载
             if (phdr.p_filesz > 0) {
                 fseek(fp, phdr.p_offset, SEEK_SET);
-                if (fread(memory + mem_offset, phdr.p_filesz, 1, fp) <= 0) {
+                
+                // 先读取到临时缓冲区
+                uint8_t* temp_buffer = new uint8_t[phdr.p_filesz];
+                if (fread(temp_buffer, phdr.p_filesz, 1, fp) <= 0) {
                     printf("Fail to read segment %d data.\n", i);
+                    delete[] temp_buffer;
                     fclose(fp);
                     return;
                 }
                 
+                // 逐字节拷贝（保持文件中小端序字节逐一落到内存），避免丢失尾部不足4字节的数据
+                for (uint32_t j = 0; j < phdr.p_filesz; j++) {
+                    memory[mem_offset + j] = temp_buffer[j];
+                }
+                
+                delete[] temp_buffer;
+                
                 // 调试输出：显示加载的数据
                 printf("Loaded %d bytes to 0x%08x\n", phdr.p_filesz, phdr.p_vaddr);
                 if (phdr.p_filesz >= 4) {
-                    uint32_t* data_ptr = (uint32_t*)(memory + mem_offset);
-                    printf("First few words: ");
-                    for (int j = 0; j < std::min(4, (int)(phdr.p_filesz / 4)); j++) {
-                        printf("0x%08x ", data_ptr[j]);
+                    printf("First few bytes: ");
+                    for (int j = 0; j < std::min(8, (int)phdr.p_filesz); j++) {
+                        printf("%02x ", memory[mem_offset + j]);
                     }
                     printf("\n");
                 }

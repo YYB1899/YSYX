@@ -21,53 +21,79 @@ bool capstone_initialized = false;
 // DPI函数实现
 extern "C" int pmem_read(int raddr) {
     // 转换为相对于基地址的偏移
-    uint32_t offset = raddr - CONFIG_MBASE;
+    uint32_t offset = (uint32_t)(raddr - CONFIG_MBASE);
     if (offset >= CONFIG_MSIZE) {
-        //printf("Warning: Invalid read at 0x%08x\n", raddr);
+        //printf("Warning: Invalid read at 0x%08x\n", (uint32_t)raddr);
         return 0;
     }
     
-    uint32_t aligned_offset = offset & ~0x3u;
-    uint32_t result = *(uint32_t*)(memory + aligned_offset);
+    // 允许非对齐读取：从字节数组按小端序组合4字节
+    uint32_t base = offset;
+    uint32_t b0 = memory[base + 0];
+    uint32_t b1 = memory[base + 1];
+    uint32_t b2 = memory[base + 2];
+    uint32_t b3 = memory[base + 3];
     
-    // 调试特定地址
-    if (raddr == 0x80000154) {
-        printf("PMEM_READ DEBUG: addr=0x%08x, offset=0x%08x, aligned_offset=0x%08x\n", 
-               raddr, offset, aligned_offset);
-        printf("  memory bytes: %02x %02x %02x %02x\n", 
-               memory[aligned_offset], memory[aligned_offset+1], 
-               memory[aligned_offset+2], memory[aligned_offset+3]);
-        printf("  result=0x%08x\n", result);
+    // 小端序：最低字节在最低地址
+    uint32_t result = (b0) | (b1 << 8) | (b2 << 16) | (b3 << 24);
+    
+    // 调试输出 - 对所有读取都输出详细信息
+    printf("PMEM_READ DEBUG: addr=0x%08x, offset=0x%08x, bytes=[%02x,%02x,%02x,%02x], result=0x%08x\n", 
+           (uint32_t)raddr, base, b0, b1, b2, b3, result);
+    
+    // 特别关注关键地址
+    if (raddr == 0x80000198) {
+        printf("*** CRITICAL READ: addr=0x80000198, result=0x%08x ***\n", result);
     }
     
-    return result;
+    return (int)result;  // 确保返回类型正确
 }
 
 extern "C" void pmem_write(int waddr, int wdata, unsigned char wmask) {
     // 转换为相对于基地址的偏移
-    uint32_t offset = waddr - CONFIG_MBASE;
+    uint32_t offset = (uint32_t)(waddr - CONFIG_MBASE);
     if (offset >= CONFIG_MSIZE) {
-        //printf("Warning: Invalid write at 0x%08x\n", waddr);
+        //printf("Warning: Invalid write at 0x%08x\n", (uint32_t)waddr);
         return;
     }
-    uint32_t aligned_offset = offset & ~0x3u;
-    uint32_t current = *(uint32_t*)(memory + aligned_offset);
-    uint32_t new_data = current;
     
-    // 根据字节掩码更新对应的字节
+    // 检查地址对齐
+    if (waddr % 4 != 0) {
+        printf("Warning: Unaligned write at 0x%08x\n", (uint32_t)waddr);
+        return;
+    }
+    
+    uint32_t aligned_offset = offset;
+    
+    // 先按字节读出当前值
+    uint32_t b0 = memory[aligned_offset + 0];
+    uint32_t b1 = memory[aligned_offset + 1];
+    uint32_t b2 = memory[aligned_offset + 2];
+    uint32_t b3 = memory[aligned_offset + 3];
+    uint32_t old_data = (b0) | (b1 << 8) | (b2 << 16) | (b3 << 24);
+    
+    // 根据字节掩码更新对应的字节（小端序）
     for (int i = 0; i < 4; i++) {
         if (wmask & (1 << i)) {
-            // 清除目标字节，然后设置新值
-            new_data = (new_data & ~(0xFF << (i*8))) | 
-                       ((wdata >> (i*8)) & 0xFF) << (i*8);
+            uint8_t byte_val = (uint8_t)((wdata >> (i * 8)) & 0xFF);
+            memory[aligned_offset + i] = byte_val;
         }
     }
     
-    *(uint32_t*)(memory + aligned_offset) = new_data;
+    // 重新组装调试用的新值
+    uint32_t new_data = (uint32_t)memory[aligned_offset + 0]
+                     | ((uint32_t)memory[aligned_offset + 1] << 8)
+                     | ((uint32_t)memory[aligned_offset + 2] << 16)
+                     | ((uint32_t)memory[aligned_offset + 3] << 24);
     
     // 调试输出
     printf("PMEM WRITE: addr=0x%08x, wdata=0x%08x, wmask=0x%02x, old=0x%08x, new=0x%08x\n", 
-           waddr, wdata, wmask & 0xFF, current, new_data);
+           (uint32_t)waddr, (uint32_t)wdata, wmask & 0xFF, old_data, new_data);
+           
+    // 特别关注特定地址的写入
+    if (waddr == 0x80008ff0) {
+        printf("*** CRITICAL WRITE: addr=0x80008ff0, wdata=0x%08x, wmask=0x%02x ***\n", (uint32_t)wdata, wmask);
+    }
 }
 
 extern "C" void end_simulation() {

@@ -42,7 +42,7 @@ module register_file #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
       if (rd == 5'd1) begin
         $display("REG DEBUG: Writing to x1 (ra): %h", wdata);
       end
-      $display("REG DEBUG: x%d <= %h", rd, wdata);
+        $display("REG DEBUG: x%d <= %h", rd, wdata);
     end else if (wen && rd == 5'd0) begin
       $display("REG DEBUG: Attempted write to x0 (ignored): %h", wdata);
     end

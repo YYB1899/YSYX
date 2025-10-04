@@ -1,0 +1,107 @@
+#include "npc_memory.h"
+#include "npc_define.h"
+#include "npc_device.h"
+
+#define DEVICE_BASE 0xa0000000 //设备基地址
+#define RTC_ADDR  (DEVICE_BASE + 0x0000048) //时钟设备地址
+  uint64_t npc_time;
+  extern uint8_t* pmem;
+  extern uint32_t *vmem ;
+  uint8_t* guest_to_host(uint32_t paddr) { return pmem + paddr - CONFIG_MBASE; } //客户机物理地址paddr转换为以CONFIG_MBASE为基点的宿主机偏移地址
+  uint64_t get_time() ; //时间数据
+  void vga_update_screen();
+  uint32_t screen_size();
+  uint16_t height,weight; //VGA尺寸
+  bool vga_flag;
+static inline uint32_t host_read(void *addr, int len) { //读取指定内存长度
+  switch (len) {
+    case 1: return *(uint8_t  *)addr;
+    case 2: return *(uint16_t *)addr;
+    case 4: return *(uint32_t *)addr;
+    default: return 0;
+  }
+}
+
+static uint32_t pmem_read(uint32_t addr, int len) {
+  uint32_t ret = host_read(guest_to_host(addr), len);
+  return ret;
+}
+
+
+word_t paddr_read(paddr_t addr, int len) {
+  if (likely(in_pmem(addr))) return pmem_read(addr, len); //确定地址在物理内存范围内
+  printf("******* 0x%x is out of boudary ******** \n",addr);
+  return 0;
+}
+
+extern "C" int npc_pmem_read(int addr){
+  int paddr = addr & ~0x03u;
+  int data;
+#ifdef MTRACE
+  printf("Read addr 0x%x \n",paddr);
+#endif 
+  if(addr == RTC_ADDR) //RTC低32位：返回当前时间
+  {
+    return (uint32_t)get_time();
+  }
+  else if(addr == RTC_ADDR + 4) //RTC高32位：返回当前时间的高32位
+  {
+    return (uint32_t)(get_time()>>32);
+  }
+  data = *(int*)guest_to_host(paddr); //普通内存读取
+  return data;
+}
+
+extern "C" void npc_pmem_write(int addr, int wdata, char wmask){
+  uint32_t pc;
+  int paddr = addr ;
+  int data = wdata;
+  if(addr == UART_ADDR)
+  {
+    putc(wdata, stderr);
+    return;
+  }
+  //UART串口
+  else if(addr >=FB_ADDR && addr <FB_ADDR + screen_size())
+  {
+    vmem[(addr-FB_ADDR)/4] = wdata;
+    return;
+  }
+  //视频缓冲区
+  else if(addr == VGA_ADDR)
+  {
+
+    height = wdata&0xffff;
+    weight = wdata>>16;
+    return;
+  }
+  //VGA尺寸设置
+  else if(addr == VGA_ADDR +4)
+  {
+    vga_flag  = wdata;
+    if(vga_flag == 1)
+    {
+      vga_update_screen();
+      vga_flag = 0;
+    }
+    return;
+  }
+  //VGA屏幕更新
+  switch (wmask)
+  {
+    case 1: *(uint8_t   *)guest_to_host(paddr) = data&(0x000000ff) ; break;
+    case 2: *(uint16_t  *)guest_to_host(paddr) = data&(0x0000ffff) ; break;
+    case 4: *(uint32_t  *)guest_to_host(paddr) = data&(0xffffffff) ; break;
+    default:break; 
+    //选择写入长度
+    svSetScope(svGetScopeFromName("TOP.ysyxtop"));
+    GetPC(&pc);
+    printf("wmask      =    %d  pc  = 0x%x \n",wmask,pc);
+    assert(0);
+  }
+    return;
+}
+
+
+
+

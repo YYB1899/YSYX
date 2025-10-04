@@ -8,4 +8,4 @@ bash init.sh subproject-name
 
 [lecture note]: https://ysyx.oscc.cc/docs/
 
-NEMU可运行RT-Thread,npc需要重构(见BUS及以后分支)
+NEMU可运行RT-Thread,NPC需要重构(见BUS及以后分支)

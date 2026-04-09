@@ -988,7 +988,7 @@ Xbar Xbar( //交叉开关(设备与核心)
     .CLNT_rdata                         (CLNT_rdata                ),
     .CLNT_rlast                         (CLNT_rlast                ),
     .CLNT_rid                           (CLNT_rid                  ),
-
+    
     .SOC_awready                        (io_master_awready         ),
     .SOC_awvalid                        (io_master_awvalid         ),
     .SOC_awaddr                         (io_master_awaddr          ),
@@ -1025,4 +1025,3 @@ Xbar Xbar( //交叉开关(设备与核心)
 );
 
 endmodule
-

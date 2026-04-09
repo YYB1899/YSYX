@@ -18,8 +18,9 @@ $(shell mkdir -p $(BUILD_DIR))
 Warning = ASSIGNDLY DECLFILENAME PINCONNECTEMPTY  UNDRIVEN SYNCASYNCNET  UNUSEDSIGNAL DEFPARAM UNUSEDPARAM
 VERILATOR_FLAGS += --timescale "1ns/1ns" --no-timing --autoflush
 
+#PLATFORM从ARCH变量里提取。若不设置ARCH，则无法触发NPC宏，导致RTL里io_master系列信号未声明，产生IMPLICIT警告。
 ifeq ($(PLATFORM),npc)
-VERILATOR_FLAGS += -GResetValue=0x80000000 -DNPC
+VERILATOR_FLAGS += -GResetValue=0x80000000 -DNPC 
 VSOURCES +=$(shell find $(abspath ./vsrc/SRAM) -name "*.v" -or -name "*.sv" )
 endif
 

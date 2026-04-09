@@ -8,4 +8,4 @@ bash init.sh subproject-name
 
 [lecture note]: https://ysyx.oscc.cc/docs/
 
-NEMU和NPC均可运行RT-Thread,NPC总线完成
+NEMU和NPC均可运行RT-Thread，NPC总线完成。修改环境变量、NPC中NPC宏与SOC系列接口的BUG。make npc时需输入make ARCH=riscv32e-npc all完成（详情见npc/makefile）。

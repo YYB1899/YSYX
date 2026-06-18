@@ -9,3 +9,5 @@ bash init.sh subproject-name
 [lecture note]: https://ysyx.oscc.cc/docs/
 
 NEMU和NPC均可运行RT-Thread,NPC总线完成
+
+开启difftest：define DIFTEST宏在npc/include/npc_define.h内。nemu menuconfig打开build target和testing and debugging后，make clean再make run
